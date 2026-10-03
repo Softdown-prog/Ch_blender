@@ -1,0 +1,109 @@
+name: CH Blender migration
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  migrate:
+    if: github.head_ref == 'migration/ch-blender-standalone' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout migration branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          path: target
+
+      - name: Checkout City Horizon source
+        uses: actions/checkout@v4
+        with:
+          repository: Softdown-prog/City-horizon-
+          ref: main
+          path: source
+          sparse-checkout: |
+            tools/ch_blender
+            tools/blender_bake_runner.py
+            docs
+          sparse-checkout-cone-mode: false
+
+      - name: Copy CH Blender core
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p target/tools/ch_blender target/tools target/docs
+          rsync -a --delete source/tools/ch_blender/ target/tools/ch_blender/
+
+          # Standalone production repo must not mutate the City Horizon runtime directly.
+          rm -rf target/tools/ch_blender/runtime_integrations
+          rm -rf target/tools/ch_blender/runtime_promotions
+          rm -f target/tools/ch_blender/integrate_ice_cream_runtime.py
+
+          cp source/tools/blender_bake_runner.py target/tools/blender_bake_runner.py
+
+      - name: Copy documentation needed by CH Blender
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          for file in source/docs/*.md; do
+            base="$(basename "$file")"
+            case "$base" in
+              ASSET_PIPELINE.md|CH_BLENDER*.md|CH_AMUSEMENT_RIDE*.md|CH_CAROUSEL*.md|CH_ISOMETRIC_OCCLUSION*.md)
+                cp "$file" "target/docs/$base"
+                continue
+                ;;
+            esac
+            if grep -Eqi 'CH Blender|ch_blender|blender_bake_runner|CH_CAMERA_V1|asset requirements|shape authoring|parametric authoring|Blender bake' "$file"; then
+              cp "$file" "target/docs/$base"
+            fi
+          done
+
+      - name: Write migration boundary
+        shell: bash
+        run: |
+          cat > target/MIGRATION_SCOPE.md <<'EOF'
+          # CH Blender standalone migration
+
+          CH Blender was migrated from `Softdown-prog/City-horizon-` so asset
+          production can run independently from the game repository.
+
+          ## Included
+
+          - `tools/ch_blender/`: CLI, workers, contracts, preflight profiles,
+            authoring tools, scripts, tests, jobs and production recipes/data.
+          - `tools/blender_bake_runner.py`: Blender bake orchestration.
+          - `docs/`: CH Blender and directly related asset/render/camera/
+            authoring documentation selected from City Horizon.
+
+          ## Deliberately excluded
+
+          These bridges write directly into City Horizon runtime state and are
+          intentionally not part of the standalone production copy:
+
+          - `tools/ch_blender/runtime_integrations/`
+          - `tools/ch_blender/runtime_promotions/`
+          - `tools/ch_blender/integrate_ice_cream_runtime.py`
+
+          Approved outputs should be promoted to City Horizon only after
+          visual and contract validation.
+          EOF
+
+      - name: Commit migrated files to PR branch
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools docs MIGRATION_SCOPE.md
+          if git diff --cached --quiet; then
+            echo "No migration changes to commit."
+            exit 0
+          fi
+          git commit -m "feat: migrate CH Blender from City Horizon"
+          git push origin HEAD:${{ github.head_ref }}
