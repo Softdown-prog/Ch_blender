@@ -1,0 +1,184 @@
+--- a/source/creator/CMakeLists.txt
++++ b/source/creator/CMakeLists.txt
+@@ -1343,23 +1343,25 @@
+         )
+       endif()
+ 
+-      # MaterialX python bindings
+-      install(
+-        DIRECTORY ${LIBDIR}/materialx/python/Release/MaterialX
+-        DESTINATION ${TARGETDIR_VER}/python/lib/site-packages/
+-        CONFIGURATIONS Release;RelWithDebInfo;MinSizeRel
+-        PATTERN "__pycache__" EXCLUDE           # * any cache *
+-        PATTERN "*.pyc" EXCLUDE                 # * any cache *
+-        PATTERN "*.pyo" EXCLUDE                 # * any cache *
+-      )
+-      install(
+-        DIRECTORY ${LIBDIR}/materialx/python/Debug/MaterialX
+-        DESTINATION ${TARGETDIR_VER}/python/lib/site-packages/
+-        CONFIGURATIONS Debug
+-        PATTERN "__pycache__" EXCLUDE           # * any cache *
+-        PATTERN "*.pyc" EXCLUDE                 # * any cache *
+-        PATTERN "*.pyo" EXCLUDE                 # * any cache *
+-      )
++      if(WITH_MATERIALX)
++        # MaterialX python bindings
++        install(
++          DIRECTORY ${LIBDIR}/materialx/python/Release/MaterialX
++          DESTINATION ${TARGETDIR_VER}/python/lib/site-packages/
++          CONFIGURATIONS Release;RelWithDebInfo;MinSizeRel
++          PATTERN "__pycache__" EXCLUDE           # * any cache *
++          PATTERN "*.pyc" EXCLUDE                 # * any cache *
++          PATTERN "*.pyo" EXCLUDE                 # * any cache *
++        )
++        install(
++          DIRECTORY ${LIBDIR}/materialx/python/Debug/MaterialX
++          DESTINATION ${TARGETDIR_VER}/python/lib/site-packages/
++          CONFIGURATIONS Debug
++          PATTERN "__pycache__" EXCLUDE           # * any cache *
++          PATTERN "*.pyc" EXCLUDE                 # * any cache *
++          PATTERN "*.pyo" EXCLUDE                 # * any cache *
++        )
++      endif()
+ 
+       if(WINDOWS_PYTHON_DEBUG)
+         install(
+@@ -1380,31 +1382,34 @@
+ 
+   endif()
+ 
+-  # Filenames change slightly between FFMPEG versions check both 6.0 and fallback to 5.0
+-  # to ease the transition between versions.
+-  if(EXISTS "${LIBDIR}/ffmpeg/lib/avcodec-60.dll")
+-    windows_install_shared_manifest(
+-      FILES
+-        ${LIBDIR}/ffmpeg/lib/avcodec-60.dll
+-        ${LIBDIR}/ffmpeg/lib/avformat-60.dll
+-        ${LIBDIR}/ffmpeg/lib/avdevice-60.dll
+-        ${LIBDIR}/ffmpeg/lib/avutil-58.dll
+-        ${LIBDIR}/ffmpeg/lib/swscale-7.dll
+-        ${LIBDIR}/ffmpeg/lib/swresample-4.dll
+-      ALL
+-    )
+-  else()
+-    windows_install_shared_manifest(
+-      FILES
+-        ${LIBDIR}/ffmpeg/lib/avcodec-59.dll
+-        ${LIBDIR}/ffmpeg/lib/avformat-59.dll
+-        ${LIBDIR}/ffmpeg/lib/avdevice-59.dll
+-        ${LIBDIR}/ffmpeg/lib/avutil-57.dll
+-        ${LIBDIR}/ffmpeg/lib/swscale-6.dll
+-        ${LIBDIR}/ffmpeg/lib/swresample-4.dll
+-      ALL
+-    )
+-  endif()
++  if(WITH_CODEC_FFMPEG)
++    # Filenames change slightly between FFMPEG versions check both 6.0 and fallback to 5.0
++    # to ease the transition between versions.
++    if(EXISTS "${LIBDIR}/ffmpeg/lib/avcodec-60.dll")
++      windows_install_shared_manifest(
++        FILES
++          ${LIBDIR}/ffmpeg/lib/avcodec-60.dll
++          ${LIBDIR}/ffmpeg/lib/avformat-60.dll
++          ${LIBDIR}/ffmpeg/lib/avdevice-60.dll
++          ${LIBDIR}/ffmpeg/lib/avutil-58.dll
++          ${LIBDIR}/ffmpeg/lib/swscale-7.dll
++          ${LIBDIR}/ffmpeg/lib/swresample-4.dll
++        ALL
++      )
++    else()
++      windows_install_shared_manifest(
++        FILES
++          ${LIBDIR}/ffmpeg/lib/avcodec-59.dll
++          ${LIBDIR}/ffmpeg/lib/avformat-59.dll
++          ${LIBDIR}/ffmpeg/lib/avdevice-59.dll
++          ${LIBDIR}/ffmpeg/lib/avutil-57.dll
++          ${LIBDIR}/ffmpeg/lib/swscale-6.dll
++          ${LIBDIR}/ffmpeg/lib/swresample-4.dll
++        ALL
++      )
++    endif()
++  endif()
++
+   windows_install_shared_manifest(
+     FILES
+       ${LIBDIR}/tbb/bin/tbb.dll
+@@ -1431,38 +1436,46 @@
+     list(APPEND LIB ${TBB_MALLOC_LIBRARIES})
+   endif()
+ 
+-  if(EXISTS ${LIBDIR}/sndfile/lib/sndfile.dll)
+-    set(SNDFILE_DLL ${LIBDIR}/sndfile/lib/sndfile.dll)
+-  else()
+-    set(SNDFILE_DLL ${LIBDIR}/sndfile/lib/libsndfile-1.dll)
+-  endif()
+-
+-  windows_install_shared_manifest(
+-    FILES ${SNDFILE_DLL}
+-    ALL
+-  )
+-  unset(SNDFILE_DLL)
+-
+-  windows_install_shared_manifest(
+-    FILES ${LIBDIR}/shaderc/bin/shaderc_shared.dll
+-    RELEASE
+-  )
+-
+-  windows_install_shared_manifest(
+-    FILES ${LIBDIR}/shaderc/bin/shaderc_shared_d.dll
+-    DEBUG
+-  )
+-
+-  windows_install_shared_manifest(
+-    FILES
+-      ${LIBDIR}/openal/lib/OpenAL32.dll
+-    ALL
+-  )
+-
+-  windows_install_shared_manifest(
+-    FILES ${LIBDIR}/sdl/lib/SDL2.dll
+-    ALL
+-  )
++  if(WITH_CODEC_SNDFILE)
++    if(EXISTS ${LIBDIR}/sndfile/lib/sndfile.dll)
++      set(SNDFILE_DLL ${LIBDIR}/sndfile/lib/sndfile.dll)
++    else()
++      set(SNDFILE_DLL ${LIBDIR}/sndfile/lib/libsndfile-1.dll)
++    endif()
++  
++    windows_install_shared_manifest(
++      FILES ${SNDFILE_DLL}
++      ALL
++    )
++    unset(SNDFILE_DLL)
++  endif()
++
++  if(WITH_VULKAN_BACKEND)
++    windows_install_shared_manifest(
++      FILES ${LIBDIR}/shaderc/bin/shaderc_shared.dll
++      RELEASE
++    )
++  
++    windows_install_shared_manifest(
++      FILES ${LIBDIR}/shaderc/bin/shaderc_shared_d.dll
++      DEBUG
++    )
++  endif()
++
++  if(WITH_OPENAL)
++    windows_install_shared_manifest(
++      FILES
++        ${LIBDIR}/openal/lib/OpenAL32.dll
++      ALL
++    )
++  endif()
++
++  if(WITH_SDL)
++    windows_install_shared_manifest(
++      FILES ${LIBDIR}/sdl/lib/SDL2.dll
++      ALL
++    )
++  endif()
+ 
+   if(WITH_SYSTEM_AUDASPACE)
+     install(

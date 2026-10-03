@@ -1,0 +1,28 @@
+--- a/build_files/build_environment/cmake/setup_msys2.cmake
++++ b/build_files/build_environment/cmake/setup_msys2.cmake
+@@ -1,3 +1,15 @@
++
++# The Legacy subset uses only CMake, nmake and Meson; no Unix configure recipes.
++if(CH_BLENDER_LEGACY_CPU)
++  find_program(CH_PATCH patch HINTS "C:/Program Files/Git/usr/bin" REQUIRED)
++  set(PATCH_CMD "${CH_PATCH}")
++  set(NASM_PATH "${DOWNLOAD_DIR}/nasm-2.13.02/nasm.exe")
++  set(CONFIGURE_ENV_MSVC set CC=cl && set CXX=cl)
++  set(CONFIGURE_ENV ${CONFIGURE_ENV_MSVC})
++  set(CONFIGURE_ENV_NO_PERL ${CONFIGURE_ENV_MSVC})
++  return()
++endif()
++
+ # SPDX-FileCopyrightText: 2023 Blender Authors
+ #
+ # SPDX-License-Identifier: GPL-2.0-or-later
+--- a/build_files/build_environment/cmake/download.cmake
++++ b/build_files/build_environment/cmake/download.cmake
+@@ -102,6 +102,7 @@
+   download_source(MINIZIPNG)
+   download_source(OPENCOLORIO)
+   download_source(WEBP)
++  download_source(OPENIMAGEIO)
+   download_source(OPENJPEG)
+   download_source(PYBIND11)
+   return()

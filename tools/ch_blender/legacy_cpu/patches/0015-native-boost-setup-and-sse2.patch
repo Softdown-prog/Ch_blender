@@ -1,0 +1,52 @@
+--- a/build_files/build_environment/cmake/boost.cmake
++++ b/build_files/build_environment/cmake/boost.cmake
+@@ -49,6 +49,20 @@
+ 
+ set(JAM_FILE ${BUILD_DIR}/boost.user-config.jam)
+ configure_file(${PATCH_DIR}/boost.user.jam.in ${JAM_FILE})
++if(CH_BLENDER_LEGACY_CPU AND WIN32)
++  file(TO_CMAKE_PATH "$ENV{VSINSTALLDIR}" CH_VS_ROOT)
++  string(REGEX REPLACE "/$" "" CH_VS_ROOT "${CH_VS_ROOT}")
++  set(CH_BOOST_SETUP "${CH_VS_ROOT}/VC/Auxiliary/Build/vcvarsall.bat")
++  if(NOT EXISTS "${CH_BOOST_SETUP}")
++    message(FATAL_ERROR "Native VS setup not found: ${CH_BOOST_SETUP}")
++  endif()
++  file(APPEND "${JAM_FILE}" "\nusing msvc : 14.3 : \"${CMAKE_CXX_COMPILER}\" : <setup>\"${CH_BOOST_SETUP}\" ;\n")
++  list(APPEND BOOST_BUILD_OPTIONS --reconfigure -d+2 --disable-icu boost.locale.icu=off)
++  set(CH_BOOST_PATCH ${CMAKE_COMMAND} -DSOURCE=${BUILD_DIR}/boost/src/external_boost -DPATCH_PATH=${PATCH_DIR}/boost.diff -P ${PATCH_DIR}/ch_legacy_apply_patch.cmake && ${CMAKE_COMMAND} -DSOURCE=${BUILD_DIR}/boost/src/external_boost -DPATCH_PATH=${PATCH_DIR}/ch_legacy_boost_atomic.diff -P ${PATCH_DIR}/ch_legacy_apply_patch.cmake)
++else()
++  set(CH_BOOST_PATCH ${PATCH_CMD} -p 1 -d ${BUILD_DIR}/boost/src/external_boost < ${PATCH_DIR}/boost.diff)
++endif()
++
+ set(BOOST_PYTHON_OPTIONS
+   --with-python
+   --user-config=${JAM_FILE}
+@@ -88,9 +102,7 @@
+   PREFIX ${BUILD_DIR}/boost
+   UPDATE_COMMAND  ""
+ 
+-  PATCH_COMMAND ${PATCH_CMD} -p 1 -d
+-    ${BUILD_DIR}/boost/src/external_boost <
+-    ${PATCH_DIR}/boost.diff
++  PATCH_COMMAND ${CH_BOOST_PATCH}
+ 
+   CONFIGURE_COMMAND ${BOOST_CONFIGURE_COMMAND}
+ 
+--- /dev/null
++++ b/build_files/build_environment/patches/ch_legacy_boost_atomic.diff
+@@ -0,0 +1,15 @@
++--- a/libs/atomic/build/Jamfile.v2
+++++ b/libs/atomic/build/Jamfile.v2
++@@ -107,11 +107,7 @@
++             result += <define>BOOST_ATOMIC_USE_SSE2 ;
++         }
++ 
++-        if [ configure.builds ../config//has_sse41 : $(properties) : "compiler supports SSE4.1" ]
++-        {
++-            result += <source>$(BOOST_ATOMIC_SOURCES_SSE41) ;
++-            result += <define>BOOST_ATOMIC_USE_SSE41 ;
++-        }
+++        # CH Legacy: retain SSE2 and scalar implementations only.
++     }
++ 
++ #    ECHO "Arch sources: " $(result) ;

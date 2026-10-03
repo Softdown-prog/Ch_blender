@@ -1,0 +1,90 @@
+{
+  "status": "validated_on_phenom_for_ch_pipeline",
+  "cpu": {
+    "model": "AMD Phenom(tm) II X6 1055T Processor",
+    "x86_64": true,
+    "sse": true,
+    "sse2": true,
+    "sse3": true,
+    "ssse3": false,
+    "sse4a": true,
+    "sse41": false,
+    "sse42": false,
+    "avx": false,
+    "f16c": false,
+    "avx2": false
+  },
+  "compiler": "MSVC 19.44.35228.0 x64",
+  "architecture": "MSVC x64 default SSE2; no /arch:AVX or x86-64-v2",
+  "compilerEnvironment": {
+    "_CL_": "/Od /Ob0 /Oi-",
+    "NPY_BLAS_ORDER": "",
+    "NPY_LAPACK_ORDER": "",
+    "NPY_DISABLE_SVML": "1"
+  },
+  "versionLine": "Blender 4.2.3 LTS",
+  "executable": "C:\\Users\\User\\.ch-blender\\blender-4.2.3-legacy\\blender.exe",
+  "executableSha256": "312bf1f30c634222c4d5bd19762d47918705756f4a127df630811624d75b389a",
+  "binaryFilesReviewed": 159,
+  "preflightProxy": {
+    "contract": "CH_RENDER_QUALITY_COMPARISON_V1",
+    "blenderVersion": "4.2.3 LTS",
+    "geometryChanged": false,
+    "oldSource": [
+      4096,
+      2048
+    ],
+    "oldFinal": [
+      640,
+      448
+    ],
+    "oldAnisotropicStretch": 0.7142857142857143,
+    "newSource": [
+      2560,
+      1792
+    ],
+    "newFinal": [
+      640,
+      448
+    ],
+    "newAnisotropicStretch": 1.0,
+    "measuredTileRatio": 2.0000001835853745,
+    "allFourViewsFit": true,
+    "cameraDriftRejected": true,
+    "lightDriftRejected": true,
+    "modifierGeometryChecked": true,
+    "requestedDimensionsChecked": true,
+    "finalPassVisibilityRestored": true,
+    "orthoScale": 16.334439086914067
+  },
+  "selectedUnitTests": 32,
+  "cyclesSmoke": true,
+  "realRecipe": true,
+  "realChecks": {
+    "maskChannels": true,
+    "maskFrameMatchesColor": true,
+    "fixedColorSurfacesBlack": true,
+    "fourDirections": true,
+    "rgba": true,
+    "camera": true,
+    "footprint": true,
+    "anchorFinite": true,
+    "anchorFixedAcrossDirections": true,
+    "materials": true,
+    "styleContract": true,
+    "fixedLighting": true,
+    "visualEquivalenceApproved": false
+  },
+  "embreeExperiment": {
+    "baselineMeanSeconds": 17.69591284999842,
+    "embreeMeanSeconds": 19.533223649999854,
+    "bitExactPNGs": 12,
+    "selected": "without_embree",
+    "officialReferenceAvailable": false
+  },
+  "officialPNGReferenceAvailable": false,
+  "upstreamCommit": "0e22e4fcea037eeec1531fdbfc32d3acb88b4bd5",
+  "patches": 18,
+  "preExistingRepositoryInventoryErrors": 15,
+  "sourceVendoredIntoCH": false
+}

@@ -1,0 +1,21 @@
+--- a/build_files/build_environment/patches/ch_legacy_python_prepare.cmake
++++ b/build_files/build_environment/patches/ch_legacy_python_prepare.cmake
+@@ -18,14 +18,15 @@
+   endif()
+ endforeach()
+ file(COPY "${ZLIB_BUILD}/zconf.h" DESTINATION "${SOURCE}/externals/zlib-1.2.13")
++find_program(CH_PATCH_EXECUTABLE patch PATHS "C:/Program Files/Git/usr/bin" REQUIRED)
+ foreach(patch python_windows_x64.diff ch_legacy_python.diff)
+-  execute_process(COMMAND git -C "${SOURCE}" apply --reverse --check "${PATCH_DIR}/${patch}" RESULT_VARIABLE reversed OUTPUT_QUIET ERROR_QUIET)
++  execute_process(COMMAND "${CH_PATCH_EXECUTABLE}" --dry-run -R -p1 -d "${SOURCE}" -i "${PATCH_DIR}/${patch}" RESULT_VARIABLE reversed OUTPUT_QUIET ERROR_QUIET)
+   if(NOT reversed EQUAL 0)
+-    execute_process(COMMAND git -C "${SOURCE}" apply --check "${PATCH_DIR}/${patch}" RESULT_VARIABLE checked)
++    execute_process(COMMAND "${CH_PATCH_EXECUTABLE}" --dry-run -N -p1 -d "${SOURCE}" -i "${PATCH_DIR}/${patch}" RESULT_VARIABLE checked)
+     if(NOT checked EQUAL 0)
+       message(FATAL_ERROR "Cannot apply dependency patch ${patch}")
+     endif()
+-    execute_process(COMMAND git -C "${SOURCE}" apply "${PATCH_DIR}/${patch}" RESULT_VARIABLE applied)
++    execute_process(COMMAND "${CH_PATCH_EXECUTABLE}" -N -p1 -d "${SOURCE}" -i "${PATCH_DIR}/${patch}" RESULT_VARIABLE applied)
+     if(NOT applied EQUAL 0)
+       message(FATAL_ERROR "Dependency patch failed ${patch}")
+     endif()

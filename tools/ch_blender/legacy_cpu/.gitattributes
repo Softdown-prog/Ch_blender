@@ -1,0 +1,6 @@
+*.patch text eol=lf whitespace=-blank-at-eol,-blank-at-eof
+*.py text eol=lf
+*.cmake text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.ps1 text eol=crlf

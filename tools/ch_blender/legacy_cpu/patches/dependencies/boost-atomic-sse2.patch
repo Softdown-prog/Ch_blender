@@ -1,0 +1,15 @@
+--- a/libs/atomic/build/Jamfile.v2
++++ b/libs/atomic/build/Jamfile.v2
+@@ -107,11 +107,7 @@
+             result += <define>BOOST_ATOMIC_USE_SSE2 ;
+         }
+ 
+-        if [ configure.builds ../config//has_sse41 : $(properties) : "compiler supports SSE4.1" ]
+-        {
+-            result += <source>$(BOOST_ATOMIC_SOURCES_SSE41) ;
+-            result += <define>BOOST_ATOMIC_USE_SSE41 ;
+-        }
++        # CH Legacy: retain SSE2 and scalar implementations only.
+     }
+ 
+ #    ECHO "Arch sources: " $(result) ;

@@ -754,6 +754,8 @@ def add_camera(camera):
     return obj
 
 
+from ch_backend import legacy_cpu_backend as _legacy_cpu_backend
+
 def configure_scene(studio, src_resolution, output_dir):
     if studio.get("id") != "CH_TYCOON_STUDIO_V1":
         raise RuntimeError("This baker expects frozen studio preset CH_TYCOON_STUDIO_V1")
@@ -765,7 +767,7 @@ def configure_scene(studio, src_resolution, output_dir):
     scene.render.engine = render["engine"]
     scene.cycles.device = render["device"]
     scene.cycles.samples = int(render["samples"])
-    scene.cycles.use_denoising = bool(render["denoising"])
+    scene.cycles.use_denoising = False if _legacy_cpu_backend() else bool(render["denoising"])
     scene.render.resolution_x = src_resolution[0]
     scene.render.resolution_y = src_resolution[1]
     scene.render.resolution_percentage = 100
@@ -899,7 +901,7 @@ def render_shadow_pass(scene, authored, ground, path):
     if shadow_samples is not None:
         scene.cycles.samples = shadow_samples
     if shadow_denoising is not None:
-        scene.cycles.use_denoising = shadow_denoising
+        scene.cycles.use_denoising = False if _legacy_cpu_backend() else shadow_denoising
 
     try:
         scene.render.filepath = path

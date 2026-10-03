@@ -1,0 +1,1552 @@
+{
+  "status": "approved_for_tested_pipeline",
+  "cpu": {
+    "model": "AMD Phenom(tm) II X6 1055T Processor",
+    "x86_64": true,
+    "sse": true,
+    "sse2": true,
+    "sse3": true,
+    "ssse3": false,
+    "sse4a": true,
+    "sse41": false,
+    "sse42": false,
+    "avx": false,
+    "f16c": false,
+    "avx2": false
+  },
+  "scope": "Blender 4.2.3 headless CH Blender Cycles CPU path actually executed on this Phenom; does not assert absence of optional modern code or support for disabled features.",
+  "files": [
+    {
+      "file": "4.2/python/bin/python.exe",
+      "sha256": "3f9502c9c287771d3a55031ef16f2ba9ae1395985a8a8f83fde7e63a6fc8d7f9",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/bin/python311.dll",
+      "sha256": "154a00ef37317e7d47ea61649e2c8e76fe28b359ba8c5008006f23048e052468",
+      "elevatedISA": {
+        "vmovupd": 1
+      },
+      "decision": "rva_jump_table_data"
+    },
+    {
+      "file": "4.2/python/DLLs/_asyncio.pyd",
+      "sha256": "9755eb36ffffa3b622601af627126693f411c92d56ab196706526ce221219009",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/_bz2.pyd",
+      "sha256": "99e2224d498ccd3f021cb189607f72d0aafc472b1442469b1eb8d8bf33d268f7",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/_ctypes.pyd",
+      "sha256": "3d16167bcc2e7502b3fc3572537a3eb3c895b57a1464daf21478b6c062f79357",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/_decimal.pyd",
+      "sha256": "85d793404d0cedf0ca1d8a41c5031a674e2ad997b5810a0075f21f2e5e23ac96",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/_elementtree.pyd",
+      "sha256": "0ee6b16ca8531e8e4023ced4f34d6c51bf2a1bd3ea327154165fbcd9b129e1a2",
+      "elevatedISA": {
+        "vpshufb": 1
+      },
+      "decision": "rva_jump_table_data"
+    },
+    {
+      "file": "4.2/python/DLLs/_hashlib.pyd",
+      "sha256": "3e8064324deb413c2cdbbe2941ad11f11b4394fdf43aa59b7098fcb3420f7efe",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/_lzma.pyd",
+      "sha256": "e2da3a8a2a9238561b0f373155ce97529ffe9f37eb20d2490c0ca2b43bdb65be",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/_msi.pyd",
+      "sha256": "1c78ed8482f46a5d35db18008e6aa6c7ceec59a9f9999386161f89604b33dd2c",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/_multiprocessing.pyd",
+      "sha256": "514c936b46d448bc06c33010e4340a87ed42ace1547d4af32307f75a5bf152a2",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/_overlapped.pyd",
+      "sha256": "5dbfb7cdee213c8714b7554d271eced1ed82c0000dec9e7857afcb3698bfb6ae",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/_queue.pyd",
+      "sha256": "efe56fc329a1cdd97f891ed81ae850787ffb61cbb284d5c9820945776b5d3846",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/_socket.pyd",
+      "sha256": "0e0af2c14d9914bac2083677aaa187a2355544df82996c0accff52b33f2582be",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/_sqlite3.pyd",
+      "sha256": "6c521cec09d12dd5683ee27d9a78f3dd1b64eeef8880c821cdb9f3c526654f32",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/_ssl.pyd",
+      "sha256": "0c8353548684a3235b692d13445e62ea78e14f2be559c8bcf675aa21ade79a56",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/_uuid.pyd",
+      "sha256": "2134441e46fae5b4f85f8fa71acbd7b226bcee114f46a4710c3b14df837c95e4",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/_zoneinfo.pyd",
+      "sha256": "5026554d0762a8cb5e34a7724061223c835f786813c6936261ca30cb19a092ac",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/libcrypto-3.dll",
+      "sha256": "d43e1cfbccdbf090c8eec8639ae6f3cc1e18cd2975dde0b4ef5c520b275762a0",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/libffi-8.dll",
+      "sha256": "eff52743773eb550fcc6ce3efc37c85724502233b6b002a35496d828bd7b280a",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/libssl-3.dll",
+      "sha256": "5201934025dc022b9b0c7f3789bc867c62fa4eecc579f493ac38fa9a1d8dfbb2",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/pyexpat.pyd",
+      "sha256": "e32616b000164cc849d0913b0c4bb05d3fd944ba94d841cc1885e20ef22d1117",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/select.pyd",
+      "sha256": "e5f8be5de968ae05d50df264d9b8ec239c51702ba165b1db706db29ee19846f5",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/sqlite3.dll",
+      "sha256": "dc99e26396123431f631735601485f58de8e59657d1eab2c562931454d05ad0f",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/unicodedata.pyd",
+      "sha256": "5bb4130d907644d81f0e0c89121262c5dbea7c252aba8439ea252dc7d38e0225",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/DLLs/winsound.pyd",
+      "sha256": "559548c3f5a196f98d32e6397a88bf95432fff364f3e694028b37a8b3ee543f1",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/Cython/Compiler/FlowControl.cp311-win_amd64.pyd",
+      "sha256": "2d4d137454510436612a88c63c32aa606b597231fc3e0fd9cb68b8275824adb4",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/Cython/Compiler/FusedNode.cp311-win_amd64.pyd",
+      "sha256": "550d8acc7657676403e7dab79856d658d5b0c7da016915bfb45f2db3824549a2",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/Cython/Compiler/Scanning.cp311-win_amd64.pyd",
+      "sha256": "bc6d9322d29fa64dca4989ae59a3b60adabaca7a8b767f33b28dfb0e12ccdc87",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/Cython/Compiler/Visitor.cp311-win_amd64.pyd",
+      "sha256": "937a7bb01c421095d354f73d01ef4a32541d8dff77d9357d722537b1ec53c4a0",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/Cython/Plex/Actions.cp311-win_amd64.pyd",
+      "sha256": "272c2d59017b191e82d82179fc89efa30596ee1c42d0c6e6f5e700296fa4bdbb",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/Cython/Plex/Scanners.cp311-win_amd64.pyd",
+      "sha256": "d8e99a1032ea518b2770e1a49974e613daa1b47c8af3e0ecef9d7d6ec78c3d30",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/Cython/Runtime/refnanny.cp311-win_amd64.pyd",
+      "sha256": "ad3502a56356ae973c4edc0603330f3f6fad66b23440d472dc1b7a39930ea6b4",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/Cython/Tempita/_tempita.cp311-win_amd64.pyd",
+      "sha256": "6df009237a66e53a9cc8448c0c29eeae03346ccfe3de46250dc71e13008d63d6",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/extern_draco.dll",
+      "sha256": "9ce0033010984f5c0ec97380c945ddae87bacc50944f8f01602189168d5ba9d6",
+      "elevatedISA": {
+        "vmovd": 1,
+        "vpshufd": 1,
+        "vinsertf128": 1,
+        "vpcmpeqd": 2,
+        "vpmovmskb": 2,
+        "vmovdqu": 7,
+        "vpmaskmovd": 1,
+        "vpand": 1,
+        "vzeroupper": 4,
+        "vpermq": 2,
+        "vpshufb": 2,
+        "pshufb": 2,
+        "vpermd": 2
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/core/_multiarray_tests.cp311-win_amd64.pyd",
+      "sha256": "2daaf49f9ad5394943f6a4a5443089c01c80093abe55932099b0524d5e2f7cfd",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/core/_multiarray_umath.cp311-win_amd64.pyd",
+      "sha256": "dbebdeda86affe1defc5bddb85252f0e9328e21116c6309b818c4596a92e9b24",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/core/_operand_flag_tests.cp311-win_amd64.pyd",
+      "sha256": "d43a1925cf9fe518daa759a598d73e2d4eae53e4dbcc10a7ca4bec3f87327191",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/core/_rational_tests.cp311-win_amd64.pyd",
+      "sha256": "ad2b234024a8e901ba58555f8f8802bdd2c60399b96f782ded3dd69a017e8926",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/core/_simd.cp311-win_amd64.pyd",
+      "sha256": "d6d119c7966cd33ddfa8ae1d34e1cb049c9d4c8466c2728d8cd7ab9d7a9f7a0f",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/core/_struct_ufunc_tests.cp311-win_amd64.pyd",
+      "sha256": "5c05a1e0abee9d77c07b1a05da7d88564cbd668ffec34751bd53a9e36c0c4fa2",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/core/_umath_tests.cp311-win_amd64.pyd",
+      "sha256": "431516e891d547b0feedf98852a0edb914f375828e33814f176556d4a76faf16",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/fft/_pocketfft_internal.cp311-win_amd64.pyd",
+      "sha256": "199320c3d841f385e4cdb458a7114b258e9cb6fd5ec4c17363a9242f64e14e3b",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/linalg/_umath_linalg.cp311-win_amd64.pyd",
+      "sha256": "987eda27dac70ee7f371e6c7ef7f99beac637747c587364154ad03e00a0c2e70",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/linalg/lapack_lite.cp311-win_amd64.pyd",
+      "sha256": "300173011d19b385a945ddc986bb947a50d6cd4654e9c11ac6deff05fe1d0a05",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/random/_bounded_integers.cp311-win_amd64.pyd",
+      "sha256": "cbce4624b8f692d626227f85fd5fb39d134080276d47c878c3fe35184f0d8282",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/random/_common.cp311-win_amd64.pyd",
+      "sha256": "fbc7b2af07d31346d3e39a0ea907be7b641c7727162a08be9f7100f38007ba9d",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/random/_generator.cp311-win_amd64.pyd",
+      "sha256": "80a215dddf2ee4eedd415aaf8ba189b8e091b603e6c7241ba9c93290933295c5",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/random/_mt19937.cp311-win_amd64.pyd",
+      "sha256": "5025dc8fcc74f6b70e0bcee57a5beb69c7ad6ea591e88b3c14ece2c01a1a6a25",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/random/_pcg64.cp311-win_amd64.pyd",
+      "sha256": "62480ac59ad60cd739bedb4f2555a4ea62480f1b3f474d97376a898542d109b8",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/random/_philox.cp311-win_amd64.pyd",
+      "sha256": "19c953de223fe1d026ef7b7b2d98c7417ef65475bbdcadd1aa7d1284c327e925",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/random/_sfc64.cp311-win_amd64.pyd",
+      "sha256": "5c6708fb63bbd9fe86fec7f2297c717633a4b36a2d1d0507c19ca3af9c8c535c",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/random/bit_generator.cp311-win_amd64.pyd",
+      "sha256": "9ebed620806a24ceeff6c70d4fa92d2cf394b49b16bb3233ea81d2f637d9e449",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/numpy/random/mtrand.cp311-win_amd64.pyd",
+      "sha256": "880f7b37dcc5cf5a542433e0a273f9343515d32a9e77eff012b65dda4dfe98df",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/OpenImageIO/OpenImageIO.pyd",
+      "sha256": "fe300d16ac47fa82fde7595ff6f11334905a98673f4b26aee63b8b8a8c4c4bb6",
+      "elevatedISA": {
+        "pcmpestrm": 5,
+        "ptest": 6,
+        "vmovd": 2,
+        "vpxor": 2,
+        "vpshufb": 2,
+        "vinsertf128": 2,
+        "vpcmpeqb": 4,
+        "vpmovmskb": 4,
+        "vmovdqu": 2,
+        "vpmaskmovd": 2,
+        "vpand": 2,
+        "vzeroupper": 5,
+        "pshufb": 2,
+        "pcmpestri": 3
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/pip/_vendor/distlib/t32.exe",
+      "sha256": "6b4195e640a85ac32eb6f9628822a622057df1e459df7c17a12f97aeabc9415b",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/pip/_vendor/distlib/t64-arm.exe",
+      "sha256": "ebc4c06b7d95e74e315419ee7e88e1d0f71e9e9477538c00a93a9ff8c66a6cfc",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/pip/_vendor/distlib/t64.exe",
+      "sha256": "81a618f21cb87db9076134e70388b6e9cb7c2106739011b6a51772d22cae06b7",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/pip/_vendor/distlib/w32.exe",
+      "sha256": "47872cc77f8e18cf642f868f23340a468e537e64521d9a3a416c8b84384d064b",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/pip/_vendor/distlib/w64-arm.exe",
+      "sha256": "c5dc9884a8f458371550e09bd396e5418bf375820a31b9899f6499bf391c7b2e",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/pip/_vendor/distlib/w64.exe",
+      "sha256": "7a319ffaba23a017d7b1e18ba726ba6c54c53d6446db55f92af53c279894f8ad",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/PyOpenColorIO/PyOpenColorIO.pyd",
+      "sha256": "0864fa422db2a51619385d50be65cb4c6105aa0eead569cc3b730ab911c19e07",
+      "elevatedISA": {
+        "vmovd": 3,
+        "vpxor": 4,
+        "vpshufb": 3,
+        "vinsertf128": 3,
+        "vmovdqu": 4,
+        "vpcmpeqb": 6,
+        "vpsubb": 1,
+        "vpsadbw": 1,
+        "vextracti128": 1,
+        "vpaddq": 1,
+        "vmovq": 1,
+        "vpextrq": 1,
+        "vpmaskmovd": 3,
+        "vpand": 3,
+        "vpmovmskb": 5,
+        "vzeroupper": 6,
+        "pshufb": 3,
+        "pextrq": 1,
+        "pcmpestrm": 5,
+        "ptest": 6,
+        "pcmpestri": 3
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/setuptools/cli-32.exe",
+      "sha256": "75f12ea2f30d9c0d872dade345f30f562e6d93847b6a509ba53beec6d0b2c346",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/setuptools/cli-64.exe",
+      "sha256": "28b001bb9a72ae7a24242bfab248d767a1ac5dec981c672a3944f7a072375e9a",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/setuptools/cli-arm64.exe",
+      "sha256": "a3d6a6c68c2e759f7c36f35687f6b60d163c2e1a0846a4c07a4c4006a96d88c7",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/setuptools/cli.exe",
+      "sha256": "75f12ea2f30d9c0d872dade345f30f562e6d93847b6a509ba53beec6d0b2c346",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/setuptools/gui-32.exe",
+      "sha256": "5c1af46c7300e87a73dacf6cf41ce397e3f05df6bd9c7e227b4ac59f85769160",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/setuptools/gui-64.exe",
+      "sha256": "69828c857d4824b9f850b1e0597d2c134c91114b7a0774c41dffe33b0eb23721",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/setuptools/gui-arm64.exe",
+      "sha256": "4c416738a0e2fa6ab766ccf1a9b0a80974e733f9615168dd22a069afa7d5b38d",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/setuptools/gui.exe",
+      "sha256": "5c1af46c7300e87a73dacf6cf41ce397e3f05df6bd9c7e227b4ac59f85769160",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/site-packages/zstandard/backend_c.cp311-win_amd64.pyd",
+      "sha256": "3337049b7c5984f23e663c717104473187f07fce301d0a807860d638fdd54a95",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "4.2/python/lib/venv/scripts/nt/python.exe",
+      "sha256": "c03b8058210d8829e7d531d5c062afbcfbd6eb4d8054497941cef8fb2165a912",
+      "elevatedISA": {
+        "pcmpistri": 10,
+        "pinsrb": 1,
+        "vpxor": 3,
+        "vpcmpeqw": 2,
+        "vpmovmskb": 2,
+        "vzeroupper": 6,
+        "vpsrlq": 2,
+        "vmovq": 2,
+        "vpsubq": 1,
+        "vcvtdq2pd": 2,
+        "vpand": 7,
+        "vcomisd": 4,
+        "vsubsd": 6,
+        "vpsllq": 1,
+        "vpaddq": 1,
+        "vpor": 3,
+        "vmulsd": 15,
+        "vmovsd": 8,
+        "vfmadd213sd": 5,
+        "vfmadd231sd": 3,
+        "vfmsub213sd": 1,
+        "vaddsd": 9,
+        "vmovdqa": 21,
+        "vdivsd": 1,
+        "vmovapd": 1,
+        "vpsubd": 1,
+        "roundsd": 1,
+        "vmovdqu": 54,
+        "vmovntdq": 30,
+        "vinsertf128": 1
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    },
+    {
+      "file": "4.2/python/lib/venv/scripts/nt/pythonw.exe",
+      "sha256": "48a53457b3697935b43ef7b89f3aa3622393897eb64578027a15f0690fbaa2dc",
+      "elevatedISA": {
+        "pcmpistri": 10,
+        "pinsrb": 1,
+        "vpxor": 3,
+        "vpcmpeqw": 2,
+        "vpmovmskb": 2,
+        "vzeroupper": 6,
+        "vpsrlq": 2,
+        "vmovq": 2,
+        "vpsubq": 1,
+        "vcvtdq2pd": 2,
+        "vpand": 7,
+        "vcomisd": 4,
+        "vsubsd": 6,
+        "vpsllq": 1,
+        "vpaddq": 1,
+        "vpor": 3,
+        "vmulsd": 15,
+        "vmovsd": 8,
+        "vfmadd213sd": 5,
+        "vfmadd231sd": 3,
+        "vfmsub213sd": 1,
+        "vaddsd": 9,
+        "vmovdqa": 21,
+        "vdivsd": 1,
+        "vmovapd": 1,
+        "vpsubd": 1,
+        "roundsd": 1,
+        "vmovdqu": 54,
+        "vmovntdq": 30,
+        "vinsertf128": 1
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    },
+    {
+      "file": "blender-launcher.exe",
+      "sha256": "0a0282125669c1f961c2f29bcfe9dddffe1c8d66f2f7c30582b75eca300f950d",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-console-l1-1-0.dll",
+      "sha256": "59d78aec2611cc356702b3836cd6bc66575c594b458b7830877001a89a767547",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-console-l1-2-0.dll",
+      "sha256": "5cd07f83247cbe9cfbc0932b6499ec5230b2163ec12421911eb5ee261462b33f",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-datetime-l1-1-0.dll",
+      "sha256": "78f6c8078b69676497ad76b9ccc337a61f3020bca618ab0141f10972903b1bde",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-debug-l1-1-0.dll",
+      "sha256": "1f5b7d47e991a1dc056f2f50cc62d4f77a51a590c56379f6fa4ecb5455f9b6f2",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-errorhandling-l1-1-0.dll",
+      "sha256": "a1d3ec684400c79d2ec827ddb6d52f4121591694cf464dd653d6b239d136b0bd",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-fibers-l1-1-0.dll",
+      "sha256": "c1d20209067be99a3c69a797e3f499dbe20f04c493ce289e55496a1d5066ca4b",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-fibers-l1-1-1.dll",
+      "sha256": "7fe8a461983247ce74c1e1b09171c68a230a11a3c56142aad718f76ad81780e6",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-file-l1-1-0.dll",
+      "sha256": "3a1cf66477892df44b9f451c8f947cac1329bc1f02399ca63621574154b51538",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-file-l1-2-0.dll",
+      "sha256": "ba215618e8cc09ff2eaa664abbb0732b07db0e4661e16b04d170fc6668694304",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-file-l2-1-0.dll",
+      "sha256": "75b953a6a99b9491244fa56c68ade516119ac473b8e8c64c152fdfd09df11bdc",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-handle-l1-1-0.dll",
+      "sha256": "bd24621589d33a765542e6a109def69f61156bcd1cdc4a0c2e954ffb58de0432",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-heap-l1-1-0.dll",
+      "sha256": "165c0c680b9ad7cf0d10cb02a6dbba897205bb27f7adfb00dfb0cefeb49a40c0",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-interlocked-l1-1-0.dll",
+      "sha256": "697c2de8a219c586869df7b70198aa9d93831b907a2151841bc63943b42e4816",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-kernel32-legacy-l1-1-1.dll",
+      "sha256": "71f4587da6097b837a0631c5c4804b94a3f6a419b9b5665f4e6333453a22fb98",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-libraryloader-l1-1-0.dll",
+      "sha256": "5c4d953db991d849c22782419a8b436d6fc639c5412c34ea672a0c8891b6ca13",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-localization-l1-2-0.dll",
+      "sha256": "16256dfc26826296c8c88471b176f98d3e7ad9a4afacdc5350d0fdd470f40909",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-memory-l1-1-0.dll",
+      "sha256": "beb72ed3c23a5227523bbf9077c57e36540fac0c422c30ec3b63599e4edd2f9a",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-namedpipe-l1-1-0.dll",
+      "sha256": "a44c1d24b3c342fb32ae2836ef890777c1950333c1c167d76383dcf093c8e8c3",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-processenvironment-l1-1-0.dll",
+      "sha256": "bf79af5629a7e2df040ea1a26e3f74137f782f378ee2cedaca49db1fb4957800",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-processthreads-l1-1-0.dll",
+      "sha256": "ffe2375e1d29d541659aa47aead5636afee8c17162e1b47dd7afb46ed52a78b3",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-processthreads-l1-1-1.dll",
+      "sha256": "9de901ebf9dac5e9fad669a065cc2c8c06c2b02d74bcdaf472f02497538d5797",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-profile-l1-1-0.dll",
+      "sha256": "69f5ed9328ff5fdbc14fff88c41184bfe7e8d0ef5d93f5fb467dd6c263b0d51f",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-rtlsupport-l1-1-0.dll",
+      "sha256": "acb9c973980ab441226b30e3647a334ea31c1604d84c6a0aebc2ea4993358901",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-string-l1-1-0.dll",
+      "sha256": "c6372337c9ce1dd2a521d9390fbc867d7445b44d360af8a56e2c0a860297da3f",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-synch-l1-1-0.dll",
+      "sha256": "7e0eb833be2378f0686f958a74edb3fd44cc902c27d597f4ed3cfd7f206255f3",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-synch-l1-2-0.dll",
+      "sha256": "3ba58aecb8e9e6d6620b98e0d8252a005f2bc350e79d1b182cb59883abe277cf",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-sysinfo-l1-1-0.dll",
+      "sha256": "e40f7232de970478d9244ba4d8279c4e3bf30079b072e13298c663b529cb0787",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-sysinfo-l1-2-0.dll",
+      "sha256": "c1eb0f061e8a3b0fc7b98a63eaf9dec264ce013fb9763c4d86dd14a670350c93",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-timezone-l1-1-0.dll",
+      "sha256": "54a9178b6df11f2024e2b38761136d24d8ba0586b2cb4ee2c4722da8d6037b8e",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-core-util-l1-1-0.dll",
+      "sha256": "a8c4b20070cd6c9346024b97ef15269d71bfb37796bccc5b439cbd3a3e5c3d9c",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-conio-l1-1-0.dll",
+      "sha256": "963ea14aba2ecfd7c61bb0d796292fff22ace2da5968d8b1db314345ae28cf4a",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-convert-l1-1-0.dll",
+      "sha256": "b88f98bcb692c6c5b4438767308f44adefda590710941eaa5c4af204f24f4321",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-environment-l1-1-0.dll",
+      "sha256": "a87560fd7d1bafb9e5519443253e0493e399d1081246b8f29a57e5e7346cd7bc",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-filesystem-l1-1-0.dll",
+      "sha256": "0d9a3d6106d280e6918a10051cdbf01f7425a9a92cffa070fd4b73fa8aa937bb",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-heap-l1-1-0.dll",
+      "sha256": "a564f90def67228e35a29ee1f11492c97be7a094ac151e93c03b1a6969cbbc25",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-locale-l1-1-0.dll",
+      "sha256": "6365a6acc38115f1b3ff099e918906b2edc46262a8b9c203d1768d0f4f0ee1b3",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-math-l1-1-0.dll",
+      "sha256": "f35e6b89190265a41b449bbb91d6004be673be313e60cceff4bb39e408aab46e",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-multibyte-l1-1-0.dll",
+      "sha256": "9a0db1e28ed4fe59cd930892511810628b2f36c3cba4f98403f17618619baa60",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-private-l1-1-0.dll",
+      "sha256": "553e11871e01f94d331be5e21138418d5e34023c6531d79f46f62fc47798e5c7",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-process-l1-1-0.dll",
+      "sha256": "05b29818af66f0b76903792ba37dc088ff330209e0de6b2cc8edbd518cc999d0",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-runtime-l1-1-0.dll",
+      "sha256": "659a5d57d7235e0892e6162828c5b144ee911f0c9c92844c1eab0961b88b1172",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-stdio-l1-1-0.dll",
+      "sha256": "55397a894ca181e23dc0f67d857f83a73b293c16ef2854f9c3dc939835f03c2f",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-string-l1-1-0.dll",
+      "sha256": "3dc14795df69a59fab83339e5e9d627aa66605f5e45adeb8b1ebdb92f36f6c67",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-time-l1-1-0.dll",
+      "sha256": "5fd56ad9d9a8df953edd9796335071fd8cd5202644a094185bbd9e494e46c64a",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/api-ms-win-crt-utility-l1-1-0.dll",
+      "sha256": "4d90d577248b381608f6a336a7fb5d7af10a0eb1723987704bd90979d147115f",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/concrt140.dll",
+      "sha256": "2405355f0a58067b258f8df33c327e3a3d716eaac5a3a5aebb757842d85bd376",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/msvcp140.dll",
+      "sha256": "0f885b509a685d2bbfa652fed26b5fb31d88fbdab0a978c641d1c7b8aa460aa9",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/msvcp140_1.dll",
+      "sha256": "bfad5aef4c63a669e3c140655cdfdf395b6c979b400a447bd5dcb65ed8826c3d",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/msvcp140_2.dll",
+      "sha256": "3ea06f0ee098b4823cb79599df3780e7f23cce52c19aac31d2a0d47efe33a5e9",
+      "elevatedISA": {
+        "vmovd": 1,
+        "vpxor": 1,
+        "vpshufb": 1,
+        "vinsertf128": 1,
+        "vpcmpeqb": 2,
+        "vpmovmskb": 2,
+        "vmovdqu": 1,
+        "vpmaskmovd": 1,
+        "vpand": 1,
+        "vzeroupper": 2,
+        "pshufb": 1,
+        "pcmpestri": 3,
+        "ptest": 1
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    },
+    {
+      "file": "blender.crt/msvcp140_atomic_wait.dll",
+      "sha256": "640b2aefced484d0368eea5bdd06addd0658a3a70a49256e560d6923b404a479",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/msvcp140_codecvt_ids.dll",
+      "sha256": "f2069a52880ec885ee7f0511186100eb7fada0411a2b4948fafea7735b878a18",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.crt/vcruntime140.dll",
+      "sha256": "d5e4d9a3e835fa679450145d6a7d94e36573a509317111904d9b3712c30d9066",
+      "elevatedISA": {
+        "pcmpistri": 10,
+        "pinsrb": 1,
+        "vmovdqu": 140,
+        "vmovdqa": 32,
+        "vzeroupper": 8,
+        "vmovntdq": 60,
+        "vinsertf128": 1
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    },
+    {
+      "file": "blender.crt/vcruntime140_1.dll",
+      "sha256": "1f2d41c4aa5db0bc33ebf7b66d72943a817d7ce6cbe880502a9403823633093f",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.exe",
+      "sha256": "312bf1f30c634222c4d5bd19762d47918705756f4a127df630811624d75b389a",
+      "elevatedISA": {
+        "vmovdqu": 96,
+        "vpcmpeqw": 1,
+        "vpmovmskb": 30,
+        "vzeroupper": 32,
+        "vmovups": 10,
+        "vmovntps": 1,
+        "vfmsub213sd": 1,
+        "vtestpd": 1,
+        "vmovmskps": 6,
+        "vmovapd": 3,
+        "vmovd": 23,
+        "vpaddq": 4,
+        "vpcmpgtb": 1,
+        "vpinsrw": 1,
+        "vmovlpd": 3,
+        "vhaddpd": 1,
+        "vcomisd": 5,
+        "vpxor": 20,
+        "vsubpd": 1,
+        "vpavgw": 1,
+        "vmovdqa": 3,
+        "vpsrld": 5,
+        "vpsllw": 5,
+        "pmaxud": 12,
+        "vpshufd": 20,
+        "vinsertf128": 10,
+        "vpmaxud": 9,
+        "vpsubd": 10,
+        "vpmovzxbd": 5,
+        "vpermd": 11,
+        "vpandn": 4,
+        "vpsllvd": 4,
+        "pcmpestri": 15,
+        "vpmovzxbq": 1,
+        "vpsllq": 1,
+        "vpor": 1,
+        "vpinsrd": 6,
+        "vpshufb": 3,
+        "vpcmpeqb": 6,
+        "vpsubb": 1,
+        "vpsadbw": 1,
+        "vextracti128": 1,
+        "vmovq": 13,
+        "vpextrq": 1,
+        "vpmaskmovd": 10,
+        "vpand": 11,
+        "pshufb": 6,
+        "pextrq": 1,
+        "pcmpestrm": 5,
+        "ptest": 6,
+        "vpcmpeqd": 8,
+        "vpunpcklqdq": 4,
+        "vpcmpeqq": 5,
+        "pcmpeqq": 4,
+        "pminsd": 21,
+        "vpminud": 17,
+        "vpblendvb": 23,
+        "vpermq": 11,
+        "pminud": 16,
+        "vpaddd": 4,
+        "vpcmpgtd": 4,
+        "vpminsd": 10,
+        "pblendvb": 12,
+        "vmovupd": 6,
+        "vmovsd": 2,
+        "vminpd": 4,
+        "vmaskmovpd": 2,
+        "vblendvpd": 2,
+        "vshufpd": 2,
+        "vpermpd": 2,
+        "vcmpeqpd": 2,
+        "vmovaps": 4,
+        "vpsrldq": 4,
+        "vextractf128": 4,
+        "vminps": 5,
+        "vmaskmovps": 2,
+        "vblendvps": 2,
+        "vshufps": 4,
+        "vxorps": 2,
+        "vperm2f128": 2,
+        "vcomiss": 2,
+        "vcmpeqps": 2,
+        "vpmaxsd": 5,
+        "pmaxsd": 3,
+        "vmaxpd": 4,
+        "vmaxps": 5,
+        "vmovmskpd": 1
+      },
+      "decision": "mapped_msvc_dispatch_lzma_cpuid_and_jump_table_data"
+    },
+    {
+      "file": "blender.shared/boost_atomic-vc143-mt-x64-1_82.dll",
+      "sha256": "c5bf454a5c1ac6aa8566042c8984a1ba085f0bab7d5ea26cd1656c71ad645831",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/boost_chrono-vc143-mt-x64-1_82.dll",
+      "sha256": "5784ffb2d4c635fc89d1723d6cf4a0751c652eeb0ffc9e845dd640ecfd7e1dad",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/boost_date_time-vc143-mt-x64-1_82.dll",
+      "sha256": "7e0a5886f18fd9bc550e5cd7c6fa9eef6e5a22f10ac2d2692d323dae354967ca",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/boost_filesystem-vc143-mt-x64-1_82.dll",
+      "sha256": "edf60d21ddc68128ef0067e9bb811a1a906a1fc9a709dbe075f925329ba2bf42",
+      "elevatedISA": {
+        "vpbroadcastw": 1,
+        "vmovdqu": 53,
+        "vpcmpeqw": 4,
+        "vpmovmskb": 22,
+        "ptest": 2,
+        "vpmovzxbd": 2,
+        "vpsrld": 4,
+        "vpermd": 4,
+        "vpandn": 4,
+        "vpsllvd": 4,
+        "vmovmskps": 4,
+        "vzeroupper": 12,
+        "vpxor": 5,
+        "vpmovzxwd": 2,
+        "vpand": 6,
+        "vpcmpeqd": 2,
+        "pcmpestri": 12,
+        "vmovd": 10,
+        "vpmovzxbq": 2,
+        "vpsllq": 2,
+        "vpor": 2,
+        "vpinsrd": 12,
+        "vinsertf128": 4,
+        "vpunpcklwd": 1,
+        "vpshufd": 1,
+        "vpmaskmovd": 2,
+        "vpshufb": 1,
+        "vpcmpeqb": 2,
+        "pshufb": 1
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    },
+    {
+      "file": "blender.shared/boost_iostreams-vc143-mt-x64-1_82.dll",
+      "sha256": "2890efc6dcaa5948133283cca258b90c683de63106fb3cde9bba3d876bd67265",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/boost_locale-vc143-mt-x64-1_82.dll",
+      "sha256": "5678dbdd344f2647cb09a9e10a0f022eb49cf1d80075eedcdf6bf0cccabf0676",
+      "elevatedISA": {
+        "vpbroadcastw": 1,
+        "vmovdqu": 39,
+        "vpcmpeqw": 4,
+        "vpmovmskb": 14,
+        "vpmovzxbd": 2,
+        "vpsrld": 2,
+        "vpermd": 2,
+        "vpandn": 2,
+        "vpsllvd": 2,
+        "vmovmskps": 2,
+        "vzeroupper": 8,
+        "pcmpestri": 9,
+        "vpxor": 2,
+        "vmovd": 6,
+        "vpmovzxbq": 1,
+        "vpsllq": 1,
+        "vpor": 1,
+        "vpinsrd": 6,
+        "vinsertf128": 3,
+        "vpshufb": 1,
+        "vpcmpeqb": 2,
+        "vpmaskmovd": 2,
+        "vpand": 2,
+        "pshufb": 1,
+        "vpunpcklwd": 1,
+        "vpshufd": 1,
+        "ptest": 1
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    },
+    {
+      "file": "blender.shared/boost_numpy311-vc143-mt-x64-1_82.dll",
+      "sha256": "6360f0f4564fcd17f7c6d1c02c571ebbcf809f76d55e968996697ca9656ec658",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/boost_program_options-vc143-mt-x64-1_82.dll",
+      "sha256": "57f2fbf863968ba900d9b2aaab54b58861c79be1eb943bf40e8d25d4bc7a6273",
+      "elevatedISA": {
+        "vmovdqu": 16,
+        "vpcmpeqw": 1,
+        "vpmovmskb": 4,
+        "vmovd": 2,
+        "vpxor": 3,
+        "vpshufb": 2,
+        "vinsertf128": 2,
+        "vpcmpeqb": 4,
+        "vpsubb": 1,
+        "vpsadbw": 1,
+        "vextracti128": 1,
+        "vpaddq": 1,
+        "vmovq": 1,
+        "vpextrq": 1,
+        "vpmaskmovd": 2,
+        "vpand": 2,
+        "vzeroupper": 3,
+        "pshufb": 2,
+        "pextrq": 1,
+        "pcmpestri": 3,
+        "ptest": 1
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    },
+    {
+      "file": "blender.shared/boost_python311-vc143-mt-x64-1_82.dll",
+      "sha256": "ad53e6470b60bfc1cf360405cbeff12b250b18cfd25f8cf01c9694677c986079",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/boost_regex-vc143-mt-x64-1_82.dll",
+      "sha256": "ece5bd60f8d840e572ae7b121d8193988d0c8483a36ecb57b3ff8b047b4d2a62",
+      "elevatedISA": {
+        "vmovdqu": 17,
+        "vpcmpeqw": 3,
+        "vpmovmskb": 5,
+        "vpcmpeqb": 2,
+        "vzeroupper": 7,
+        "vpmaskmovd": 4
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    },
+    {
+      "file": "blender.shared/boost_serialization-vc143-mt-x64-1_82.dll",
+      "sha256": "67996df5a7fd3c1251734bf0d643352656146d89e05311874f87b460a580ceb8",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/boost_system-vc143-mt-x64-1_82.dll",
+      "sha256": "07b8589e54c03cba05f14f5a9c8aeffc15f7ab0a77430a7c5aadfb79dc6a7950",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/boost_thread-vc143-mt-x64-1_82.dll",
+      "sha256": "fb657be241a9868b444322d6f0d757132a0d92a5a65c653d1eb0ad272e623340",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/boost_wave-vc143-mt-x64-1_82.dll",
+      "sha256": "6636eb37bc144746de683f76ef8018e11e4e061f747ee4829fb92152e60e58be",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/boost_wserialization-vc143-mt-x64-1_82.dll",
+      "sha256": "500919b2882e219ce49730e141dc8995a3fcbc7a7dd72fcc593cdf71e462b782",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/epoxy-0.dll",
+      "sha256": "a979e599637d906707d9855a3c679d1261e3a1794cf08aa07b250df0f27c5f88",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/Iex.dll",
+      "sha256": "e6570c05a8af8b2b22e61a0c6702e11c90e92dab6284d1792a7ca3e4dc2adb52",
+      "elevatedISA": {
+        "vmovd": 1,
+        "vpxor": 1,
+        "vpshufb": 1,
+        "vinsertf128": 1,
+        "vpcmpeqb": 2,
+        "vpmovmskb": 2,
+        "vmovdqu": 1,
+        "vpmaskmovd": 1,
+        "vpand": 1,
+        "vzeroupper": 2,
+        "pshufb": 1,
+        "pcmpestri": 3,
+        "ptest": 1
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    },
+    {
+      "file": "blender.shared/IlmThread.dll",
+      "sha256": "0e4e31d220b73e71990d8d14bed851f1c76c9ff59ede9f0db3b346f187406f76",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/imath.dll",
+      "sha256": "e8ee44ea9760c9d9e20ed9fa19326d3f20dee92c3bcb1936846afbf65967dd57",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/opencolorio_2_3.dll",
+      "sha256": "1f312454d88c121910d2da132702bec40b2409b6bde36c173451fd873a4a666c",
+      "elevatedISA": {
+        "vmovdqu": 15,
+        "vpmovzxbd": 2,
+        "vpsrld": 2,
+        "vpermd": 2,
+        "vpandn": 2,
+        "vpsllvd": 2,
+        "vmovmskps": 2,
+        "vzeroupper": 11,
+        "pcmpestri": 9,
+        "vpxor": 3,
+        "vmovd": 6,
+        "vpmovzxbq": 1,
+        "vpsllq": 1,
+        "vpor": 1,
+        "vpmovmskb": 14,
+        "vpinsrd": 6,
+        "vinsertf128": 4,
+        "pcmpestrm": 5,
+        "ptest": 6,
+        "vpshufb": 2,
+        "vpcmpeqb": 4,
+        "vpmaskmovd": 3,
+        "vpand": 3,
+        "pshufb": 2,
+        "vmovq": 1,
+        "vpunpcklqdq": 1,
+        "vpcmpeqq": 2,
+        "pcmpeqq": 1
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    },
+    {
+      "file": "blender.shared/OpenEXR.dll",
+      "sha256": "7e5f66d48724bb6762d35170fe328b1fe3f94a0dba67a2d7dd19d495ad107f95",
+      "elevatedISA": {
+        "vmovups": 4,
+        "pshufb": 3,
+        "pextrb": 1,
+        "vmovd": 2,
+        "vpxor": 2,
+        "vpshufb": 2,
+        "vinsertf128": 2,
+        "vpcmpeqb": 4,
+        "vpmovmskb": 4,
+        "vmovdqu": 2,
+        "vpmaskmovd": 2,
+        "vpand": 2,
+        "vzeroupper": 5
+      },
+      "decision": "openexr_libdeflate_cpuid_dispatch_and_msvc_runtime"
+    },
+    {
+      "file": "blender.shared/OpenEXRCore.dll",
+      "sha256": "eb4f28c10e21216227119f4c79a1c6ee9d0d471408bd2854ff5491118d7d3f7c",
+      "elevatedISA": {
+        "bzhi": 9,
+        "vpxor": 1,
+        "vmovdqu": 61,
+        "vpaddd": 7,
+        "vpsadbw": 2,
+        "vpunpcklbw": 2,
+        "vpaddw": 4,
+        "vpunpckhbw": 2,
+        "vpslld": 1,
+        "vpmaddwd": 4,
+        "vextracti128": 2,
+        "vmovups": 2
+      },
+      "decision": "openexr_libdeflate_cpuid_dispatch_and_msvc_runtime"
+    },
+    {
+      "file": "blender.shared/OpenEXRUtil.dll",
+      "sha256": "73a739772e8817baf61ed5c30c82facca6b3f4314baa950251479765616ac171",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/openimageio.dll",
+      "sha256": "038a205c86e0ee7d135fbc05e3226a686703eb4bb5b7677ea7fef92648a66ca1",
+      "elevatedISA": {
+        "vhaddpd": 1,
+        "vmread": 1,
+        "vmovdqu": 26,
+        "vpmovzxbd": 2,
+        "vpsrld": 2,
+        "vpermd": 4,
+        "vpandn": 2,
+        "vpsllvd": 2,
+        "vmovmskps": 2,
+        "vzeroupper": 10,
+        "pcmpestri": 9,
+        "vpxor": 3,
+        "vmovd": 5,
+        "vpmovzxbq": 1,
+        "vpsllq": 1,
+        "vpor": 1,
+        "vpmovmskb": 14,
+        "vpinsrd": 6,
+        "vinsertf128": 5,
+        "vpshufb": 1,
+        "vpcmpeqb": 2,
+        "vpmaskmovd": 3,
+        "vpand": 3,
+        "pshufb": 1,
+        "vmovq": 12,
+        "vpunpcklqdq": 3,
+        "vpcmpeqq": 4,
+        "pcmpeqq": 3,
+        "vpsubq": 3,
+        "vpcmpgtq": 2,
+        "vpblendvb": 6,
+        "vpaddq": 1,
+        "vmovdqa": 2,
+        "vpsrldq": 4,
+        "vextractf128": 4,
+        "pcmpgtq": 1,
+        "pblendvb": 3,
+        "ptest": 1
+      },
+      "decision": "sse2_build_msvc_dispatch_and_rva_jump_table_data"
+    },
+    {
+      "file": "blender.shared/openimageio_util.dll",
+      "sha256": "475cf74493cd1d79de755b0b37b942da007cb22c525a582f43978927d635fa41",
+      "elevatedISA": {
+        "vmovdqu": 32,
+        "vpcmpeqw": 3,
+        "vpmovmskb": 15,
+        "vpmovzxbd": 4,
+        "vpsrld": 4,
+        "vpermd": 4,
+        "vpandn": 4,
+        "vpsllvd": 4,
+        "vmovmskps": 4,
+        "vzeroupper": 15,
+        "pcmpestri": 15,
+        "vpxor": 3,
+        "vmovd": 7,
+        "vpmovzxbq": 1,
+        "vpsllq": 1,
+        "vpor": 1,
+        "vpinsrd": 6,
+        "vinsertf128": 4,
+        "pcmpestrm": 5,
+        "ptest": 6,
+        "vpshufb": 2,
+        "vpcmpeqb": 4,
+        "vpmaskmovd": 3,
+        "vpand": 3,
+        "pshufb": 2,
+        "vpunpcklwd": 1,
+        "vpshufd": 1
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    },
+    {
+      "file": "blender.shared/tbb.dll",
+      "sha256": "353521549707253e65a4beb0ee276c4ca9b695a617282a76f85d5becc7ea9d81",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/tbbmalloc.dll",
+      "sha256": "e577fd736a5b7dea27220de68382edb775d4009fb82ba431f1b1d272cea40bdc",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "blender.shared/tbbmalloc_proxy.dll",
+      "sha256": "2cef68e099318507c62eb4f261021778e5f77a8de8885e8c81fae16aef254fc9",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "python3.dll",
+      "sha256": "46e1cbd2fda8c0218931921fc259d91734d67a25b82f9e508824a9d63dd9c269",
+      "elevatedISA": {},
+      "decision": "no_elevated_isa_decoded"
+    },
+    {
+      "file": "python311.dll",
+      "sha256": "154a00ef37317e7d47ea61649e2c8e76fe28b359ba8c5008006f23048e052468",
+      "elevatedISA": {
+        "vmovupd": 1
+      },
+      "decision": "rva_jump_table_data"
+    },
+    {
+      "file": "ucrtbase.dll",
+      "sha256": "8c9d0d38f521e86a780ae9b2a7c222ee14aad597dbe85a05b9241a9a52782aed",
+      "elevatedISA": {
+        "pcmpistri": 12,
+        "vpxor": 68,
+        "vpcmpeqw": 39,
+        "vpmovmskb": 61,
+        "vzeroupper": 73,
+        "vpcmpeqb": 22,
+        "vmovaps": 579,
+        "vxorps": 75,
+        "vmovss": 154,
+        "vmovd": 119,
+        "vsubss": 41,
+        "vmulss": 87,
+        "vsqrtss": 2,
+        "vfnmadd213ss": 4,
+        "vfmsub213ss": 10,
+        "vfmadd213ss": 22,
+        "vdivss": 26,
+        "vfmadd231ss": 8,
+        "vfnmadd231ss": 3,
+        "vaddss": 77,
+        "vfmsub231ss": 1,
+        "vucomiss": 16,
+        "vxorpd": 124,
+        "vmovsd": 495,
+        "vmovq": 201,
+        "vmulsd": 383,
+        "vfmadd213sd": 224,
+        "vfmsub213sd": 17,
+        "vdivsd": 95,
+        "vfmadd231sd": 65,
+        "vsubsd": 170,
+        "vsqrtsd": 2,
+        "vfnmadd231sd": 26,
+        "vaddsd": 258,
+        "vfmsub231sd": 5,
+        "vucomisd": 33,
+        "vcomisd": 122,
+        "vcvttsd2si": 16,
+        "vcvtsi2sd": 25,
+        "vfnmadd213sd": 12,
+        "vcvtsi2ss": 6,
+        "vcomiss": 48,
+        "vcvttss2si": 3,
+        "vcvtss2sd": 16,
+        "vcvtsd2ss": 18,
+        "shrx": 8,
+        "shlx": 41,
+        "vandpd": 16,
+        "vcmpltsd": 1,
+        "vblendvpd": 2,
+        "andn": 15,
+        "vmovups": 19,
+        "vmovdqu": 59,
+        "vmovdqa": 80,
+        "vmovapd": 51,
+        "vcvttpd2dq": 4,
+        "vpmovsxdq": 3,
+        "vshufps": 3,
+        "vcvtdq2pd": 10,
+        "vcmplesd": 1,
+        "vcmpnltsd": 1,
+        "vandps": 5,
+        "vroundsd": 1,
+        "vpaddq": 4,
+        "vcvtpd2dq": 2,
+        "roundsd": 8,
+        "roundss": 8,
+        "vpsrlq": 5,
+        "vpsubq": 3,
+        "vpand": 17,
+        "vpsllq": 3,
+        "vpor": 9,
+        "vpsubd": 4,
+        "vcvtdq2ps": 4,
+        "vpsrld": 2,
+        "vpunpckldq": 1,
+        "vcvtps2pd": 1,
+        "vpshufd": 7,
+        "vmulpd": 3,
+        "vpsrad": 1,
+        "vorps": 3,
+        "vroundss": 3,
+        "vcvtss2si": 3,
+        "vaddpd": 1,
+        "vunpcklpd": 1,
+        "vpsrldq": 2,
+        "vfmadd132sd": 4,
+        "vfnmadd132sd": 4,
+        "vpcmpeqq": 2,
+        "vorpd": 1,
+        "vandnpd": 2,
+        "vfmsub132sd": 1,
+        "vinsertf128": 1,
+        "vmovntdq": 30,
+        "pinsrb": 1,
+        "vcmpeqsd": 1
+      },
+      "decision": "msvc_stl_crt_guarded_dispatch"
+    }
+  ],
+  "evidence": {
+    "blenderSymbolGroups": 48,
+    "msvcVectorAlgorithmGroups": 33,
+    "jumpTableGroups": 11,
+    "wmemcmpAvx2WeakFlagZero": true,
+    "complexFmaRuntimeGuard": true,
+    "lzmaCpuidGroups": 2,
+    "binarySha256": "312bf1f30c634222c4d5bd19762d47918705756f4a127df630811624d75b389a",
+    "mapSha256": "236d6a8e6006beb54aea0b00e1d3c6c3d1701fa70fb860d5f614fcd69cb36c7b",
+    "cyclesSmoke": "validation/validation.json",
+    "realRecipe": "validation/benchmark/3-baseline.log",
+    "sourceFlags": "logs/isa-flags.log",
+    "imageDependencyProbe": "logs/dependency-probe.json"
+  },
+  "sourceGuards": [
+    "MSVC 14.44 crt/src/stl/vector_algorithms.cpp: _Use_avx2/_Use_sse42 check __isa_enabled",
+    "MSVC 14.44 include/complex: __isa_available gates _Sqr_error_x86_x64_fma",
+    "Windows SDK 10.0.26100.0 ucrt/wchar.h: _Avx2WmemEnabled; map aliases WeakValue=0",
+    "MSVC 14.44 crt/src/x64/memcpy.asm: __isa_available and NoAVX fallback",
+    "Blender extern/lzma/LzFind.c: CPU_IsSupported_SSE41/AVX2, scalar fallback",
+    "OpenEXR ImfZip.cpp/ImfSystemSpecific.cpp: CpuId guards reconstruct_sse41",
+    "libdeflate lib/x86/cpu_features.h and dispatch: __AVX2__ absent; CPUID checked",
+    "WebP src/dsp/cpu.c: CPUID and OSXSAVE before SSE4.1/AVX/AVX2",
+    "OpenImageIO USE_SIMD=sse2; OCIO SSE2 only, four AVX units excluded",
+    "Blender symbol/context and OIIO context inventories distinguish RVA data after ret from executed instructions",
+    "Python 3.11.7 NumPy baseline/dispatch empty; _elementtree/python311 isolated hits are jump-table data",
+    "Target CPU completed bpy, modifiers, PNG texture, Cycles, .blend/FBX/GLB/OpenEXR, and four-view real worker without illegal instruction"
+  ]
+}

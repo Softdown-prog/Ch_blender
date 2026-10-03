@@ -1,0 +1,17 @@
+--- a/src/OpenColorIO/CMakeLists.txt
++++ b/src/OpenColorIO/CMakeLists.txt
+@@ -216,6 +216,14 @@
+     set_property(SOURCE ops/lut3d/Lut3DOpCPU_AVX2.cpp APPEND PROPERTY COMPILE_OPTIONS ${OCIO_AVX2_ARGS})
+ endif()
+ 
++# Legacy dependency: do not even compile disabled ISA translation units.
++if(NOT OCIO_USE_AVX)
++    list(REMOVE_ITEM SOURCES ops/lut1d/Lut1DOpCPU_AVX.cpp ops/lut3d/Lut3DOpCPU_AVX.cpp)
++endif()
++if(NOT OCIO_USE_AVX2)
++    list(REMOVE_ITEM SOURCES ops/lut1d/Lut1DOpCPU_AVX2.cpp ops/lut3d/Lut3DOpCPU_AVX2.cpp)
++endif()
++
+ configure_file(CPUInfoConfig.h.in CPUInfoConfig.h)
+ 
+ add_library(OpenColorIO ${SOURCES})

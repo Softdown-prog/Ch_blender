@@ -10,6 +10,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 
 import bpy
+from ch_backend import legacy_cpu_backend
 
 CONTRACT = "CH_COLOR_MASK_V1"
 ROLE_PROPERTY = "ch_color_mask_role"
@@ -179,6 +180,8 @@ def _mask_scene_override(scene, authored, ground, spec: dict):
     }
     unmasked = _emission_material("CHMask_Unmasked", UNMASKED_COLOR)
 
+    legacy = legacy_cpu_backend()
+    original_cycles = (scene.cycles.device, scene.cycles.use_denoising, scene.cycles.use_adaptive_sampling)
     original_engine = scene.render.engine
     original_transparent = scene.render.film_transparent
     original_dither_intensity = scene.render.dither_intensity
@@ -192,7 +195,12 @@ def _mask_scene_override(scene, authored, ground, spec: dict):
     visibility_state = []
 
     try:
-        scene.render.engine = "BLENDER_EEVEE_NEXT"
+        scene.render.engine = "CYCLES" if legacy else "BLENDER_EEVEE_NEXT"
+        if legacy:
+            # Existing emission materials encode mask data without lighting.
+            scene.cycles.device = "CPU"
+            scene.cycles.use_denoising = False
+            scene.cycles.use_adaptive_sampling = False
         scene.render.film_transparent = True
         # CH_COLOR_MASK_V1 is data, not artwork. Disable output dithering and
         # bypass display color transforms so inactive channels remain exact zero.
@@ -256,6 +264,7 @@ def _mask_scene_override(scene, authored, ground, spec: dict):
 
         ground.hide_render = ground_hidden
         scene.render.engine = original_engine
+        scene.cycles.device, scene.cycles.use_denoising, scene.cycles.use_adaptive_sampling = original_cycles
         scene.render.film_transparent = original_transparent
         scene.render.dither_intensity = original_dither_intensity
         try:
