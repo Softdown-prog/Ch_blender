@@ -37,7 +37,9 @@ Denoising desativado somente no Legacy; samples oficiais e contratos geométrico
 Scripts especiais que exigem Eevee/UI não foram portados nem declarados compatíveis.
 
 Não havia referência PNG oficial 4.2.3 comparável disponível; não se afirma comparação visual oficial
-nem aprovação artística. A auditoria ISA aprova o artefato e caminho testados, não todos os caminhos possíveis.
+nem aprovação artística. O pipeline testado está validado (`pipelineValidated=true`), mas
+a aprovação de produção permanece pendente (`productionValidated=false`) enquanto faltar a comparação oficial exigida.
+A auditoria ISA aprova o artefato e caminho testados, não todos os caminhos possíveis.
 Opcodes modernos opcionais podem existir em dispatch protegido por CPUID e CRT, conforme [ISA_REVIEW.md](ISA_REVIEW.md).
 
 Fonte oficial externo: tag v4.2.3, commit `0e22e4fcea037eeec1531fdbfc32d3acb88b4bd5`.
@@ -45,6 +47,7 @@ Fonte oficial externo: tag v4.2.3, commit `0e22e4fcea037eeec1531fdbfc32d3acb88b4
 Sem downgrade para 3.6. Workflow Windows ajustado após os testes: CH_BLENDER_EXE → Legacy → oficial em CPU moderna,
 com rejeição de versão diferente de 4.2.3; nenhuma transferência pelo GitHub Actions.
 
-Branch local: `ch-blender-423-legacy-cpu`, sem push. Commits iniciais:
+Branch publicada: `origin/legacy/blender-4.2.3-phenom`; checkout local `ch-blender-423-legacy-cpu`.
+Sem merge na main. Commits iniciais:
 `fbed0d4`, `362eff1`, `cec2230`, `91aeac2`; commits finais de validação e runner constam em `git log` e na entrega.
 SHA256 final: `312bf1f30c634222c4d5bd19762d47918705756f4a127df630811624d75b389a`.
