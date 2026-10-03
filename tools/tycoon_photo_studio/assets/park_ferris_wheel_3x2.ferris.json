@@ -1,0 +1,105 @@
+{
+  "contract": "CITY_HORIZON_FERRIS_WHEEL_V1",
+  "assetId": "attraction.park_ferris_wheel.01",
+  "assetType": "animated_attraction",
+  "styleContract": "CH_STYLIZED_PRERENDER_V1",
+  "studioPreset": "CH_TYCOON_STUDIO_V1",
+  "renderPipeline": {
+    "contract": "CH_RENDER_PIPELINES_V1",
+    "class": "large_asset_1024",
+    "preset": "tools/tycoon_photo_studio/render_pipelines/large_asset/studio_1024.json",
+    "sourceResolution": [2048, 2048],
+    "finalResolution": [1024, 1024],
+    "reason": "Large landmark attraction with thin dual rims, spokes, cross-members, railings and cabins that lose definition in the compact 256 pipeline.",
+    "escalation": "Use large_asset_2048 only if MapForge/gameplay review proves 1024 insufficient."
+  },
+  "footprint": {
+    "widthTiles": 6,
+    "depthTiles": 5,
+    "occupiedCells": [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[0,3],[1,3],[2,3],[3,3],[4,3],[5,3],[0,4],[1,4],[2,4],[3,4],[4,4],[5,4]]
+  },
+  "geometry": {
+    "wheelRadius": 5.35,
+    "wheelCenterZ": 6.55,
+    "ringTubeRadius": 0.170,
+    "ringHalfDepth": 0.92,
+    "rimCrossMemberRadius": 0.058,
+    "rimPrimaryCrossMemberRadius": 0.078,
+    "spokeRadius": 0.058,
+    "axleRadius": 0.29,
+    "axleDepth": 1.92,
+    "supportRadius": 0.145,
+    "supportBaseHalfWidth": 3.45,
+    "supportBaseHalfDepth": 1.70,
+    "supportFootZ": 0.18,
+    "hubRadius": 0.46,
+    "gondolaCount": 16,
+    "gondolaWidth": 1.42,
+    "gondolaDepth": 1.00,
+    "gondolaBodyHeight": 0.78,
+    "gondolaRoofHeight": 0.22,
+    "gondolaDrop": 0.68,
+    "gondolaHangerRadius": 0.056,
+    "entryPlatformWidth": 5.20,
+    "entryPlatformDepth": 1.35,
+    "entryPlatformHeight": 0.24,
+    "baseBeamHeight": 0.31,
+    "baseBeamDepth": 0.48,
+    "railingHeight": 0.82,
+    "railingRadius": 0.034,
+    "stairWidth": 1.42,
+    "stairDepth": 0.82,
+    "stairSteps": 4
+  },
+  "animation": {
+    "enabled": true,
+    "frameStart": 1,
+    "frameEnd": 12,
+    "fps": 8,
+    "looping": true,
+    "rotationAxis": "Y",
+    "revolutionsPerLoop": 1.0,
+    "keepGondolasUpright": true
+  },
+  "runtimeLayers": {
+    "contract": "CH_ATTRACTION_MOTION_OVERLAY_V1",
+    "staticBase": {
+      "role": "attraction_static_base",
+      "animated": false,
+      "includes": ["supports", "loading_platform", "stairs", "railings", "operator_console", "fixed_structure"]
+    },
+    "motionOverlay": {
+      "role": "attraction_motion_overlay",
+      "animated": true,
+      "includes": ["WheelRotor", "parallel_rims", "paired_spokes", "rim_cross_members", "hub", "gondolas", "moving_shadow"],
+      "idleFrame": 1,
+      "frameStart": 1,
+      "frameEnd": 12,
+      "fps": 8,
+      "looping": true,
+      "activation": {
+        "trigger": "passenger_boarded",
+        "minimumPassengers": 1,
+        "whileOccupied": true,
+        "whenInactive": "hold_idle_frame"
+      }
+    }
+  },
+  "materials": {
+    "frame": {"name":"FerrisFrameCream","rgba":[0.70,0.68,0.60,1.0],"roughness":0.52,"metallic":0.16},
+    "wheel": {"name":"FerrisWheelBlue","rgba":[0.04,0.24,0.48,1.0],"roughness":0.50,"metallic":0.17},
+    "hub": {"name":"FerrisHubWarmMetal","rgba":[0.44,0.46,0.48,1.0],"roughness":0.38,"metallic":0.46},
+    "platform": {"name":"FerrisPlatform","rgba":[0.31,0.33,0.32,1.0],"roughness":0.72,"metallic":0.08},
+    "accentA": {"name":"FerrisAccentCoral","rgba":[0.72,0.12,0.16,1.0],"roughness":0.58,"metallic":0.05},
+    "accentB": {"name":"FerrisAccentGold","rgba":[0.78,0.45,0.06,1.0],"roughness":0.58,"metallic":0.05},
+    "accentC": {"name":"FerrisAccentTeal","rgba":[0.03,0.45,0.48,1.0],"roughness":0.58,"metallic":0.05},
+    "dark": {"name":"FerrisDark","rgba":[0.050,0.058,0.066,1.0],"roughness":0.74,"metallic":0.10}
+  },
+  "prototypeNotes": {
+    "status": "geometry_prototype_v7_landmark_dual_rim_presence_pass",
+    "terrainIncluded": false,
+    "designIntent": "Large landmark Ferris wheel with visibly separated parallel full-diameter rims, larger passenger cabins suspended between them, paired front/rear spokes and stronger alternating rim cross-members. Preserve the approved loading platform, stairs, protective rails, overlay split and City Horizon 2D readability.",
+    "referencePolicy": "Use real Ferris-wheel structural logic and classic Tycoon-scale readability without copying a proprietary attraction design.",
+    "nextGate": "Render through large_asset_1024, then validate sharpness, lighting, rim separation, cabin scale and landmark presence in MapForge before any escalation to large_asset_2048."
+  }
+}

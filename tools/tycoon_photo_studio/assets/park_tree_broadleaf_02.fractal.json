@@ -1,0 +1,120 @@
+{
+  "contract": "TYCOON_FRACTAL_TREE_SOURCE_V1",
+  "styleContract": "CH_STYLIZED_PRERENDER_V1",
+  "assetId": "park_tree_broadleaf_02",
+  "assetType": "static_decor",
+  "studioPreset": "CH_TYCOON_STUDIO_V1",
+  "footprint": {
+    "widthTiles": 1,
+    "depthTiles": 1,
+    "occupiedCells": [[0, 0]]
+  },
+  "materials": {
+    "trunk": {
+      "name": "TreeBarkWarm",
+      "rgba": [0.145, 0.073, 0.035, 1],
+      "roughness": 1
+    },
+    "branch": {
+      "name": "TreeBranchWarm",
+      "rgba": [0.095, 0.041, 0.019, 1],
+      "roughness": 1
+    },
+    "leafDeep": {
+      "name": "LeafDeep",
+      "rgba": [0.016, 0.070, 0.040, 1],
+      "roughness": 1
+    },
+    "leafDark": {
+      "name": "LeafDark",
+      "rgba": [0.026, 0.140, 0.052, 1],
+      "roughness": 1
+    },
+    "leafMid": {
+      "name": "LeafMid",
+      "rgba": [0.070, 0.265, 0.068, 1],
+      "roughness": 1
+    },
+    "leafLight": {
+      "name": "LeafLight",
+      "rgba": [0.195, 0.445, 0.105, 1],
+      "roughness": 1
+    },
+    "leafSun": {
+      "name": "LeafSun",
+      "rgba": [0.360, 0.610, 0.160, 1],
+      "roughness": 1
+    }
+  },
+  "trunk": {
+    "material": "trunk",
+    "height": 2.25,
+    "baseRadius": 0.3525,
+    "topRadius": 0.138,
+    "vertices": 18,
+    "lean": [0.063, -0.0615],
+    "midKink": [-0.0285, 0.0465],
+    "rootCount": 6,
+    "rootLength": 0.375,
+    "rootRadius": 0.099,
+    "rootSeed": 1337,
+    "smoothShading": true
+  },
+  "fractalTree": {
+    "name": "CrownSkeleton",
+    "material": "branch",
+    "seed": 2803,
+    "origin": [0.045, -0.03, 1.95],
+    "levels": 4,
+    "primaryBranches": 5,
+    "branchFactor": 2,
+    "baseLength": 1.02,
+    "lengthDecay": 0.69,
+    "baseRadius": 0.087,
+    "radiusDecay": 0.65,
+    "initialElevationDegrees": 45,
+    "elevationGainDegrees": 7,
+    "baseYawDegrees": -17,
+    "yawSpreadDegrees": 49,
+    "yawJitterDegrees": 17,
+    "elevationJitterDegrees": 9
+  },
+  "leafCards": {
+    "seed": 4421,
+    "count": 1020,
+    "materials": ["leafDeep", "leafDark", "leafMid", "leafLight", "leafSun"],
+    "widthRange": [0.1095, 0.1995],
+    "heightRange": [0.192, 0.318],
+    "sizeBiasPower": 1.68,
+    "maxTiltDegrees": 54,
+    "clusterRadius": [0.435, 0.405, 0.27],
+    "interiorFraction": 0.56,
+    "terminalPullToCenter": 0.36,
+    "maxNormalizedCenterRadius": 0.92,
+    "crownCenter": [0.045, -0.0375, 3.75],
+    "crownRadius": [2.28, 2.04, 1.08],
+    "coreFillFraction": 0.23,
+    "coreRadius": [1.035, 0.945, 0.66],
+    "topIsolationLimit": 0.86
+  },
+  "foliagePostProcess": {
+    "shadowAlphaMax": 102,
+    "shadowStrength": 0.40,
+    "shadowRadiusPx": 76.0,
+    "saturationMultiplier": 1.00,
+    "contrastMultiplier": 0.88,
+    "luminanceCompression": 0.60,
+    "midtoneLift": 8.0,
+    "paletteColors": 32,
+    "posterizeBitsPerChannel": 4,
+    "outlineAlpha": 30,
+    "shadowBlendIntent": "multiply_equivalent_alpha"
+  },
+  "woodPostProcess": {
+    "woodToneCount": 4,
+    "woodOrganicStrength": 0.24,
+    "woodVerticalScale": 24.0,
+    "woodHorizontalScale": 39.0,
+    "intent": "Preserve the approved crown unchanged while replacing large polygon-lighting plates on visible trunk and branches with restrained, vertical organic bark tone masses."
+  }
+}
