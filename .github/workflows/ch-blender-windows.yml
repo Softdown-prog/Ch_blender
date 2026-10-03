@@ -52,97 +52,37 @@ jobs:
           if (-not $python) { throw "Python was not found on PATH." }
           & $python.Source --version
 
-      - name: Provision CH Blender 4.2.3 LTS portable
-        timeout-minutes: 25
+      - name: Resolve local CH Blender 4.2.3 LTS
         run: |
           $ErrorActionPreference = "Stop"
-          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $expectedVersion = "4.2.3"
+          $preferred = Join-Path $env:USERPROFILE ".ch-blender\blender-4.2.3-windows-x64\blender.exe"
+          $candidates = @($preferred)
 
-          $version = "4.2.3"
-          $series = "4.2"
-          $root = Join-Path $env:USERPROFILE ".ch-blender"
-          $installDir = Join-Path $root "blender-$version-windows-x64"
-          $blenderExe = Join-Path $installDir "blender.exe"
-          $zipPath = Join-Path $root "blender-$version-windows-x64.zip"
-          $url = "https://download.blender.org/release/Blender$series/blender-$version-windows-x64.zip"
+          $pathBlender = Get-Command blender.exe -ErrorAction SilentlyContinue
+          if ($pathBlender) { $candidates += $pathBlender.Source }
 
-          New-Item -ItemType Directory -Force -Path $root | Out-Null
+          $candidates += @(
+            "$env:ProgramFiles\Blender Foundation\Blender 4.2\blender.exe"
+          )
 
-          function Test-BlenderZip([string]$path) {
-            if (-not (Test-Path $path)) { return $false }
-            try {
-              $archive = [System.IO.Compression.ZipFile]::OpenRead($path)
-              $entryCount = $archive.Entries.Count
-              $archive.Dispose()
-              if ($entryCount -lt 1) { return $false }
-              Write-Host "Portable Blender ZIP validated ($entryCount entries)."
-              return $true
-            } catch {
-              Write-Host "Existing ZIP is partial or invalid; download will resume when possible."
-              return $false
+          $blenderExe = $null
+          foreach ($candidate in ($candidates | Select-Object -Unique)) {
+            if (-not (Test-Path $candidate)) { continue }
+            $versionText = (& $candidate --version 2>&1 | Select-Object -First 1)
+            Write-Host "Candidate: $candidate -> $versionText"
+            if ($versionText -match "Blender\s+4\.2\.3") {
+              $blenderExe = $candidate
+              break
             }
           }
 
-          if (-not (Test-Path $blenderExe)) {
-            $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
-            if (-not $curl) { throw "curl.exe was not found on this Windows runner." }
-
-            $archiveReady = Test-BlenderZip $zipPath
-            for ($attempt = 1; $attempt -le 2 -and -not $archiveReady; $attempt++) {
-              Write-Host "Downloading Blender $version ZIP (attempt $attempt/2; max 15 minutes; resume enabled)..."
-
-              & $curl.Source `
-                --location `
-                --fail `
-                --show-error `
-                --connect-timeout 20 `
-                --max-time 900 `
-                --retry 2 `
-                --retry-delay 5 `
-                --retry-max-time 900 `
-                --retry-all-errors `
-                --speed-time 90 `
-                --speed-limit 1024 `
-                --continue-at - `
-                --output $zipPath `
-                $url
-
-              $curlExit = $LASTEXITCODE
-              if ($curlExit -ne 0) {
-                Write-Warning "Download attempt ended with curl exit code $curlExit. Partial ZIP was preserved for resume."
-                Start-Sleep -Seconds 5
-                continue
-              }
-
-              $archiveReady = Test-BlenderZip $zipPath
-              if (-not $archiveReady) {
-                Write-Warning "Download completed but ZIP validation failed. Removing corrupt archive before final retry."
-                Remove-Item $zipPath -Force -ErrorAction SilentlyContinue
-              }
-            }
-
-            if (-not $archiveReady) {
-              throw "Could not obtain a valid Blender $version portable ZIP within the bounded download window. Re-run the workflow to resume/retry."
-            }
-
-            if (Test-Path $installDir) {
-              Remove-Item $installDir -Recurse -Force
-            }
-            Write-Host "Extracting Blender $version portable..."
-            Expand-Archive -Path $zipPath -DestinationPath $root -Force
-          } else {
-            Write-Host "Using cached CH Blender baseline at $blenderExe"
-          }
-
-          if (-not (Test-Path $blenderExe)) {
-            throw "Blender $version portable provisioning failed: $blenderExe was not found."
+          if (-not $blenderExe) {
+            throw "Blender 4.2.3 LTS was not found locally. Install/extract the official portable ZIP to $preferred, then re-run this workflow. GitHub Actions no longer downloads Blender."
           }
 
           Write-Host "CH Blender executable: $blenderExe"
           & $blenderExe --version
-          if ($LASTEXITCODE -ne 0) {
-            throw "Blender $version failed its version probe."
-          }
           "BLENDER_EXE=$blenderExe" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "CH_BLENDER_EXE=$blenderExe" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
