@@ -2,6 +2,10 @@ name: CH Blender - Windows Self-Hosted
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/ch-blender-windows.yml"
     inputs:
       command:
         description: "CH Blender command to execute after validation (optional)"
