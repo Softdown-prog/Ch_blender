@@ -2,7 +2,8 @@ param(
  [string]$BuildRoot = 'C:\CH-Blender-Build',
  [string]$InstallDir = "$env:USERPROFILE\.ch-blender\blender-4.2.3-legacy",
  [ValidateSet('Prepare','Dependencies','Blender','Validate','All')][string]$Stage = 'All',
- [int]$Jobs = 4
+ [int]$Jobs = 4,
+ [switch]$ExperimentalEmbree
 )
 $ErrorActionPreference = 'Stop'
 $Here = $PSScriptRoot
@@ -11,6 +12,21 @@ $Deps = Join-Path $BuildRoot 'deps'
 $Harvest = (Join-Path $Deps 'output').Replace('\','/')
 $Build = Join-Path $BuildRoot 'build-legacy'
 $Logs = Join-Path $BuildRoot 'logs'
+$Validation = Join-Path $BuildRoot 'validation'
+$ExtraCMake = @()
+$ExtraManifest = @()
+if ($ExperimentalEmbree) {
+ if ($Stage -notin @('Blender','Validate')) { throw 'Experimental Embree supports Blender/Validate stages only' }
+ if ((Get-Content "$BuildRoot/validation/validation.json" -Raw | ConvertFrom-Json).status -ne 'ok') { throw 'Basic validation required' }
+ if ((Get-Content "$BuildRoot/validation/embree-probe.json" -Raw | ConvertFrom-Json).status -ne 'ok') { throw 'Embree CPU probe required' }
+ if (-not $PSBoundParameters.ContainsKey('InstallDir')) { $InstallDir = "$env:USERPROFILE/.ch-blender/blender-4.2.3-legacy-embree-sse2" }
+ $Logs = Join-Path $Logs 'embree-blender'
+ $Validation = Join-Path $BuildRoot 'validation-embree'
+ $ExtraCMake = @('-DWITH_CYCLES_EMBREE=ON')
+ $ExtraManifest = @('--experimental-embree')
+ New-Item -ItemType Directory -Force -Path "$Harvest/embree" | Out-Null
+ Get-ChildItem -LiteralPath "$Deps/embree-sse2" | Copy-Item -Destination "$Harvest/embree" -Recurse -Force
+}
 New-Item -ItemType Directory -Force -Path $BuildRoot,$Logs | Out-Null
 $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
 $vsPath = (& $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath)
@@ -58,15 +74,17 @@ if ($Stage -in @('Dependencies','All')) {
  Run "$Deps/Release/python/python.exe" @("$Here/dependency_probe.py",$Harvest,"$BuildRoot/logs/dependency-probe.json") 'dependency-probe.log'
 }
 if ($Stage -in @('Blender','All')) {
- Run 'cmake' @('-S',$Source,'-B',$Build,'-G','Ninja','-C',"$Here/legacy.cmake",'-DCMAKE_POLICY_VERSION_MINIMUM=3.5',"-DLIBDIR=$Harvest",'-DCMAKE_BUILD_TYPE=Release',"-DCMAKE_INSTALL_PREFIX=$InstallDir") 'blender-configure.log'
+ Run 'cmake' (@('-S',$Source,'-B',$Build,'-G','Ninja','-C',"$Here/legacy.cmake",'-DCMAKE_POLICY_VERSION_MINIMUM=3.5',"-DLIBDIR=$Harvest",'-DCMAKE_BUILD_TYPE=Release','-DCMAKE_EXE_LINKER_FLAGS_RELEASE=/MAP',"-DCMAKE_INSTALL_PREFIX=$InstallDir")+$ExtraCMake) 'blender-configure.log'
  Run 'python' @("$Here/audit_flags.py",$Build,$Deps) 'isa-flags.log'
  Run 'cmake' @('--build',$Build,'--parallel',"$Jobs") 'blender-build.log'
  Run 'cmake' @('--install',$Build) 'blender-install.log'
- Run 'python' @("$Here/write_build_manifest.py",$BuildRoot,$InstallDir) 'manifest.log'
+ Run 'python' (@("$Here/write_build_manifest.py",$BuildRoot,$InstallDir)+$ExtraManifest) 'manifest.log'
 }
 if ($Stage -in @('Validate','All')) {
- Run 'python' @("$Here/smoke_test.py",'--blender',"$InstallDir/blender.exe",'--output',"$BuildRoot/validation") 'validation.log'
+ Run 'python' @("$Here/smoke_test.py",'--blender',"$InstallDir/blender.exe",'--output',"$Validation") 'validation.log'
  Run 'python' @("$Here/real_recipe_test.py",'--blender',"$InstallDir/blender.exe") 'real-recipe.log'
  $dumpbin = (Get-Command dumpbin.exe -ErrorAction Stop).Source
- Run 'python' @("$Here/audit_binary.py",'--dumpbin',$dumpbin,'--output',"$BuildRoot/validation/binary-isa.json",$InstallDir) 'binary-isa.log'
+ $ReviewArgs = @()
+ if (-not $ExperimentalEmbree -and (Test-Path "$Here/isa-review.json")) { $ReviewArgs = @('--review',"$Here/isa-review.json") }
+ Run 'python' (@("$Here/audit_binary.py",'--dumpbin',$dumpbin,'--output',"$Validation/binary-isa.json",$InstallDir)+$ReviewArgs) 'binary-isa.log'
 }

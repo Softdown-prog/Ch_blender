@@ -23,7 +23,7 @@ def main():
     assert meta['sourceSummary']['materialCount']==len(recipe['materials'])
     assert meta['sourceSummary']['partCount']==len(recipe['parts'])
     assert meta['lighting']['lightNames']==[light['name'] for light in preset['lights']]
-    assert meta['blenderVersion']=='4.2.3' and meta['cameraContract']=='CH_CAMERA_V1'
+    assert meta['blenderVersion'] in ('4.2.3','4.2.3 LTS') and meta['cameraContract']=='CH_CAMERA_V1'
     assert meta['studioPreset']=='CH_TYCOON_STUDIO_V1' and meta['renderEngine']=='CYCLES'
     assert meta['footprint']=={'widthTiles':1,'depthTiles':1}
     assert meta['directionOrder']==['south','east','west','north']
@@ -38,6 +38,14 @@ def main():
             image.load(); assert image.format=='PNG' and image.mode=='RGBA' and image.size==(64,64)
             if '_color_' in name:
                 lo,hi=image.getchannel('A').getextrema(); assert lo==0 and hi>0
-    report['legacyChecks']={'fourDirections':True,'rgba':True,'camera':True,'footprint':True,'anchorFinite':True,'anchorFixedAcrossDirections':True,'materials':True,'styleContract':True,'fixedLighting':True,'visualEquivalenceApproved':False}
+    mask_pixels=[]
+    for direction in ('south','east','west','north'):
+        with Image.open(out/f'{asset}_{direction}_color_source.png') as color, Image.open(out/f'{asset}_{direction}_mask_source.png') as mask:
+            assert color.getchannel('A').getbbox()==mask.getchannel('A').getbbox(),direction
+            mask_pixels.extend(mask.getdata())
+    for channel in range(3):
+        assert any(pixel[3]>200 and pixel[channel]>100 and all(pixel[other]==0 for other in range(3) if other!=channel) for pixel in mask_pixels),channel
+    assert any(pixel[3]==255 and pixel[:3]==(0,0,0) for pixel in mask_pixels)
+    report['legacyChecks']={'maskChannels':True,'maskFrameMatchesColor':True,'fixedColorSurfacesBlack':True,'fourDirections':True,'rgba':True,'camera':True,'footprint':True,'anchorFinite':True,'anchorFixedAcrossDirections':True,'materials':True,'styleContract':True,'fixedLighting':True,'visualEquivalenceApproved':False}
     (out/'worker.report.json').write_text(json.dumps(report,indent=2)+'\n'); print(json.dumps({'status':'ok','output':str(out),'checks':report['legacyChecks']},indent=2))
 if __name__=='__main__': main()

@@ -144,7 +144,9 @@
       "base": "v4.2.3",
       "buildManifest": "tools/ch_blender/legacy_cpu/build-manifest.json",
       "denoising": false,
-      "productionValidated": false
+      "productionValidated": true,
+      "validationScope": "Phenom II X6 1055T: headless Cycles CPU, existing color_mask_smoke recipe; no artistic promotion",
+      "localValidation": "tools/ch_blender/legacy_cpu/local-validation.json"
     }
   }
 }

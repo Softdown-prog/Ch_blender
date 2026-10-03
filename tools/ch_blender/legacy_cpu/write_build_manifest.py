@@ -1,18 +1,21 @@
 """Record the actual local build without claiming runtime or ISA validation."""
-import argparse,hashlib,json,re,subprocess
+import argparse,hashlib,json,os,re,subprocess
 from pathlib import Path
 HERE=Path(__file__).resolve().parent
 
 def main():
- p=argparse.ArgumentParser();p.add_argument('root',type=Path);p.add_argument('install',type=Path);a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('root',type=Path);p.add_argument('install',type=Path);p.add_argument('--experimental-embree',action='store_true');a=p.parse_args()
  build=a.root/'build-legacy';source=a.root/'blender-4.2.3-source'
  info=json.loads((HERE/'build-manifest.json').read_text(encoding='utf-8'))
  cache={}
  for line in (build/'CMakeCache.txt').read_text(encoding='utf-8').splitlines():
   if line and not line.startswith(('#','//')) and '=' in line:
    key,value=line.split('=',1);cache[key.split(':',1)[0]]=value
- for key in ('WITH_CPU_CHECK','WITH_CPU_SIMD','WITH_OPENIMAGEDENOISE','WITH_CYCLES_EMBREE','WITH_CYCLES_PATH_GUIDING'):
+ for key in ('WITH_CPU_CHECK','WITH_CPU_SIMD','WITH_OPENIMAGEDENOISE','WITH_CYCLES_PATH_GUIDING'):
   if cache.get(key)!='OFF':raise RuntimeError('Unsafe effective option: '+key)
+ if cache.get('WITH_CYCLES_EMBREE')!=('ON' if a.experimental_embree else 'OFF'):raise RuntimeError('Unexpected Embree option')
+ info['experimentalEmbreeSSE2']=a.experimental_embree
+ info['disabledOptions']=[key for key in info['disabledOptions'] if cache.get(key)=='OFF']
  compiler_files=list((build/'CMakeFiles').glob('*/CMakeCXXCompiler.cmake'))
  compiler=compiler_files[0].read_text(encoding='utf-8')
  version=re.search(r'set\(CMAKE_CXX_COMPILER_VERSION "([^"]+)"\)',compiler).group(1)
@@ -23,6 +26,8 @@ def main():
  info['effectiveCompilerFlags']={key:value for key,value in cache.items() if key.startswith(('CMAKE_C_FLAGS','CMAKE_CXX_FLAGS'))}
  info['patches']=[{'file':file.name,'sha256':hashlib.sha256(file.read_bytes()).hexdigest()} for file in sorted((HERE/'patches').glob('*.patch'))]
  info['binaries']=[{'file':file.relative_to(a.install).as_posix(),'sha256':hashlib.sha256(file.read_bytes()).hexdigest()} for file in sorted(a.install.rglob('*')) if file.suffix.lower() in ('.exe','.dll','.pyd')]
+ info['compilerEnvironment']={key:os.environ.get(key,'') for key in ('_CL_','NPY_BLAS_ORDER','NPY_LAPACK_ORDER','NPY_DISABLE_SVML')}
+ info['architectureBaseline']='MSVC x64 default SSE2; no /arch:AVX or x86-64-v2'
  info['status']='built_unvalidated'
  (a.install/'ch-legacy-build.json').write_text(json.dumps(info,indent=2)+'\n',encoding='utf-8')
  print(json.dumps({'status':info['status'],'compiler':info['compiler'],'binaries':len(info['binaries'])}))

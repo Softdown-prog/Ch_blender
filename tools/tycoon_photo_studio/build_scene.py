@@ -754,16 +754,7 @@ def add_camera(camera):
     return obj
 
 
-def _legacy_cpu_backend():
-    # The worker sets identity from the executable marker; direct bpy use reads it too.
-    if os.environ.get("CH_BLENDER_BACKEND") == "legacy_cpu_4_2_3":
-        return True
-    marker = Path(bpy.app.binary_path).parent / "ch-legacy-build.json"
-    if not marker.is_file():
-        return False
-    info = json.loads(marker.read_text(encoding="utf-8-sig"))
-    return info.get("backend") == "legacy_cpu_4_2_3" and info.get("upstreamTag") == "v4.2.3"
-
+from ch_backend import legacy_cpu_backend as _legacy_cpu_backend
 
 def configure_scene(studio, src_resolution, output_dir):
     if studio.get("id") != "CH_TYCOON_STUDIO_V1":

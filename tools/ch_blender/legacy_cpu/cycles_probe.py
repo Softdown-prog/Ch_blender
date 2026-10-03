@@ -1,11 +1,14 @@
 """Run inside the exact Blender 4.2.3 Legacy executable."""
-import bpy, json, sys
+import bpy, json, sys, _cycles
 import ssl, zlib, ctypes, numpy, addon_utils
 from pathlib import Path
 from mathutils import Vector
 out=Path(sys.argv[sys.argv.index('--')+1]); out.mkdir(parents=True,exist_ok=True)
 assert bpy.app.version == (4,2,3), bpy.app.version
 assert bpy.app.background
+marker=json.loads((Path(bpy.app.binary_path).parent/'ch-legacy-build.json').read_text(encoding='utf-8'))
+assert bool(_cycles.with_embree)==bool(marker.get('experimentalEmbreeSSE2',False))
+assert not _cycles.with_openimagedenoise and not _cycles.with_path_guiding and not _cycles.with_osl
 build_options={name:getattr(bpy.app.build_options,name) for name in dir(bpy.app.build_options) if not name.startswith('_') and isinstance(getattr(bpy.app.build_options,name),bool)}
 for option in ('cycles','compositor_cpu','opensubdiv','opencolorio','image_openexr'):
     assert build_options[option],option
@@ -64,6 +67,6 @@ assert tuple(image.size)==(64,64) and image.channels==4
 exr=out/'smoke.exr'; image.file_format='OPEN_EXR'; image.filepath_raw=str(exr); image.save()
 loaded=bpy.data.images.load(str(exr),check_existing=False); assert tuple(loaded.size)==(64,64)
 alpha=list(image.pixels)[3::4]; assert max(alpha)>0.9 and min(alpha)==0
-report={'status':'ok','version':bpy.app.version_string,'background':bpy.app.background,'engine':scene.render.engine,'device':scene.cycles.device,'denoising':scene.cycles.use_denoising,'rgba':True,'size':list(image.size),'blendRoundTrip':True,'python':sys.version,'buildOptions':build_options,'pythonModules':['ssl','zlib','ctypes','numpy'],'openssl':ssl.OPENSSL_VERSION,'modifiers':['BEVEL','SUBSURF'],'fbxRoundTrip':True,'gltfRoundTrip':True,'openexrRoundTrip':True,'cyclesImageTexture':True}
+report={'status':'ok','version':bpy.app.version_string,'background':bpy.app.background,'engine':scene.render.engine,'device':scene.cycles.device,'denoising':scene.cycles.use_denoising,'rgba':True,'size':list(image.size),'blendRoundTrip':True,'python':sys.version,'buildOptions':build_options,'pythonModules':['ssl','zlib','ctypes','numpy'],'openssl':ssl.OPENSSL_VERSION,'modifiers':['BEVEL','SUBSURF'],'fbxRoundTrip':True,'gltfRoundTrip':True,'openexrRoundTrip':True,'cyclesImageTexture':True,'embreeCompiled':bool(_cycles.with_embree),'openImageDenoiseCompiled':bool(_cycles.with_openimagedenoise),'pathGuidingCompiled':bool(_cycles.with_path_guiding)}
 (out/'cycles-report.json').write_text(json.dumps(report,indent=2)+'\n')
 print('CH_LEGACY_CYCLES_SMOKE_OK')

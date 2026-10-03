@@ -1,20 +1,30 @@
-# Revisao ISA em andamento
+# Revisão ISA do artefato validado
 
-Ainda nao e uma aprovacao de producao. Flags limpas e DLLs carregadas nao substituem bpy, Cycles e a receita real.
+Status: `approved_for_tested_pipeline`, vinculado aos 159 hashes de [isa-review.json](isa-review.json).
+Blender SHA256: `312bf1f30c634222c4d5bd19762d47918705756f4a127df630811624d75b389a`.
+Escopo: AMD Phenom II X6 1055T, bpy/background, Cycles CPU e receita existente color_mask_smoke com quatro vistas.
+Não equivale a verificar todos os recursos/caminhos possíveis do Blender.
 
-Evidencias locais:
-- Phenom II X6 1055T: SSE2/SSE3/SSE4a, sem SSSE3/SSE4.1/SSE4.2/AVX/AVX2/F16C.
-- NumPy 1.24.3 recompilado: __cpu_baseline__=[] e __cpu_dispatch__=[]; dot executou na CPU real.
-- Python 3.11.7: SSL 3.1.5, zlib, ctypes e parser XML executaram normalmente.
-- OpenColorIO 2.3.2: transformacao Exponent CPU validada; AVX/AVX2/SSE4 desativados e unidades AVX removidas pelo patch 0013.
-- Auditoria de comandos apos o patch: 1550 comandos, zero flags elevadas.
+6243 comandos gerados passaram sem flags SSE4.x/AVX/AVX2/F16C ou x86-64-v2.
+MSVC x64 SSE2 padrão; `_CL_=/Od /Ob0 /Oi-`; CPU_CHECK e CPU_SIMD desligados.
+NumPy tem baseline/dispatch vazios; OIIO usa SSE2; OCIO somente SSE2; OpenSSL sem ASM.
 
-Hits preliminares de disassembly devem ser revistos por hash do binario final:
-- OpenEXR ImfZip.cpp initializeFuncs seleciona reconstruct_sse41 somente se CpuId.sse4_1; ImfSystemSpecific.cpp consulta o CPUID.
-- libdeflate lib/x86/cpu_features.h distingue HAVE_*_NATIVE de dispatch. Sem macros __AVX__/__AVX2__, adler32_impl.h e decompress_impl.h exigem features de CPUID para AVX2/BMI2.
-- MSVC 14.44 CRT crt/src/x64/memcpy.asm compara __isa_available antes do caminho AVX e tem NoAVX/SSE; STL vector_algorithms.cpp usa _Use_avx2()/_Use_sse42() antes das rotinas correspondentes.
-- Disassembly linear de _elementtree.pyd encontrou vpshufb em VA 0x18001078c depois de ret e dentro de dados de uma jump table; python311.dll encontrou vmovupd em VA 0x180102658 tambem entre RVAs de jump table, apos ret/nop. Esses dados nao devem ser declarados codigo executado.
-- python3.dll e uma DLL de forwarders sem secao executavel; nao exige decodificar instrucoes inexistentes.
-- UCRT/CRT de sistema podem conter caminhos opcionais; nao declarar compatibilidade apenas por nao encontrar opcodes.
+Disassembly linear encontrou código moderno opcional e dados. A revisão usa fonte, símbolos/mapas e CPU real:
 
-Pendente: hashes e revisao de todos os binarios instalados, testes Blender e render real, limites do suporte comprovado.
+- MSVC CRT/STL: dispatch por `__isa_available`/`__isa_enabled` antes de AVX2/SSE4.2; fallback SSE2.
+- 48 grupos no blender.exe: 33 CRT/STL, 11 tabelas de saltos após retorno, um wmemcmp com flag weak zero,
+  um FMA protegido pelo nível ISA e dois LZMA protegidos por CPUID.
+- OpenEXR ImfZip seleciona SSE4.1 após CpuId; libdeflate distingue baseline de dispatch CPUID.
+- WebP consulta CPUID e OSXSAVE/xgetbv antes dos caminhos elevados.
+- Python/elementtree e dois hits de OIIO eram RVAs de tabelas interpretados como instruções, após retorno.
+- python3.dll contém forwarders e nenhuma seção de código; não inventariamos instruções inexistentes.
+- O libffi fornecido pela preparação do Python não contém opcodes elevados no inventário e ctypes passou.
+
+Evidências completas externas: `C:\CH-Blender-Build\validation`, incluindo mapas e contextos de disassembly.
+Evidências portáteis e revisão: `blender-4.2.3-legacy\legacy-validation`.
+SSL/zlib/ctypes/NumPy, OCIO Exponent e OIIO PNG round-trip passaram no Phenom.
+Blender, bpy, Cycles CPU, FBX/GLB/.blend/OpenEXR, worker real e preflight/proxy passaram sem illegal instruction.
+
+`audit_binary.py --review isa-review.json` recusa diferenças no conjunto de PEs, hashes ou contagens ISA.
+Não há aprovação automática por nome de DLL. Novos binários requerem revisão nova e repetição dos testes.
+Embree experimental SSE2 passou os testes mas foi mais lento e não integra o artefato aprovado.

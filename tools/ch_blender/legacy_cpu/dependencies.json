@@ -6,7 +6,9 @@
     "sourceHashType": "SHA256",
     "sourceHash": "6ae015467dabf0469b139ada93319327be24b98251ffaeceda0221848dc09262",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": true,
+    "localBuildStatus": "rebuilt from source locally",
+    "validationScope": "SSL module load on Phenom"
   },
   {
     "library": "zlib",
@@ -15,7 +17,9 @@
     "sourceHashType": "MD5",
     "sourceHash": "9b8aa094c4e5765dabf4da391f00d15c",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": true,
+    "localBuildStatus": "rebuilt from source locally",
+    "validationScope": "compression module load on Phenom"
   },
   {
     "library": "zstd",
@@ -24,7 +28,8 @@
     "sourceHashType": "SHA256",
     "sourceHash": "5194fbfa781fcf45b98c5e849651aa7b3b0a008c6b72d4a0db760f3002291e94",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "png",
@@ -33,7 +38,9 @@
     "sourceHashType": "SHA256",
     "sourceHash": "505e70834d35383537b6491e7ae8641f1a4bed1876dbfe361201fc80868d88ca",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": true,
+    "localBuildStatus": "rebuilt from source locally",
+    "validationScope": "RGBA PNG render and decode"
   },
   {
     "library": "jpeg",
@@ -42,7 +49,8 @@
     "sourceHashType": "MD5",
     "sourceHash": "627b980fad0573e08e4c3b80b290fc91",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "pthreads",
@@ -51,7 +59,8 @@
     "sourceHashType": "MD5",
     "sourceHash": "f3bf81bb395840b3446197bcf4ecd653",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "deflate",
@@ -60,7 +69,8 @@
     "sourceHashType": "MD5",
     "sourceHash": "a29d9dd653cbe03f2d5cd83972063f9e",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "imath",
@@ -69,7 +79,9 @@
     "sourceHashType": "MD5",
     "sourceHash": "5cedab446ab296c080957c3037c6d097",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": true,
+    "localBuildStatus": "rebuilt from source locally",
+    "validationScope": "OpenEXR round-trip via bpy"
   },
   {
     "library": "openexr",
@@ -78,7 +90,9 @@
     "sourceHashType": "MD5",
     "sourceHash": "83b23b937b3a76fd37680422f41b81b7",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": true,
+    "localBuildStatus": "rebuilt from source locally",
+    "validationScope": "OpenEXR round-trip via bpy"
   },
   {
     "library": "brotli",
@@ -87,7 +101,8 @@
     "sourceHashType": "SHA256",
     "sourceHash": "f9e8d81d0405ba66d181529af42a3354f838c939095ff99930da6aa9cdf6fe46",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "freetype",
@@ -96,7 +111,8 @@
     "sourceHashType": "MD5",
     "sourceHash": "98bc3cf234fe88ef3cf24569251fe0a4",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "epoxy",
@@ -105,7 +121,8 @@
     "sourceHashType": "MD5",
     "sourceHash": "f0730aad115c952e77591fcc805b1dc1",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "tiff",
@@ -114,7 +131,8 @@
     "sourceHashType": "MD5",
     "sourceHash": "fc7d49a9348b890b29f91a4ecadd5b49",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "tbb",
@@ -123,7 +141,9 @@
     "sourceHashType": "MD5",
     "sourceHash": "55ec8df6eae5ed6364a47f0e671e460c",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": true,
+    "localBuildStatus": "rebuilt from source locally",
+    "validationScope": "Cycles CPU render on Phenom"
   },
   {
     "library": "python",
@@ -132,7 +152,9 @@
     "sourceHashType": "MD5",
     "sourceHash": "d96c7e134c35a8c46236f8a0e566b69c",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": true,
+    "localBuildStatus": "rebuilt from source locally",
+    "validationScope": "bpy/background and standard module imports"
   },
   {
     "library": "numpy",
@@ -141,7 +163,9 @@
     "sourceHashType": "MD5",
     "sourceHash": "89e5e2e78407032290ae6acf6dcaea46",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": true,
+    "localBuildStatus": "rebuilt from source locally",
+    "validationScope": "dot and empty CPU baseline/dispatch on Phenom"
   },
   {
     "library": "boost",
@@ -150,7 +174,8 @@
     "sourceHashType": "MD5",
     "sourceHash": "f7050f554a65f6a42ece221eaeec1660",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "pugixml",
@@ -159,7 +184,8 @@
     "sourceHashType": "MD5",
     "sourceHash": "0c208b0664c7fb822bf1b49ad035e8fd",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "fmt",
@@ -168,7 +194,8 @@
     "sourceHashType": "SHA256",
     "sourceHash": "5dea48d1fcddc3ec571ce2058e13910a0d4a6bab4cc09a809d8b1dd1c88ae6f2",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "robinmap",
@@ -177,7 +204,8 @@
     "sourceHashType": "SHA256",
     "sourceHash": "c08ec4b1bf1c85eb0d6432244a6a89862229da1cb834f3f90fba8dc35d8c8ef1",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "expat",
@@ -186,7 +214,8 @@
     "sourceHashType": "MD5",
     "sourceHash": "d375fa3571c0abb945873f5061a8f2e2",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "pystring",
@@ -195,7 +224,8 @@
     "sourceHashType": "MD5",
     "sourceHash": "f2c68786b359f5e4e62bed53bc4fb86d",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "yamlcpp",
@@ -204,7 +234,8 @@
     "sourceHashType": "MD5",
     "sourceHash": "74d646a3cc1b5d519829441db96744f0",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "minizipng",
@@ -213,7 +244,8 @@
     "sourceHashType": "MD5",
     "sourceHash": "09dcc8a9def348e1be9659e384c2cd55",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "opencolorio",
@@ -222,7 +254,9 @@
     "sourceHashType": "MD5",
     "sourceHash": "8af74fcb8c4820ab21204463a06ba490",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": true,
+    "localBuildStatus": "rebuilt from source locally",
+    "validationScope": "CPU Exponent transform on Phenom"
   },
   {
     "library": "webp",
@@ -231,7 +265,8 @@
     "sourceHashType": "MD5",
     "sourceHash": "34869086761c0e2da6361035f7b64771",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "openjpeg",
@@ -240,7 +275,8 @@
     "sourceHashType": "SHA256",
     "sourceHash": "0333806d6adecc6f7a91243b2b839ff4d2053823634d4f6ed7a59bc87409122a",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "pybind11",
@@ -249,7 +285,8 @@
     "sourceHashType": "MD5",
     "sourceHash": "ce07bfd5089245da7807b3faf6cbc878",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": false,
+    "localBuildStatus": "rebuilt from source locally"
   },
   {
     "library": "openimageio",
@@ -258,7 +295,9 @@
     "sourceHashType": "MD5",
     "sourceHash": "691e9364d25e2878e042d48980fad593",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": true,
+    "localBuildStatus": "rebuilt from source locally",
+    "validationScope": "RGBA PNG identical-pixel round-trip on Phenom"
   },
   {
     "library": "opensubdiv",
@@ -267,15 +306,19 @@
     "sourceHashType": "MD5",
     "sourceHash": "cd03aaf8890bc0b8550eef62029cabe7",
     "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
-    "validated": false
+    "validated": true,
+    "localBuildStatus": "rebuilt from source locally",
+    "validationScope": "SUBSURF modifier evaluated in Cycles smoke"
   },
   {
     "library": "libffi",
     "version": "3.4.4",
-    "policy": "CPython Windows shim, audited DLL; runtime ctypes probe pending",
+    "policy": "CPython Windows shim; hash and ISA audited, ctypes runtime probe passed",
     "binarySha256": "eff52743773eb550fcc6ce3efc37c85724502233b6b002a35496d828bd7b280a",
     "instructionsDecoded": 5309,
     "elevatedISAFound": false,
-    "validated": false
+    "validated": true,
+    "localBuildStatus": "audited CPython Windows shim",
+    "validationScope": "ctypes call on Phenom, 5309 decoded instructions without elevated ISA"
   }
 ]

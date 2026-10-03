@@ -1,5 +1,5 @@
 """Exact version, bpy, blend round-trip, headless Cycles CPU and RGBA gates."""
-import argparse,json,subprocess,sys
+import argparse,json,re,subprocess,sys
 from pathlib import Path
 from PIL import Image
 HERE=Path(__file__).resolve().parent
@@ -15,9 +15,9 @@ def main():
     exe=Path(o.blender).resolve(); out=Path(o.output).resolve(); out.mkdir(parents=True,exist_ok=True)
     try:
         version=run([exe,'--version'],out,'version').splitlines()[0].strip()
-        assert version=='Blender 4.2.3', version
+        assert re.fullmatch(r'Blender 4\.2\.3(?: LTS)?',version), version
         bpy=run([exe,'--background','--factory-startup','--python-exit-code','1','--python-expr','import bpy; print(bpy.app.version_string); assert bpy.app.version == (4,2,3)'],out,'bpy')
-        assert '4.2.3' in bpy.splitlines(), bpy
+        assert any(line.strip() in ('4.2.3','4.2.3 LTS') for line in bpy.splitlines()), bpy
         run([exe,'--background','--factory-startup','--python-exit-code','1','--python',HERE/'cycles_probe.py','--',out],out,'cycles')
         with Image.open(out/'cycles.png') as image:
             image.load(); assert image.format=='PNG' and image.mode=='RGBA' and image.size==(64,64)

@@ -1,8 +1,9 @@
 # CH Blender Engine 4.2.3 Legacy CPU
 
-Estado atual: em construção, **não validado para produção**. O contrato permanece Blender 4.2.3 LTS.
-A primeira build prioriza compatibilidade x64/SSE2 no Phenom II X6 e não inclui Embree, OIDN ou OpenPGL.
-Não use este backend como aprovado antes dos testes reais e da auditoria ISA.
+Estado atual: **validado no AMD Phenom II X6 1055T para o pipeline headless testado**.
+O contrato permanece Blender 4.2.3 LTS. Consulte [REPORT.md](REPORT.md), [local-validation.json](local-validation.json)
+e [ISA_REVIEW.md](ISA_REVIEW.md) para resultados, hashes e limites da validação.
+A distribuição final usa Cycles CPU sem Embree, OIDN e OpenPGL. Não houve downgrade nem aprovação artística de assets.
 
 ## Estrutura
 
@@ -48,7 +49,7 @@ A distribuição Legacy recebe `ch-legacy-build.json` ao instalar. O worker usa 
 O baker desliga denoising somente no Legacy, incluindo overrides de shadow pass.
 Presets oficiais, samples e contratos geométricos permanecem intactos.
 Headless, bpy, meshes, materiais/nodes, modifiers, SUBSURF/OpenSubdiv, PNG, .blend e compositor CPU são preservados.
-FBX/glTF estão nos scripts addons_core upstream; precisam de probes antes de declarar suporte validado.
+Round-trips FBX, GLB/glTF, .blend e OpenEXR passaram nos probes instalados.
 
 Desativados nesta configuração: OIDN, OpenPGL/path guiding, Embree, OSL, GPUs de Cycles, USD/Hydra,
 MaterialX, OpenXR, áudio, NDOF, OpenVDB, fluid/ocean, Alembic, Collada, Freestyle, tracking/libmv,
@@ -73,8 +74,7 @@ Não cria aprovação artística e não promove assets.
 Disassembly linear não prova reachability: hits em dispatch ou dados exigem revisão explícita, junto dos testes na CPU real.
 Nenhum relatório deve alegar auditoria ISA completa só porque encontrou zero flags.
 
-Antes de concluir: testar imports SSL/zlib/ctypes/NumPy, modifiers usados, FBX/glTF se necessários; revisar DLLs e binários;
-comparar imagens oficiais existentes sem exigir bit-exact. O runner só deve ser alterado após validação local.
+Todos os gates locais acima passaram. Não havia PNG oficial 4.2.3 comparável no repositório; comparação oficial visual permanece indisponível. O runner foi ajustado somente após esta validação.
 
 ## Embree experimental
 
@@ -85,3 +85,30 @@ Se a experiência não passar, manter Cycles sem Embree.
 O manifesto instalado registra compilador efetivo, cache CMake, hashes dos patches e dos binarios; começa como built_unvalidated. Validate executa os renders antes da auditoria binaria e falha com review_required se houver instrucoes elevadas pendentes de revisao.
 
 Potrace (image tracing) e FFTW3 (ocean/glare/audio FFT) ficam desligados: nao foram encontrados nos scripts do pipeline. O script normaliza LIBDIR para barras diretas, evitando escapes invalidos no CMake Windows.
+
+Legacy mask backend: ch_color_mask.py uses Cycles CPU emission instead of Eevee because WITH_HEADLESS has no OpenGL context. Camera, geometry, channels, Raw view transform and coverage alpha remain unchanged; scene render settings are restored. Official backend continues using Eevee. Real smoke checks pure R/G/B, covered black fixed-color surfaces, and identical alpha bounding boxes in all views. No human visual approval or runtime promotion is claimed.
+
+## Resultado observado e reprodução da revisão
+
+Foram auditados 6243 comandos e 159 arquivos PE da distribuição. A revisão por hash em `isa-review.json`
+identifica dispatch opcional e dados confundidos com instruções; não exige ausência de todo opcode moderno.
+`build.ps1 -Stage Validate` aplica essa revisão somente quando o inventário e os hashes coincidem.
+Uma nova compilação que mude os binários exige nova revisão explícita; não reutilize aprovação de outro artefato.
+`finalize_validation.py <BuildRoot> <InstallDir>` sela os resultados e copia as evidências para `legacy-validation`.
+`build-manifest.json` é configuração inicial; `ch-legacy-build.json` instalado registra o artefato efetivo.
+
+A experiência Embree SSE2 passou version/bpy/Cycles/worker. Quatro runs ABBA produziram 12 PNGs bit-exact:
+sem Embree 17,70 s em média; com Embree 19,53 s. A distribuição principal mantém Embree desligado.
+
+```powershell
+.\tools\ch_blender\legacy_cpu\embree_experiment.ps1 -Jobs 2
+.\tools\ch_blender\legacy_cpu\build.ps1 -Stage Blender -ExperimentalEmbree -Jobs 2
+.\tools\ch_blender\legacy_cpu\build.ps1 -Stage Validate -ExperimentalEmbree
+```
+
+A variante experimental instala em `blender-4.2.3-legacy-embree-sse2`, separada da principal.
+O cache de trabalho é reutilizado; cada build recarrega `legacy.cmake` e só a opção experimental ativa Embree.
+A revisão completa da distribuição experimental não substitui a aprovação por hash da principal.
+O resolver Windows exige versão exata 4.2.3 e procura CH_BLENDER_EXE, Legacy e então oficial somente em CPU SSE4.2.
+32 testes unitários selecionados passaram. O teste de inventário de jobs tem 15 entradas com inputs ausentes,
+reproduzidas também no HEAD anterior; não se afirma que a suíte inteira passou.

@@ -1,0 +1,171 @@
+--- a/source/creator/CMakeLists.txt
++++ b/source/creator/CMakeLists.txt
+@@ -1073,26 +1073,28 @@
+     )
+   endif()
+ 
+-  if(EXISTS ${LIBDIR}/gmp/lib/gmp-10.dll)
+-    set(GMP_DLL ${LIBDIR}/gmp/lib/gmp-10.dll)
+-  else()
+-    set(GMP_DLL ${LIBDIR}/gmp/lib/libgmp-10.dll)
+-  endif()
+-
+-  windows_install_shared_manifest(
+-    FILES ${GMP_DLL}
+-    ALL
+-  )
+-  unset(GMP_DLL)
+-
+-  windows_install_shared_manifest(
+-    FILES ${LIBDIR}/gmp/lib/libgmpxx.dll
+-    RELEASE
+-  )
+-  windows_install_shared_manifest(
+-    FILES ${LIBDIR}/gmp/lib/libgmpxx_d.dll
+-    DEBUG
+-  )
++  if(WITH_GMP)
++    if(EXISTS ${LIBDIR}/gmp/lib/gmp-10.dll)
++      set(GMP_DLL ${LIBDIR}/gmp/lib/gmp-10.dll)
++    else()
++      set(GMP_DLL ${LIBDIR}/gmp/lib/libgmp-10.dll)
++    endif()
++  
++    windows_install_shared_manifest(
++      FILES ${GMP_DLL}
++      ALL
++    )
++    unset(GMP_DLL)
++  
++    windows_install_shared_manifest(
++      FILES ${LIBDIR}/gmp/lib/libgmpxx.dll
++      RELEASE
++    )
++    windows_install_shared_manifest(
++      FILES ${LIBDIR}/gmp/lib/libgmpxx_d.dll
++      DEBUG
++    )
++  endif()
+ 
+   if(WITH_WINDOWS_RELEASE_PDB)
+     # Skip install of stripped pdb if compiling with clang since there doesn't seem
+@@ -1117,65 +1119,69 @@
+     endif()
+   endif()
+ 
+-  windows_install_shared_manifest(
+-    FILES ${LIBDIR}/openvdb/bin/openvdb.dll
+-    RELEASE
+-  )
+-  windows_install_shared_manifest(
+-    FILES ${LIBDIR}/openvdb/bin/openvdb_d.dll
+-    DEBUG
+-  )
+-
+-  windows_install_shared_manifest(
+-    FILES
+-      ${LIBDIR}/materialx/bin/MaterialXCore.dll
+-      ${LIBDIR}/materialx/bin/MaterialXFormat.dll
+-      ${LIBDIR}/materialx/bin/MaterialXGenGlsl.dll
+-      ${LIBDIR}/materialx/bin/MaterialXGenMdl.dll
+-      ${LIBDIR}/materialx/bin/MaterialXGenOsl.dll
+-      ${LIBDIR}/materialx/bin/MaterialXGenShader.dll
+-    RELEASE
+-  )
+-  if(EXISTS ${LIBDIR}/materialx/bin/MaterialXRender.dll) # 3.6+
++  if(WITH_OPENVDB)
++    windows_install_shared_manifest(
++      FILES ${LIBDIR}/openvdb/bin/openvdb.dll
++      RELEASE
++    )
++    windows_install_shared_manifest(
++      FILES ${LIBDIR}/openvdb/bin/openvdb_d.dll
++      DEBUG
++    )
++  endif()
++
++  if(WITH_MATERIALX)
+     windows_install_shared_manifest(
+       FILES
+-        ${LIBDIR}/materialx/bin/MaterialXRender.dll
+-        ${LIBDIR}/materialx/bin/MaterialXRenderGlsl.dll
+-        ${LIBDIR}/materialx/bin/MaterialXRenderHw.dll
+-        ${LIBDIR}/materialx/bin/MaterialXRenderOsl.dll
++        ${LIBDIR}/materialx/bin/MaterialXCore.dll
++        ${LIBDIR}/materialx/bin/MaterialXFormat.dll
++        ${LIBDIR}/materialx/bin/MaterialXGenGlsl.dll
++        ${LIBDIR}/materialx/bin/MaterialXGenMdl.dll
++        ${LIBDIR}/materialx/bin/MaterialXGenOsl.dll
++        ${LIBDIR}/materialx/bin/MaterialXGenShader.dll
+       RELEASE
+     )
++    if(EXISTS ${LIBDIR}/materialx/bin/MaterialXRender.dll) # 3.6+
++      windows_install_shared_manifest(
++        FILES
++          ${LIBDIR}/materialx/bin/MaterialXRender.dll
++          ${LIBDIR}/materialx/bin/MaterialXRenderGlsl.dll
++          ${LIBDIR}/materialx/bin/MaterialXRenderHw.dll
++          ${LIBDIR}/materialx/bin/MaterialXRenderOsl.dll
++        RELEASE
++      )
++      windows_install_shared_manifest(
++        FILES
++          ${LIBDIR}/materialx/bin/MaterialXRender_d.dll
++          ${LIBDIR}/materialx/bin/MaterialXRenderGlsl_d.dll
++          ${LIBDIR}/materialx/bin/MaterialXRenderHw_d.dll
++          ${LIBDIR}/materialx/bin/MaterialXRenderOsl_d.dll
++        DEBUG
++      )
++    endif()
++    if(EXISTS ${LIBDIR}/materialx/bin/MaterialXGenMsl.dll) # 4.1+
++      windows_install_shared_manifest(
++        FILES
++          ${LIBDIR}/materialx/bin/MaterialXGenMsl.dll
++        RELEASE
++      )
++      windows_install_shared_manifest(
++        FILES
++          ${LIBDIR}/materialx/bin/MaterialXGenMsl_d.dll
++        DEBUG
++      )
++    endif()
+     windows_install_shared_manifest(
+       FILES
+-        ${LIBDIR}/materialx/bin/MaterialXRender_d.dll
+-        ${LIBDIR}/materialx/bin/MaterialXRenderGlsl_d.dll
+-        ${LIBDIR}/materialx/bin/MaterialXRenderHw_d.dll
+-        ${LIBDIR}/materialx/bin/MaterialXRenderOsl_d.dll
++        ${LIBDIR}/materialx/bin/MaterialXCore_d.dll
++        ${LIBDIR}/materialx/bin/MaterialXFormat_d.dll
++        ${LIBDIR}/materialx/bin/MaterialXGenGlsl_d.dll
++        ${LIBDIR}/materialx/bin/MaterialXGenMdl_d.dll
++        ${LIBDIR}/materialx/bin/MaterialXGenOsl_d.dll
++        ${LIBDIR}/materialx/bin/MaterialXGenShader_d.dll
+       DEBUG
+     )
+   endif()
+-  if(EXISTS ${LIBDIR}/materialx/bin/MaterialXGenMsl.dll) # 4.1+
+-    windows_install_shared_manifest(
+-      FILES
+-        ${LIBDIR}/materialx/bin/MaterialXGenMsl.dll
+-      RELEASE
+-    )
+-    windows_install_shared_manifest(
+-      FILES
+-        ${LIBDIR}/materialx/bin/MaterialXGenMsl_d.dll
+-      DEBUG
+-    )
+-  endif()
+-  windows_install_shared_manifest(
+-    FILES
+-      ${LIBDIR}/materialx/bin/MaterialXCore_d.dll
+-      ${LIBDIR}/materialx/bin/MaterialXFormat_d.dll
+-      ${LIBDIR}/materialx/bin/MaterialXGenGlsl_d.dll
+-      ${LIBDIR}/materialx/bin/MaterialXGenMdl_d.dll
+-      ${LIBDIR}/materialx/bin/MaterialXGenOsl_d.dll
+-      ${LIBDIR}/materialx/bin/MaterialXGenShader_d.dll
+-    DEBUG
+-  )
+ 
+   if(WITH_PYTHON)
+     string(REPLACE "." "" _PYTHON_VERSION_NO_DOTS ${PYTHON_VERSION})

@@ -27,3 +27,9 @@ O patch de dependência Python está em patches/dependencies/python-openssl-no-t
 
 ## 0016 — include chrono explicito
 Arquivo upstream: intern/cycles/util/profiling.cpp. MSVC 19.44 nao fornece system_clock por includes transitivos de thread. Legacy inclui chrono diretamente, sem alterar logica ou ISA. Risco baixo; testar compilacao de cycles_util e render CPU.
+
+## 0017 — Windows DLL installation respects options
+Upstream: source/creator/CMakeLists.txt. Original install unconditionally copied GMP, OpenVDB and MaterialX DLLs even when their features were OFF. Legacy wraps each group in the existing WITH_* option. Risk: missing DLL if an enabled feature is incorrectly configured; enabled groups still fail on missing files. Test: configure/build/install and bpy/Cycles smoke.
+
+## 0018 — Optional Python/media/Vulkan installation
+Upstream: source/creator/CMakeLists.txt. Original Windows installation copied MaterialX Python, FFmpeg, sndfile, shaderc, OpenAL and SDL regardless of WITH_* flags. Legacy conditions each group on its existing feature option. No enabled file is silently skipped. Risk: packaging regression; test install, bpy imports, Cycles and real recipe.

@@ -108,7 +108,9 @@
     "0013-opencolorio-exclude-disabled-isa.patch",
     "0014-python-package-cache-ninja.patch",
     "0015-native-boost-setup-and-sse2.patch",
-    "0016-cycles-explicit-chrono.patch"
+    "0016-cycles-explicit-chrono.patch",
+    "0017-install-only-enabled-windows-libraries.patch",
+    "0018-install-enabled-python-media-vulkan.patch"
   ],
   "installPath": "C:\\Users\\User\\.ch-blender\\blender-4.2.3-legacy",
   "validation": {
