@@ -1,0 +1,63 @@
+{
+  "id": "CH_STYLIZED_PRERENDER_V1",
+  "status": "active",
+  "description": "Contrato visual do City Horizon para assets 2D pre-renderizados estilizados produzidos por pipeline 3D moderno.",
+  "intent": {
+    "target": "visual proprio do City Horizon, legivel em escala de gameplay e claramente 2D no runtime",
+    "notTarget": "emulacao literal de limitacoes graficas de jogos dos anos 2000",
+    "references": "tycoons classicos podem orientar leitura, escala de gameplay, silhueta, clareza, densidade e logica espacial, mas nao funcionam como limite tecnico"
+  },
+  "render": {
+    "output": "PNG RGBA pre-renderizado 2D",
+    "cameraContract": "CH_CAMERA_V1",
+    "projection": "orthographic_dimetric_2_to_1",
+    "yawDegrees": 45,
+    "elevationDegrees": 30,
+    "tileReferencePx": [128, 64]
+  },
+  "artDirection": {
+    "silhouettePriority": true,
+    "gameplayScaleLegibilityRequired": true,
+    "photorealismRequired": false,
+    "modern3DRenderLookAllowed": false,
+    "microtextureOnlyWhenReadable": true,
+    "controlledLighting": true,
+    "subtleContactShadow": true,
+    "postProcessPurpose": "stylization_and_readability_not_artificial_age_emulation"
+  },
+  "scaleGuidance": {
+    "worldScale": "Use believable, category-appropriate proportions relative to the canonical 128x64 gameplay grid and neighboring approved assets.",
+    "buildings": "Keep building massing, floor height, roof size, windows and doors believable for the authored building while staying readable at gameplay scale.",
+    "propsAndVehicles": "Preserve coherent relative scale with characters, buildings, roads and terrain.",
+    "readability": "Stylization may simplify shapes and remove unreadable microdetail without distorting category proportions or relative world scale."
+  },
+  "vegetationGuidance": {
+    "canopy": "preserve irregular organic silhouette, readable foliage mass and controlled internal variation",
+    "canopyTreatmentStatus": "frozen_for_park_tree_broadleaf_02",
+    "trunk": "use a dedicated wood pass with 3-5 restrained organic bark tone masses; avoid obvious radial polygon facets, triangular face-reading, diagonal plates and camouflage-like geometry patterns",
+    "woodAndFoliageMustUseSeparateFinishingPaths": true,
+    "woodSourceLightingMayGuideButMustNotDominateFinalTonePattern": true,
+    "foliageIndexedDitherMayRemainEnabled": true,
+    "woodIndexedDitherRequired": false,
+    "shadow": "support grounding without competing with the asset",
+    "rotationConsistency": "four directions must read as the same authored asset"
+  },
+  "referenceAssets": [
+    {
+      "assetId": "park_tree_broadleaf_02",
+      "role": "vegetation_reference",
+      "note": "Reference for stylization level, gameplay legibility and organic canopy. Its approved crown is frozen; trunk and branch finishing may evolve independently until the wood pass no longer exposes geometric lighting plates."
+    }
+  ],
+  "approval": {
+    "humanVisualGateRequired": true,
+    "mapContextReviewRequired": true,
+    "rule": "An asset is approved only when it reads coherently in gameplay context, keeps believable relative scale for its category and no longer depends on modern 3D rendering cues for visual quality.",
+    "rejectIf": [
+      "building_proportions_were_distorted_without_an_asset_specific_reason",
+      "windows_doors_roofs_or_props_were_exaggerated_without_gameplay_need",
+      "relative_scale_conflicts_with_the_gameplay_world"
+    ],
+    "vegetationRule": "Do not alter an already approved canopy to solve a trunk problem. Wood and foliage must be reviewed as distinct visual regions."
+  }
+}

@@ -1,0 +1,223 @@
+{
+  "contract": "CITY_HORIZON_SMALL_COMMERCIAL_V1",
+  "assetId": "building.ice_cream_shop.01",
+  "category": "commercial",
+  "subtype": "ice_cream_shop",
+  "seed": 4721,
+  "studioPreset": "CH_TYCOON_STUDIO_V1",
+  "styleContract": "CH_STYLIZED_PRERENDER_V1",
+  "footprint": {
+    "widthTiles": 2,
+    "depthTiles": 2
+  },
+  "mass": {
+    "width": 5.12,
+    "depth": 4.66,
+    "wallHeight": 2.24,
+    "baseHeight": 0.14,
+    "parapetHeight": 0.16
+  },
+  "facade": {
+    "front": "south",
+    "doorWidth": 0.82,
+    "doorHeight": 1.76,
+    "windowWidth": 1.34,
+    "windowHeight": 1.05,
+    "windowSill": 0.62,
+    "awning": {
+      "enabled": true,
+      "width": 4.24,
+      "depth": 0.53,
+      "height": 0.16,
+      "z": 1.95
+    },
+    "sign": {
+      "enabled": true,
+      "width": 3.20,
+      "height": 0.72,
+      "depth": 0.15,
+      "z": 2.45
+    },
+    "details": {
+      "lowerTrimBand": true,
+      "awningSupports": true,
+      "promoBoard": true,
+      "planter": false
+    }
+  },
+  "sideWindows": {
+    "east": 2,
+    "west": 2
+  },
+  "rear": {
+    "serviceDoor": true,
+    "smallWindow": true,
+    "deliveryCrates": true
+  },
+  "roofProps": {
+    "chimney": false,
+    "acUnit": true,
+    "ovenVent": false,
+    "coffeeVent": false
+  },
+  "iceCream": {
+    "windowDisplay": true,
+    "freezerCase": true,
+    "sundaeSign": true,
+    "colorPillars": true,
+    "facadeCrown": true,
+    "sideAccentBand": true,
+    "rotatingPopsicleSign": true,
+    "polishV3": true
+  },
+  "animation": {
+    "enabled": true,
+    "frameStart": 1,
+    "frameEnd": 8,
+    "fps": 4,
+    "looping": true,
+    "bladeObjectName": "IceCreamSpinner",
+    "intent": "slow continuous rotation of the corner popsicle sign"
+  },
+  "materials": {
+    "wall": {
+      "name": "IceCreamMintWall",
+      "rgba": [0.50, 0.80, 0.76, 1.0],
+      "recipe": "plaster",
+      "roughness": 0.84,
+      "seed": 131,
+      "strength": 0.22,
+      "maskRole": "wall"
+    },
+    "roof": {
+      "name": "IceCreamBerryRoof",
+      "rgba": [0.70, 0.25, 0.43, 1.0],
+      "recipe": "solid",
+      "roughness": 0.80,
+      "seed": 137,
+      "strength": 0.03,
+      "maskRole": "roof"
+    },
+    "trim": {
+      "name": "IceCreamVanillaTrim",
+      "rgba": [0.96, 0.88, 0.72, 1.0],
+      "recipe": "solid",
+      "roughness": 0.76,
+      "seed": 139,
+      "strength": 0.02
+    },
+    "awning": {
+      "name": "IceCreamCoralAwning",
+      "rgba": [0.91, 0.38, 0.50, 1.0],
+      "recipe": "solid",
+      "roughness": 0.78,
+      "seed": 149,
+      "strength": 0.03
+    },
+    "glass": {
+      "name": "IceCreamCoolGlass",
+      "rgba": [0.18, 0.43, 0.52, 1.0],
+      "recipe": "glass",
+      "roughness": 0.24,
+      "seed": 151,
+      "strength": 0.14
+    },
+    "door": {
+      "name": "IceCreamDoorWood",
+      "rgba": [0.30, 0.15, 0.08, 1.0],
+      "recipe": "timber",
+      "roughness": 0.80,
+      "seed": 157,
+      "strength": 0.16
+    },
+    "dark": {
+      "name": "IceCreamMetalDark",
+      "rgba": [0.075, 0.085, 0.09, 1.0],
+      "recipe": "solid",
+      "roughness": 0.72,
+      "seed": 163,
+      "strength": 0.02
+    },
+    "sidewalk": {
+      "name": "IceCreamSidewalk",
+      "rgba": [0.58, 0.57, 0.54, 1.0],
+      "recipe": "concrete",
+      "roughness": 0.94,
+      "seed": 167,
+      "strength": 0.14
+    },
+    "vanilla": {
+      "name": "IceCreamVanilla",
+      "rgba": [0.98, 0.88, 0.66, 1.0],
+      "recipe": "solid",
+      "roughness": 0.72,
+      "seed": 173,
+      "strength": 0.02
+    },
+    "strawberry": {
+      "name": "IceCreamStrawberry",
+      "rgba": [0.96, 0.43, 0.55, 1.0],
+      "recipe": "solid",
+      "roughness": 0.72,
+      "seed": 179,
+      "strength": 0.02
+    },
+    "pistachio": {
+      "name": "IceCreamPistachio",
+      "rgba": [0.54, 0.82, 0.53, 1.0],
+      "recipe": "solid",
+      "roughness": 0.72,
+      "seed": 181,
+      "strength": 0.02
+    },
+    "blueberry": {
+      "name": "IceCreamBlueberry",
+      "rgba": [0.36, 0.54, 0.88, 1.0],
+      "recipe": "solid",
+      "roughness": 0.72,
+      "seed": 191,
+      "strength": 0.02
+    },
+    "cone": {
+      "name": "IceCreamConeWafer",
+      "rgba": [0.74, 0.45, 0.20, 1.0],
+      "recipe": "solid",
+      "roughness": 0.82,
+      "seed": 193,
+      "strength": 0.03
+    },
+    "spinner": {
+      "name": "IceCreamSpinnerCandy",
+      "rgba": [0.98, 0.68, 0.18, 1.0],
+      "recipe": "solid",
+      "roughness": 0.68,
+      "seed": 197,
+      "strength": 0.02
+    }
+  },
+  "colorMask": {
+    "contract": "CH_COLOR_MASK_V1",
+    "enabled": true,
+    "channels": {
+      "R": "wall",
+      "G": "roof"
+    },
+    "alpha": "coverage"
+  },
+  "designIntent": {
+    "summary": "Colorful neighborhood ice cream shop with a framed pastel storefront, oversized flavor display, strong sundae sign, side identity badge and a slowly rotating corner popsicle totem.",
+    "readOrder": ["corner_popsicle", "sundae_sign", "striped_awning", "flavor_display", "framed_storefront", "side_badge", "pastel_wall_mass", "roofline"],
+    "rules": [
+      "keep the silhouette compact and readable at gameplay scale",
+      "do not depend on readable text for ice-cream identity",
+      "use broad pastel color blocks rather than tiny decorative noise",
+      "make the storefront read as designed architecture through a crown, sign surround, vertical color rhythm and stronger freezer display",
+      "keep the animation slow and localized to the corner popsicle totem so the building does not visually jitter",
+      "keep the roof visually subordinate to the storefront by using a lower parapet",
+      "carry ice-cream identity onto the side elevation with one large badge instead of microdetail",
+      "author all four sides because AssetRoot rotation produces canonical directions",
+      "keep the front apron visually flush for future road/sidewalk placement",
+      "CH_COLOR_MASK_V1 recolors only wall in R and roof in G; awning, flavor colors, glass, trim and animated sign keep authored colors"
+    ]
+  }
+}
