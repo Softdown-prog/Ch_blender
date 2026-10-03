@@ -6,6 +6,11 @@ from mathutils import Vector
 out=Path(sys.argv[sys.argv.index('--')+1]); out.mkdir(parents=True,exist_ok=True)
 assert bpy.app.version == (4,2,3), bpy.app.version
 assert bpy.app.background
+build_options={name:getattr(bpy.app.build_options,name) for name in dir(bpy.app.build_options) if not name.startswith('_') and isinstance(getattr(bpy.app.build_options,name),bool)}
+for option in ('cycles','compositor_cpu','opensubdiv','opencolorio','image_openexr'):
+    assert build_options[option],option
+for option in ('cycles_osl','audaspace','openvdb','fluid','usd','xr_openxr'):
+    assert not build_options[option],option
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
 bpy.ops.mesh.primitive_cube_add(size=2)
 cube=bpy.context.object
@@ -59,6 +64,6 @@ assert tuple(image.size)==(64,64) and image.channels==4
 exr=out/'smoke.exr'; image.file_format='OPEN_EXR'; image.filepath_raw=str(exr); image.save()
 loaded=bpy.data.images.load(str(exr),check_existing=False); assert tuple(loaded.size)==(64,64)
 alpha=list(image.pixels)[3::4]; assert max(alpha)>0.9 and min(alpha)==0
-report={'status':'ok','version':bpy.app.version_string,'background':bpy.app.background,'engine':scene.render.engine,'device':scene.cycles.device,'denoising':scene.cycles.use_denoising,'rgba':True,'size':list(image.size),'blendRoundTrip':True,'python':sys.version,'pythonModules':['ssl','zlib','ctypes','numpy'],'openssl':ssl.OPENSSL_VERSION,'modifiers':['BEVEL','SUBSURF'],'fbxRoundTrip':True,'gltfRoundTrip':True,'openexrRoundTrip':True,'cyclesImageTexture':True}
+report={'status':'ok','version':bpy.app.version_string,'background':bpy.app.background,'engine':scene.render.engine,'device':scene.cycles.device,'denoising':scene.cycles.use_denoising,'rgba':True,'size':list(image.size),'blendRoundTrip':True,'python':sys.version,'buildOptions':build_options,'pythonModules':['ssl','zlib','ctypes','numpy'],'openssl':ssl.OPENSSL_VERSION,'modifiers':['BEVEL','SUBSURF'],'fbxRoundTrip':True,'gltfRoundTrip':True,'openexrRoundTrip':True,'cyclesImageTexture':True}
 (out/'cycles-report.json').write_text(json.dumps(report,indent=2)+'\n')
 print('CH_LEGACY_CYCLES_SMOKE_OK')

@@ -104,7 +104,8 @@
     "0011-idempotent-python-dependency-prepare.patch",
     "0012-python-upstream-patch-format.patch",
     "0013-opencolorio-exclude-disabled-isa.patch",
-    "0014-python-package-cache-ninja.patch"
+    "0014-python-package-cache-ninja.patch",
+    "0015-native-boost-setup-and-sse2.patch"
   ],
   "installPath": "C:\\Users\\User\\.ch-blender\\blender-4.2.3-legacy",
   "validation": {

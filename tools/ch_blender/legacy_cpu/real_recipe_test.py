@@ -28,11 +28,11 @@ def main():
     assert meta['footprint']=={'widthTiles':1,'depthTiles':1}
     assert meta['directionOrder']==['south','east','west','north']
     assert meta['lighting']['fixedAcrossDirections'] and not meta['rotationPolicy']['cameraRotates']
-    origins=[direction['groundOriginSourcePx'] for direction in meta['directions']]
+    origins=[(direction['groundOriginSourcePx']['x'],direction['groundOriginSourcePx']['y']) for direction in meta['directions']]
     assert all(all(abs(a-b)<1e-5 for a,b in zip(origin,origins[0])) for origin in origins)
     assert all(0<=value<=64 for value in origins[0])
     for direction in meta['directions']:
-        assert all(math.isfinite(v) for v in direction['groundOriginSourcePx'])
+        assert all(math.isfinite(v) for v in direction['groundOriginSourcePx'].values())
     for name in names:
         with Image.open(out/name) as image:
             image.load(); assert image.format=='PNG' and image.mode=='RGBA' and image.size==(64,64)
