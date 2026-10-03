@@ -1,27 +1,24 @@
 # CH Blender standalone migration
 
-This repository contains the CH Blender production tool migrated from
-`Softdown-prog/City-horizon-`.
+CH Blender was migrated from `Softdown-prog/City-horizon-` so asset
+production can run independently from the game repository.
 
-## Source copied
+## Included
 
-- `tools/ch_blender/` — CH Blender CLI, workers, contracts, profiles,
-  scripts, tests, jobs and authoring data.
-- `tools/blender_bake_runner.py` — Blender bake orchestration used by
-  the production pipeline.
-- `docs/` — documentation directly related to CH Blender, asset
-  production, render quality, camera/authoring contracts and the
-  amusement-ride production pipeline.
+- `tools/ch_blender/`: CLI, workers, contracts, preflight profiles,
+  authoring tools, scripts, tests, jobs and production recipes/data.
+- `tools/blender_bake_runner.py`: Blender bake orchestration.
+- `docs/`: CH Blender and directly related asset/render/camera/
+  authoring documentation selected from City Horizon.
 
-## Intentionally not copied
+## Deliberately excluded
 
-Direct City Horizon runtime mutation bridges are excluded from the
-standalone production repository:
+These bridges write directly into City Horizon runtime state and are
+intentionally not part of the standalone production copy:
 
 - `tools/ch_blender/runtime_integrations/`
 - `tools/ch_blender/runtime_promotions/`
 - `tools/ch_blender/integrate_ice_cream_runtime.py`
 
-Approved outputs should be promoted to City Horizon explicitly after
-visual/contract validation instead of CH Blender modifying game
-runtime files directly.
+Approved outputs should be promoted to City Horizon only after
+visual and contract validation.
