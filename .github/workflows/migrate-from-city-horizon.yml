@@ -1,0 +1,115 @@
+name: Migrate CH Blender from City Horizon
+
+on:
+  push:
+    branches:
+      - migration/ch-blender-standalone
+    paths:
+      - .github/workflows/migrate-from-city-horizon.yml
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout CH Blender target
+        uses: actions/checkout@v4
+        with:
+          path: target
+          ref: migration/ch-blender-standalone
+
+      - name: Checkout City Horizon source
+        uses: actions/checkout@v4
+        with:
+          repository: Softdown-prog/City-horizon-
+          ref: main
+          path: source
+          sparse-checkout: |
+            tools/ch_blender
+            tools/blender_bake_runner.py
+            docs
+          sparse-checkout-cone-mode: false
+
+      - name: Copy CH Blender core
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p target/tools/ch_blender target/tools target/docs
+          rsync -a --delete source/tools/ch_blender/ target/tools/ch_blender/
+
+          # Keep the standalone production tool decoupled from the City Horizon runtime.
+          rm -rf target/tools/ch_blender/runtime_integrations
+          rm -rf target/tools/ch_blender/runtime_promotions
+          rm -f target/tools/ch_blender/integrate_ice_cream_runtime.py
+
+          cp source/tools/blender_bake_runner.py target/tools/blender_bake_runner.py
+
+      - name: Copy CH Blender documentation and contracts guidance
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          for file in source/docs/*.md; do
+            base="$(basename "$file")"
+            case "$base" in
+              ASSET_PIPELINE.md|CH_BLENDER*.md|CH_AMUSEMENT_RIDE*.md|CH_CAROUSEL*.md|CH_ISOMETRIC_OCCLUSION*.md)
+                cp "$file" "target/docs/$base"
+                continue
+                ;;
+            esac
+
+            if grep -Eqi 'CH Blender|ch_blender|blender_bake_runner|CH_CAMERA_V1|asset requirements|shape authoring|parametric authoring|Blender bake' "$file"; then
+              cp "$file" "target/docs/$base"
+            fi
+          done
+
+      - name: Add standalone migration notes
+        shell: bash
+        run: |
+          cat > target/MIGRATION_SCOPE.md <<'EOF'
+          # CH Blender standalone migration
+
+          This repository contains the CH Blender production tool migrated from
+          `Softdown-prog/City-horizon-`.
+
+          ## Source copied
+
+          - `tools/ch_blender/` — CH Blender CLI, workers, contracts, profiles,
+            scripts, tests, jobs and authoring data.
+          - `tools/blender_bake_runner.py` — Blender bake orchestration used by
+            the production pipeline.
+          - `docs/` — documentation directly related to CH Blender, asset
+            production, render quality, camera/authoring contracts and the
+            amusement-ride production pipeline.
+
+          ## Intentionally not copied
+
+          Direct City Horizon runtime mutation bridges are excluded from the
+          standalone production repository:
+
+          - `tools/ch_blender/runtime_integrations/`
+          - `tools/ch_blender/runtime_promotions/`
+          - `tools/ch_blender/integrate_ice_cream_runtime.py`
+
+          Approved outputs should be promoted to City Horizon explicitly after
+          visual/contract validation instead of CH Blender modifying game
+          runtime files directly.
+          EOF
+
+      - name: Commit migrated files
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools docs MIGRATION_SCOPE.md
+          if git diff --cached --quiet; then
+            echo "No migration changes to commit."
+            exit 0
+          fi
+          git commit -m "feat: migrate CH Blender from City Horizon"
+          git push origin HEAD:migration/ch-blender-standalone
