@@ -83,3 +83,5 @@ sem GPU, auditar flags/binário e repetir bpy/Cycles/worker, estabilidade e temp
 Se a experiência não passar, manter Cycles sem Embree.
 
 O manifesto instalado registra compilador efetivo, cache CMake, hashes dos patches e dos binarios; começa como built_unvalidated. Validate executa os renders antes da auditoria binaria e falha com review_required se houver instrucoes elevadas pendentes de revisao.
+
+Potrace (image tracing) e FFTW3 (ocean/glare/audio FFT) ficam desligados: nao foram encontrados nos scripts do pipeline. O script normaliza LIBDIR para barras diretas, evitando escapes invalidos no CMake Windows.

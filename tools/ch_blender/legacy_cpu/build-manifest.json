@@ -88,7 +88,9 @@
     "WITH_BLENDER_THUMBNAILER",
     "WITH_WINDOWS_RELEASE_PDB",
     "WITH_WINDOWS_STRIPPED_PDB",
-    "WITH_VULKAN_BACKEND"
+    "WITH_VULKAN_BACKEND",
+    "WITH_POTRACE",
+    "WITH_FFTW3"
   ],
   "patches": [
     "0001-cycles-scalar-legacy.patch",
@@ -105,7 +107,8 @@
     "0012-python-upstream-patch-format.patch",
     "0013-opencolorio-exclude-disabled-isa.patch",
     "0014-python-package-cache-ninja.patch",
-    "0015-native-boost-setup-and-sse2.patch"
+    "0015-native-boost-setup-and-sse2.patch",
+    "0016-cycles-explicit-chrono.patch"
   ],
   "installPath": "C:\\Users\\User\\.ch-blender\\blender-4.2.3-legacy",
   "validation": {

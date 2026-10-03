@@ -8,7 +8,7 @@ $ErrorActionPreference = 'Stop'
 $Here = $PSScriptRoot
 $Source = Join-Path $BuildRoot 'blender-4.2.3-source'
 $Deps = Join-Path $BuildRoot 'deps'
-$Harvest = Join-Path $Deps 'output'
+$Harvest = (Join-Path $Deps 'output').Replace('\','/')
 $Build = Join-Path $BuildRoot 'build-legacy'
 $Logs = Join-Path $BuildRoot 'logs'
 New-Item -ItemType Directory -Force -Path $BuildRoot,$Logs | Out-Null

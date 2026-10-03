@@ -24,3 +24,6 @@ Os patches não mudam version_string, DNA/.blend, câmeras ou receitas.
 
 O patch de dependência Python está em patches/dependencies/python-openssl-no-tests.patch;
 0009 instala cópia dele na árvore externa e integra sua aplicação ao build.
+
+## 0016 — include chrono explicito
+Arquivo upstream: intern/cycles/util/profiling.cpp. MSVC 19.44 nao fornece system_clock por includes transitivos de thread. Legacy inclui chrono diretamente, sem alterar logica ou ISA. Risco baixo; testar compilacao de cycles_util e render CPU.
