@@ -18,13 +18,13 @@ permissions:
 
 concurrency:
   group: ch-blender-windows
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   ch-blender:
     name: CH Blender / Windows
     runs-on: [self-hosted, Windows, X64]
-    timeout-minutes: 240
+    timeout-minutes: 120
 
     defaults:
       run:
@@ -53,6 +53,7 @@ jobs:
           & $python.Source --version
 
       - name: Provision CH Blender 4.2.3 LTS portable
+        timeout-minutes: 25
         run: |
           $ErrorActionPreference = "Stop"
           Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -67,34 +68,61 @@ jobs:
 
           New-Item -ItemType Directory -Force -Path $root | Out-Null
 
+          function Test-BlenderZip([string]$path) {
+            if (-not (Test-Path $path)) { return $false }
+            try {
+              $archive = [System.IO.Compression.ZipFile]::OpenRead($path)
+              $entryCount = $archive.Entries.Count
+              $archive.Dispose()
+              if ($entryCount -lt 1) { return $false }
+              Write-Host "Portable Blender ZIP validated ($entryCount entries)."
+              return $true
+            } catch {
+              Write-Host "Existing ZIP is partial or invalid; download will resume when possible."
+              return $false
+            }
+          }
+
           if (-not (Test-Path $blenderExe)) {
             $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
             if (-not $curl) { throw "curl.exe was not found on this Windows runner." }
 
-            $archiveReady = $false
-            for ($attempt = 1; $attempt -le 3 -and -not $archiveReady; $attempt++) {
-              Write-Host "Downloading Blender $version portable ZIP (attempt $attempt/3; interrupted downloads resume automatically)..."
-              & $curl.Source -L --fail --retry 8 --retry-delay 5 --retry-all-errors --continue-at - --output $zipPath $url
-              if ($LASTEXITCODE -ne 0) {
-                Write-Warning "Download command failed with exit code $LASTEXITCODE."
+            $archiveReady = Test-BlenderZip $zipPath
+            for ($attempt = 1; $attempt -le 2 -and -not $archiveReady; $attempt++) {
+              Write-Host "Downloading Blender $version ZIP (attempt $attempt/2; max 15 minutes; resume enabled)..."
+
+              & $curl.Source `
+                --location `
+                --fail `
+                --show-error `
+                --connect-timeout 20 `
+                --max-time 900 `
+                --retry 2 `
+                --retry-delay 5 `
+                --retry-max-time 900 `
+                --retry-all-errors `
+                --speed-time 90 `
+                --speed-limit 1024 `
+                --continue-at - `
+                --output $zipPath `
+                $url
+
+              $curlExit = $LASTEXITCODE
+              if ($curlExit -ne 0) {
+                Write-Warning "Download attempt ended with curl exit code $curlExit. Partial ZIP was preserved for resume."
+                Start-Sleep -Seconds 5
                 continue
               }
 
-              try {
-                $archive = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
-                $entryCount = $archive.Entries.Count
-                $archive.Dispose()
-                if ($entryCount -lt 1) { throw "ZIP contains no entries." }
-                Write-Host "Portable Blender ZIP validated ($entryCount entries)."
-                $archiveReady = $true
-              } catch {
-                Write-Warning "Downloaded ZIP is incomplete or corrupt: $($_.Exception.Message)"
-                if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
+              $archiveReady = Test-BlenderZip $zipPath
+              if (-not $archiveReady) {
+                Write-Warning "Download completed but ZIP validation failed. Removing corrupt archive before final retry."
+                Remove-Item $zipPath -Force -ErrorAction SilentlyContinue
               }
             }
 
             if (-not $archiveReady) {
-              throw "Could not obtain a valid Blender $version portable ZIP after retries."
+              throw "Could not obtain a valid Blender $version portable ZIP within the bounded download window. Re-run the workflow to resume/retry."
             }
 
             if (Test-Path $installDir) {
