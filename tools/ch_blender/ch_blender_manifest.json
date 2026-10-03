@@ -1,0 +1,138 @@
+{
+  "contract": "CH_BLENDER_INTERNAL_V1",
+  "productName": "CH Blender 4.2.3",
+  "upstream": {
+    "project": "Blender",
+    "repository": "https://projects.blender.org/blender/blender.git",
+    "githubMirror": "https://github.com/blender/blender.git",
+    "tag": "v4.2.3",
+    "commit": "0e22e4fcea037eeec1531fdbfc32d3acb88b4bd5",
+    "release": "4.2.3 LTS"
+  },
+  "usage": {
+    "scope": "internal_only",
+    "distribution": false,
+    "runtimeDependency": false
+  },
+  "cityHorizonContracts": {
+    "camera": "CH_CAMERA_V1",
+    "studio": "CH_TYCOON_STUDIO_V1",
+    "style": "CH_STYLIZED_PRERENDER_V1",
+    "bake": "TYCOON_ASSET_BAKE_V1",
+    "parametricAuthoring": "CH_PARAMETRIC_AUTHORING_V1",
+    "shapeAuthoring": "CH_SHAPE_AUTHORING_V1"
+  },
+  "authoringStandards": {
+    "parametricContract": "tools/ch_blender/contracts/ch_parametric_authoring_v1.json",
+    "helperModule": "tools/ch_blender/parametric_authoring.py",
+    "shapeContract": "tools/ch_blender/contracts/ch_shape_authoring_v1.json",
+    "shapeHelperModule": "tools/ch_blender/shape_authoring.py",
+    "metricSceneUnits": true,
+    "nonDestructiveModifierStages": true,
+    "persistentSelectionChannels": [
+      "vertex_groups",
+      "named_attributes",
+      "material_slots"
+    ],
+    "deterministicProceduralGenerators": true,
+    "deterministicSilhouettePrimitives": true,
+    "machineReadableShapeDiagnostics": true,
+    "silhouetteFirstAuthoring": true,
+    "realWorldMappingMetadata": true,
+    "trackedSourceReimport": true,
+    "nativeAutodeskDynamicLink": false,
+    "runtimeStillPreRendered2D": true
+  },
+  "renderPipelines": {
+    "contract": "CH_RENDER_PIPELINES_V1",
+    "manifest": "tools/tycoon_photo_studio/render_pipelines/ch_render_pipelines_v1.json",
+    "default": "compact_256",
+    "classes": {
+      "compact_256": {
+        "preset": "tools/tycoon_photo_studio/render_pipelines/compact_256/studio.json",
+        "finalResolution": [
+          256,
+          256
+        ]
+      },
+      "large_asset_1024": {
+        "preset": "tools/tycoon_photo_studio/render_pipelines/large_asset/studio_1024.json",
+        "finalResolution": [
+          1024,
+          1024
+        ]
+      },
+      "large_asset_2048": {
+        "preset": "tools/tycoon_photo_studio/render_pipelines/large_asset/studio_2048.json",
+        "finalResolution": [
+          2048,
+          2048
+        ]
+      }
+    }
+  },
+  "agentInterface": {
+    "contract": "CH_BLENDER_AGENT_JOB_V1",
+    "reportContract": "CH_BLENDER_AGENT_REPORT_V1",
+    "cli": "tools/ch_blender/ch_blender_cli.py",
+    "worker": "tools/ch_blender/agent_worker.py",
+    "machineReadable": true,
+    "interactiveUiRequired": false,
+    "operations": [
+      "guarded_blender_script",
+      "canonical_bake",
+      "blender_script"
+    ]
+  },
+  "internalBuild": {
+    "contract": "CH_BLENDER_SOURCE_BUILD_V1",
+    "sourceStateContract": "CH_BLENDER_SOURCE_STATE_V1",
+    "sourceWorker": "tools/ch_blender/source_worker.py",
+    "patchSeries": "tools/ch_blender/patches/series.json",
+    "identityMarker": "City Horizon Internal",
+    "rendererModified": false,
+    "blendFileFormatModified": false,
+    "productionReplacementApproved": false
+  },
+  "cache": {
+    "contract": "CH_BLENDER_CACHE_V1",
+    "revision": 1,
+    "githubAction": ".github/actions/setup-ch-blender/action.yml",
+    "sharedAcrossWorkflows": true,
+    "invalidateWhen": [
+      "upstream.tag changes",
+      "cache.revision changes"
+    ]
+  },
+  "policy": {
+    "vendorFullUpstreamSource": false,
+    "rendererChangesAllowedByDefault": false,
+    "preferPythonIntegration": true,
+    "requireOfficialBaselineComparison": true,
+    "replaceProductionBinary": false,
+    "agentFirst": true,
+    "deterministicWorker": true,
+    "repositoryContractsRemainAuthority": true,
+    "failFastAssetAuthoring": true,
+    "nonDestructiveParametricAuthoring": true,
+    "deterministicProceduralSeeds": true,
+    "externalSourceProvenanceRequiredWhenLinked": true,
+    "proprietaryRendererDependencyAllowedByDefault": false
+  },
+  "qualityGates": {
+    "contract": "CH_ASSET_QUALITY_GATES_V1",
+    "preflight": "CH_SCENE_PREFLIGHT_V1",
+    "proxy": "CH_PROXY_RENDER_V1",
+    "approval": "CH_PROXY_APPROVAL_V1",
+    "shapeReport": "CH_SHAPE_REPORT_V1",
+    "defaultProfile": "tools/ch_blender/preflight_profiles/ch_asset_default_v1.json",
+    "policy": "preflight_then_proxy_then_explicit_human_approval_then_final",
+    "newAgentAssetsMustUseGuardedBuilder": true,
+    "directFinalAllowedByDefault": false,
+    "assetRequirements": "CH_ASSET_REQUIREMENTS_V1",
+    "pixelReview": "CH_PROXY_PIXEL_REVIEW_V1",
+    "fourDirectionEvaluatedGeometry": true,
+    "proxyPreservesBakeAspect": true,
+    "proxyUsesProductionRenderer": true
+  }
+}

@@ -1,0 +1,667 @@
+#!/usr/bin/env python3
+"""Deterministic worker for AI-agent driven City Horizon Blender jobs.
+
+This module owns orchestration only. Scene/render logic stays in Blender-side
+authoring tools. New agent-authored Blender scripts should use the guarded
+quality-stage operation so expensive final bakes cannot happen before preflight
+and proxy review.
+"""
+from __future__ import annotations
+
+import hashlib
+import ast
+import json
+import math
+import os
+import platform
+import re
+import shutil
+import subprocess
+import sys
+import time
+from pathlib import Path
+from typing import Any
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+MANIFEST_PATH = REPO_ROOT / "tools/ch_blender/ch_blender_manifest.json"
+BUILD_SCENE = REPO_ROOT / "tools/tycoon_photo_studio/build_scene.py"
+POSTPROCESS = REPO_ROOT / "tools/tycoon_photo_studio/postprocess.py"
+VALIDATE_PACKAGE = REPO_ROOT / "tools/tycoon_photo_studio/validate_package.py"
+DEFAULT_STUDIO = REPO_ROOT / "tools/tycoon_photo_studio/studio_presets/ch_tycoon_studio_v1.json"
+DEFAULT_PREFLIGHT_PROFILE = REPO_ROOT / "tools/ch_blender/preflight_profiles/ch_asset_default_v1.json"
+
+JOB_CONTRACT = "CH_BLENDER_AGENT_JOB_V1"
+REPORT_CONTRACT = "CH_BLENDER_AGENT_REPORT_V1"
+
+EXIT = {
+    "OK": 0,
+    "JOB_INVALID": 10,
+    "CONTRACT_MISMATCH": 11,
+    "BLENDER_NOT_FOUND": 12,
+    "BLENDER_VERSION_MISMATCH": 13,
+    "QUALITY_GATE_REQUIRED": 14,
+    "BLENDER_FAILED": 20,
+    "POSTPROCESS_FAILED": 21,
+    "EXPECTED_OUTPUT_MISSING": 22,
+    "PACKAGE_INVALID": 23,
+}
+
+
+def _argument_inputs(args: list[str]) -> list[Path]:
+    """Resolve actual authoring inputs before downloading or starting Blender."""
+    inputs = []
+    for flag in ("--recipe", "--asset-config", "--studio-preset"):
+        values = []
+        for index, item in enumerate(args):
+            if item == flag:
+                if index + 1 >= len(args) or args[index + 1].startswith("--"):
+                    raise WorkerError("JOB_INVALID", f"{flag} requires an input file")
+                values.append(args[index + 1])
+            elif item.startswith(flag + "="):
+                values.append(item.split("=", 1)[1])
+        if len(values) > 1:
+            raise WorkerError("JOB_INVALID", f"Repeated authoring input: {flag}")
+        for value in values:
+            path = _repo_path(value)
+            if not path.is_file():
+                raise WorkerError("JOB_INVALID", f"{flag} must refer to a file")
+            data = _load_json(path)
+            if flag == "--studio-preset":
+                sys.path.insert(0, str(REPO_ROOT / "tools/tycoon_photo_studio"))
+                from render_geometry import validate_studio_camera
+                try:
+                    validate_studio_camera(data)
+                except ValueError as exc:
+                    raise WorkerError("CONTRACT_MISMATCH", str(exc)) from exc
+            inputs.append(path)
+    return inputs
+
+
+def _input_records(script: Path, profile: Path, args: list[str]) -> list[dict[str, str]]:
+    # Local module dependencies matter: editing geometry in an imported helper
+    # changes the asset even when the thin guarded builder did not change.
+    paths = {script, profile, *_argument_inputs(args)}
+    search = (script.parent, REPO_ROOT / "tools/ch_blender", REPO_ROOT / "tools/tycoon_photo_studio")
+    pending = [script]
+    while pending:
+        current = pending.pop()
+        tree = ast.parse(current.read_text(encoding="utf-8"))
+        modules = [node.module for node in ast.walk(tree) if isinstance(node, ast.ImportFrom) and node.module]
+        modules += [alias.name for node in ast.walk(tree) if isinstance(node, ast.Import) for alias in node.names]
+        for module in modules:
+            for directory in (current.parent, *search):
+                candidate = (directory / (module.replace(".", "/") + ".py")).resolve()
+                if candidate.is_file() and candidate.is_relative_to(REPO_ROOT) and candidate not in paths:
+                    paths.add(candidate)
+                    pending.append(candidate)
+    return [{"path": path.relative_to(REPO_ROOT).as_posix(), "sha256": _sha256(path)} for path in sorted(paths)]
+
+
+def _source_fingerprint(inputs: list[dict[str, str]], args: list[str] | None = None) -> str:
+    # Output location is not authoring; every other ordered option affects identity.
+    authoring_args = []
+    skip = False
+    for arg in args or []:
+        if skip:
+            skip = False
+        elif arg == "--output":
+            skip = True
+        elif not arg.startswith("--output="):
+            authoring_args.append(arg)
+    payload = {"inputs": inputs, "args": authoring_args}
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+class WorkerError(RuntimeError):
+    def __init__(self, code: str, message: str, details: dict[str, Any] | None = None):
+        super().__init__(message)
+        self.code = code
+        self.details = details or {}
+
+
+def _load_json(path: Path) -> dict[str, Any]:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise WorkerError("JOB_INVALID", f"Cannot read JSON: {path}", {"error": str(exc)}) from exc
+    if not isinstance(value, dict):
+        raise WorkerError("JOB_INVALID", f"JSON root must be an object: {path}")
+    return value
+
+
+def _manifest() -> dict[str, Any]:
+    return _load_json(MANIFEST_PATH)
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _repo_path(value: str, *, must_exist: bool = True) -> Path:
+    path = (REPO_ROOT / value).resolve() if not Path(value).is_absolute() else Path(value).resolve()
+    try:
+        path.relative_to(REPO_ROOT)
+    except ValueError as exc:
+        raise WorkerError(
+            "JOB_INVALID",
+            "Job paths must remain inside the repository workspace",
+            {"path": str(path)},
+        ) from exc
+    if must_exist and not path.exists():
+        raise WorkerError("JOB_INVALID", "Required path does not exist", {"path": str(path)})
+    return path
+
+
+def resolve_blender(explicit: str | None = None) -> Path:
+    candidates: list[str] = []
+    if explicit:
+        candidates.append(explicit)
+    for key in ("CH_BLENDER_EXE", "BLENDER_EXE"):
+        if os.environ.get(key):
+            candidates.append(os.environ[key])
+    discovered = shutil.which("blender")
+    if discovered:
+        candidates.append(discovered)
+
+    for candidate in candidates:
+        path = Path(candidate).expanduser().resolve()
+        if path.is_file():
+            return path
+    raise WorkerError("BLENDER_NOT_FOUND", "Blender executable was not found", {"searched": candidates})
+
+
+def blender_identity(blender_exe: Path) -> dict[str, str]:
+    try:
+        completed = subprocess.run(
+            [str(blender_exe), "--version"],
+            cwd=REPO_ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+    except Exception as exc:
+        raise WorkerError(
+            "BLENDER_NOT_FOUND",
+            "Failed to execute Blender",
+            {"path": str(blender_exe), "error": str(exc)},
+        ) from exc
+
+    first_line = (completed.stdout or completed.stderr).splitlines()[0].strip()
+    expected = str(_manifest()["upstream"]["tag"]).removeprefix("v")
+    if f"Blender {expected}" not in first_line:
+        raise WorkerError(
+            "BLENDER_VERSION_MISMATCH",
+            "Blender version does not match the frozen CH Blender base",
+            {"expected": expected, "actual": first_line, "path": str(blender_exe)},
+        )
+    return {"version": expected, "versionLine": first_line, "executable": str(blender_exe)}
+
+
+def _command_prefix(blender_exe: Path) -> list[str]:
+    command = [str(blender_exe)]
+    if platform.system() == "Linux" and shutil.which("xvfb-run"):
+        command = ["xvfb-run", "-a", *command]
+    return command
+
+
+def _run(command: list[str], *, error_code: str, env: dict[str, str] | None = None) -> None:
+    run_env = os.environ.copy()
+    if env:
+        run_env.update(env)
+    completed = subprocess.run(command, cwd=REPO_ROOT, env=run_env)
+    if completed.returncode != 0:
+        raise WorkerError(
+            error_code,
+            "Command failed",
+            {"returnCode": completed.returncode, "command": command},
+        )
+
+
+def _quality_stage(job: dict[str, Any]) -> str:
+    stage = str(job.get("qualityStage", "preflight"))
+    if stage not in {"preflight", "proxy", "final"}:
+        raise WorkerError(
+            "JOB_INVALID",
+            "qualityStage must be preflight, proxy or final",
+            {"qualityStage": stage},
+        )
+    if stage == "final":
+        approval = job.get("approval")
+        if not isinstance(approval, dict) or approval.get("proxyReviewed") is not True:
+            raise WorkerError(
+                "QUALITY_GATE_REQUIRED",
+                "Final render requires explicit human proxy review.",
+                {"required": "approval.proxyReviewed=true"},
+            )
+        sha = str(approval.get("approvedProxySha256", "")).lower()
+        if not re.fullmatch(r"[0-9a-f]{64}", sha):
+            raise WorkerError(
+                "QUALITY_GATE_REQUIRED",
+                "Final render requires the SHA-256 from the reviewed proxy report.",
+                {"required": "approval.approvedProxySha256"},
+            )
+    return stage
+
+
+def _validate_job(job: dict[str, Any]) -> None:
+    if job.get("contract") != JOB_CONTRACT:
+        raise WorkerError(
+            "CONTRACT_MISMATCH",
+            "Unsupported agent job contract",
+            {"expected": JOB_CONTRACT, "actual": job.get("contract")},
+        )
+    if not isinstance(job.get("jobId"), str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", job["jobId"]):
+        raise WorkerError("JOB_INVALID", "jobId must contain only letters, digits, dots, underscores and hyphens")
+    if job.get("operation") not in {
+        "canonical_bake",
+        "blender_script",
+        "guarded_blender_script",
+    }:
+        raise WorkerError("JOB_INVALID", "Unsupported operation", {"operation": job.get("operation")})
+    if job.get("operation") == "guarded_blender_script":
+        _quality_stage(job)
+
+
+def validate_job(job_path: Path) -> dict[str, Any]:
+    """Check a job before downloading or starting Blender; never create output files."""
+    job_path = _repo_path(str(job_path))
+    job = _load_json(job_path)
+    _validate_job(job)
+    operation = job["operation"]
+    output_root = _repo_path(str(job.get("outputDir", f"out/ch_blender_agent/{job['jobId']}")), must_exist=False)
+    if output_root == REPO_ROOT or output_root.is_file():
+        raise WorkerError("JOB_INVALID", "outputDir must be a directory below the repository root")
+
+    if operation == "canonical_bake":
+        asset_config = _repo_path(str(job.get("assetConfig", "")))
+        asset = _load_json(asset_config)
+        if asset.get("contract") != "TYCOON_ASSET_SOURCE_V1":
+            raise WorkerError("CONTRACT_MISMATCH", "canonical_bake requires TYCOON_ASSET_SOURCE_V1")
+        if not isinstance(asset.get("assetId"), str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", asset["assetId"]):
+            raise WorkerError("JOB_INVALID", "assetConfig requires a safe, non-empty assetId")
+        _argument_inputs(["--studio-preset", str(job.get("studioPreset") or DEFAULT_STUDIO.relative_to(REPO_ROOT))])
+    else:
+        script = _repo_path(str(job.get("script", "")))
+        if not script.is_file() or script.suffix != ".py":
+            raise WorkerError("JOB_INVALID", "script must name a repository Python file", {"script": str(script)})
+        args = job.get("args", [])
+        if not isinstance(args, list) or not all(isinstance(item, str) for item in args):
+            raise WorkerError("JOB_INVALID", "args must be an ordered array of strings")
+        _argument_inputs(args)
+        if operation == "guarded_blender_script":
+            _repo_path(str(job.get("qualityProfile") or DEFAULT_PREFLIGHT_PROFILE.relative_to(REPO_ROOT)))
+            reserved = ("--stage", "--preflight-profile", "--approval-proxy-sha")
+            if any(arg == flag or arg.startswith(flag + "=") for arg in args for flag in reserved):
+                raise WorkerError("JOB_INVALID", "Quality-stage arguments are owned by the CH Blender worker")
+            if args.count("--output") != 1 or args.index("--output") + 1 >= len(args):
+                raise WorkerError("JOB_INVALID", "Guarded jobs require one --output matching outputDir")
+            builder_output = _repo_path(args[args.index("--output") + 1], must_exist=False)
+            if builder_output != output_root:
+                raise WorkerError("JOB_INVALID", "Builder --output and outputDir must match",
+                                  {"builderOutput": str(builder_output), "outputDir": str(output_root)})
+
+    requirements = job.get("assetRequirements", {})
+    if requirements:
+        if not isinstance(requirements, dict) or requirements.get("contract") != "CH_ASSET_REQUIREMENTS_V1":
+            raise WorkerError("CONTRACT_MISMATCH", "assetRequirements must use CH_ASSET_REQUIREMENTS_V1")
+        if not isinstance(requirements.get("assetId"), str) or not requirements["assetId"]:
+            raise WorkerError("JOB_INVALID", "assetRequirements requires assetId")
+        if operation == "guarded_blender_script" and job.get("qualityStage") == "final":
+            fingerprint = job.get("approval", {}).get("sourceFingerprint", "")
+            if not re.fullmatch(r"[0-9a-f]{64}", str(fingerprint)):
+                raise WorkerError("QUALITY_GATE_REQUIRED", "Final jobs with assetRequirements require the reviewed sourceFingerprint")
+        footprint = requirements.get("footprint")
+        if footprint is not None and (not isinstance(footprint, dict) or
+                any(type(footprint.get(key)) is not int or footprint[key] <= 0 for key in ("widthTiles", "depthTiles"))):
+            raise WorkerError("JOB_INVALID", "assetRequirements footprint must contain positive tile dimensions")
+        roles = requirements.get("requiredRoles", [])
+        if not isinstance(roles, list) or not all(isinstance(role, str) and role for role in roles):
+            raise WorkerError("JOB_INVALID", "requiredRoles must be an array of semantic roles")
+        for key in ("minDimensions", "maxDimensions"):
+            values = requirements.get(key)
+            if values is not None and (not isinstance(values, list) or len(values) != 3 or
+                    any(value is not None and (type(value) not in (int, float) or not math.isfinite(value) or value < 0) for value in values)):
+                raise WorkerError("JOB_INVALID", f"{key} must contain three non-negative dimensions or null")
+
+    expected = job.get("expectedOutputs", [])
+    if not isinstance(expected, list) or not all(isinstance(item, str) for item in expected):
+        raise WorkerError("JOB_INVALID", "expectedOutputs must be an array of repository-relative paths")
+    for item in expected:
+        _repo_path(item, must_exist=False)
+    return job
+
+
+def _output_hashes(root: Path, started_ns: int) -> list[dict[str, Any]]:
+    outputs: list[dict[str, Any]] = []
+    if not root.exists():
+        return outputs
+    for path in sorted(p for p in root.rglob("*") if p.is_file()):
+        if path.stat().st_mtime_ns < started_ns:
+            continue
+        outputs.append(
+            {
+                "path": path.relative_to(REPO_ROOT).as_posix(),
+                "bytes": path.stat().st_size,
+                "sha256": _sha256(path),
+            }
+        )
+    return outputs
+
+
+def _canonical_bake(job: dict[str, Any], blender_exe: Path, started_ns: int):
+    asset_config = _repo_path(str(job.get("assetConfig", "")))
+    studio_preset = _repo_path(
+        str(job.get("studioPreset") or DEFAULT_STUDIO.relative_to(REPO_ROOT))
+    )
+    output_root = _repo_path(
+        str(job.get("outputDir", f"out/ch_blender_agent/{job['jobId']}")),
+        must_exist=False,
+    )
+    source_dir = output_root / "source"
+    final_dir = output_root / "final"
+    source_dir.mkdir(parents=True, exist_ok=True)
+
+    command = [
+        *_command_prefix(blender_exe),
+        "--background",
+        "--factory-startup",
+        "--python-use-system-env",
+        "--python-exit-code",
+        "1",
+        "--python",
+        str(BUILD_SCENE),
+        "--",
+        "--asset-config",
+        str(asset_config),
+        "--studio-preset",
+        str(studio_preset),
+        "--output",
+        str(source_dir),
+    ]
+    env = {
+        "PYTHONPATH": str(REPO_ROOT / "tools/tycoon_photo_studio"),
+        "LIBGL_ALWAYS_SOFTWARE": os.environ.get("LIBGL_ALWAYS_SOFTWARE", "1"),
+    }
+    _run(command, error_code="BLENDER_FAILED", env=env)
+
+    inputs = [
+        {"path": asset_config.relative_to(REPO_ROOT).as_posix(), "sha256": _sha256(asset_config)},
+        {"path": studio_preset.relative_to(REPO_ROOT).as_posix(), "sha256": _sha256(studio_preset)},
+    ]
+
+    if bool(job.get("postprocess", True)):
+        final_dir.mkdir(parents=True, exist_ok=True)
+        _run(
+            [
+                sys.executable,
+                str(POSTPROCESS),
+                "--input",
+                str(source_dir),
+                "--output",
+                str(final_dir),
+                "--studio-preset",
+                str(studio_preset),
+            ],
+            error_code="POSTPROCESS_FAILED",
+        )
+        asset_id = _load_json(asset_config).get("assetId")
+        if not isinstance(asset_id, str) or not asset_id:
+            raise WorkerError("JOB_INVALID", "assetConfig must contain assetId")
+        manifest_path = final_dir / f"{asset_id}_manifest.json"
+        if not manifest_path.is_file() or manifest_path.stat().st_mtime_ns < started_ns:
+            raise WorkerError("PACKAGE_INVALID", "Postprocess did not produce a fresh package manifest",
+                              {"path": str(manifest_path)})
+        manifest = _load_json(manifest_path)
+        package_files = list(manifest.get("files", {}).values())
+        for view in manifest.get("views", []):
+            package_files.extend(view[key] for key in ("file", "colorPass", "shadowPass", "maskPass") if key in view)
+        package_files.append(manifest.get("atlas", {}).get("file"))
+        stale = [name for name in package_files if not isinstance(name, str) or
+                 not (path := (final_dir / name).resolve()).is_relative_to(final_dir) or
+                 not path.is_file() or path.stat().st_mtime_ns < started_ns]
+        if stale:
+            raise WorkerError("PACKAGE_INVALID", "Package contains missing or stale files", {"files": stale})
+        _run([
+            sys.executable, str(VALIDATE_PACKAGE),
+            "--manifest", str(manifest_path),
+            "--asset-config", str(asset_config),
+            "--studio-preset", str(studio_preset),
+        ], error_code="PACKAGE_INVALID")
+    _validate_expected_outputs(job, started_ns, [f"{output_root.relative_to(REPO_ROOT).as_posix()}/source/studio_metadata.json"])
+    return output_root, inputs, None
+
+
+def _validate_expected_outputs(job: dict[str, Any], started_ns: int,
+                               defaults: list[str] | None = None) -> None:
+    declared = job.get("expectedOutputs", [])
+    if not isinstance(declared, list) or not all(isinstance(item, str) for item in declared):
+        raise WorkerError("JOB_INVALID", "expectedOutputs must be an array of repository-relative paths")
+    expected = list(dict.fromkeys([*(defaults or []), *declared]))
+    missing = [item for item in expected if
+               not (path := _repo_path(item, must_exist=False)).is_file()
+               or path.stat().st_mtime_ns < started_ns]
+    if missing:
+        raise WorkerError(
+            "EXPECTED_OUTPUT_MISSING",
+            "One or more declared outputs were not produced",
+            {"missing": missing},
+        )
+
+
+def _blender_script(job: dict[str, Any], blender_exe: Path, started_ns: int):
+    script = _repo_path(str(job.get("script", "")))
+    output_root = _repo_path(
+        str(job.get("outputDir", f"out/ch_blender_agent/{job['jobId']}")),
+        must_exist=False,
+    )
+    output_root.mkdir(parents=True, exist_ok=True)
+
+    args = job.get("args", [])
+    if not isinstance(args, list) or not all(isinstance(item, str) for item in args):
+        raise WorkerError("JOB_INVALID", "blender_script args must be an ordered array of strings")
+
+    command = [
+        *_command_prefix(blender_exe),
+        "--background",
+        "--factory-startup",
+        "--python-use-system-env",
+        "--python-exit-code",
+        "1",
+        "--python",
+        str(script),
+        "--",
+        *args,
+    ]
+    env = {
+        "PYTHONPATH": str(REPO_ROOT / "tools/tycoon_photo_studio"),
+        "LIBGL_ALWAYS_SOFTWARE": os.environ.get("LIBGL_ALWAYS_SOFTWARE", "1"),
+        "CH_AGENT_OUTPUT_DIR": str(output_root),
+    }
+    _run(command, error_code="BLENDER_FAILED", env=env)
+    _validate_expected_outputs(job, started_ns)
+    return output_root, [
+        {"path": script.relative_to(REPO_ROOT).as_posix(), "sha256": _sha256(script)}
+    ], None
+
+
+def _guarded_blender_script(job: dict[str, Any], blender_exe: Path, started_ns: int):
+    stage = _quality_stage(job)
+    script = _repo_path(str(job.get("script", "")))
+    profile = _repo_path(
+        str(job.get("qualityProfile") or DEFAULT_PREFLIGHT_PROFILE.relative_to(REPO_ROOT))
+    )
+    output_root = _repo_path(
+        str(job.get("outputDir", f"out/ch_blender_agent/{job['jobId']}")),
+        must_exist=False,
+    )
+    output_root.mkdir(parents=True, exist_ok=True)
+
+    args = job.get("args", [])
+    if not isinstance(args, list) or not all(isinstance(item, str) for item in args):
+        raise WorkerError(
+            "JOB_INVALID",
+            "guarded_blender_script args must be an ordered array of strings",
+        )
+    inputs = _input_records(script, profile, args)
+    source_fingerprint = _source_fingerprint(inputs, args)
+    reviewed_source = job.get("approval", {}).get("sourceFingerprint")
+    if stage == "final" and reviewed_source and reviewed_source != source_fingerprint:
+        raise WorkerError("QUALITY_GATE_REQUIRED", "Authoring inputs changed since proxy review; render a new proxy",
+                          {"reviewed": reviewed_source, "current": source_fingerprint})
+    reserved = {"--stage", "--preflight-profile", "--approval-proxy-sha"}
+    if any(item in reserved for item in args):
+        raise WorkerError(
+            "JOB_INVALID",
+            "Quality-stage arguments are owned by the CH Blender worker, not job args.",
+        )
+
+    command = [
+        *_command_prefix(blender_exe),
+        "--background",
+        "--factory-startup",
+        "--python-use-system-env",
+        "--python-exit-code",
+        "1",
+        "--python",
+        str(script),
+        "--",
+        *args,
+        "--stage",
+        stage,
+        "--preflight-profile",
+        str(profile),
+    ]
+    approval_sha = None
+    if stage == "final":
+        approval_sha = str(job["approval"]["approvedProxySha256"]).lower()
+        command.extend(["--approval-proxy-sha", approval_sha])
+
+    env = {
+        "PYTHONPATH": os.pathsep.join([
+            str(REPO_ROOT / "tools/tycoon_photo_studio"),
+            str(REPO_ROOT / "tools/ch_blender"),
+        ]),
+        "LIBGL_ALWAYS_SOFTWARE": os.environ.get("LIBGL_ALWAYS_SOFTWARE", "1"),
+        "CH_AGENT_OUTPUT_DIR": str(output_root),
+        "CH_QUALITY_STAGE": stage,
+        "CH_ASSET_REQUIREMENTS": json.dumps(job.get("assetRequirements", {})),
+        "CH_SOURCE_FINGERPRINT": source_fingerprint,
+    }
+    _run(command, error_code="BLENDER_FAILED", env=env)
+
+    rel_root = output_root.relative_to(REPO_ROOT).as_posix()
+    defaults = [f"{rel_root}/preflight_report.json"]
+    if stage == "proxy":
+        defaults.extend([
+            f"{rel_root}/proxy_south.png",
+            f"{rel_root}/proxy_report.json",
+        ])
+    elif stage == "final":
+        defaults.extend([
+            f"{rel_root}/proxy_approval.json",
+            f"{rel_root}/studio_metadata.json",
+        ])
+    _validate_expected_outputs(job, started_ns, defaults)
+
+    preflight = _load_json(output_root / "preflight_report.json")
+    if preflight.get("contract") != "CH_SCENE_PREFLIGHT_V1" or preflight.get("status") != "pass":
+        raise WorkerError(
+            "BLENDER_FAILED",
+            "Guarded builder did not produce a passing CH_SCENE_PREFLIGHT_V1 report.",
+            {"preflight": preflight},
+        )
+
+    quality = {
+        "stage": stage,
+        "preflightContract": preflight.get("contract"),
+        "preflightStatus": preflight.get("status"),
+        "profile": profile.relative_to(REPO_ROOT).as_posix(),
+        "sourceFingerprint": source_fingerprint,
+    }
+    if stage == "proxy":
+        proxy = _load_json(output_root / "proxy_report.json")
+        actual_sha = _sha256(output_root / "proxy_south.png")
+        if (proxy.get("contract") != "CH_PROXY_RENDER_V1" or
+                proxy.get("status") != "ok" or proxy.get("direction") != "south" or
+                proxy.get("sha256") != actual_sha or
+                proxy.get("assetId") != preflight.get("assetId")):
+            raise WorkerError(
+                "BLENDER_FAILED",
+                "Guarded builder proxy report does not match the generated PNG and preflight.",
+                {"report": proxy, "actualSha256": actual_sha},
+            )
+        quality["proxySha256"] = proxy.get("sha256")
+        quality["proxyDirection"] = proxy.get("direction")
+        from proxy_review import write_proxy_review
+        try:
+            quality["proxyReview"] = write_proxy_review(output_root, proxy, preflight)
+        except ValueError as exc:
+            raise WorkerError("PACKAGE_INVALID", str(exc)) from exc
+    elif stage == "final":
+        approval_record = _load_json(output_root / "proxy_approval.json")
+        if (approval_record.get("contract") != "CH_PROXY_APPROVAL_V1" or
+                approval_record.get("reviewed") is not True or
+                approval_record.get("proxySha256") != approval_sha or
+                approval_record.get("assetId") != preflight.get("assetId")):
+            raise WorkerError("QUALITY_GATE_REQUIRED", "Final output approval does not match the reviewed proxy SHA and asset",
+                              {"approval": approval_record, "assetId": preflight.get("assetId")})
+        quality["approvedProxySha256"] = approval_sha
+        quality["proxyReviewed"] = True
+        metadata_path = output_root / "studio_metadata.json"
+        metadata = _load_json(metadata_path)
+        actual_studio = preflight.get("studioFingerprint")
+        if metadata.get("studioFingerprint") and metadata["studioFingerprint"] != actual_studio:
+            raise WorkerError("PACKAGE_INVALID", "Final metadata differs from the preflight studio")
+        if actual_studio:
+            metadata["studioFingerprint"] = actual_studio
+        metadata["sourceFingerprint"] = source_fingerprint
+        metadata_path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+
+    return output_root, inputs, quality
+
+
+def run_job(job_path: Path, blender_exe: Path) -> dict[str, Any]:
+    job = validate_job(job_path)
+    identity = blender_identity(blender_exe)
+    started_ns = time.time_ns()
+
+    if job["operation"] == "canonical_bake":
+        output_root, inputs, quality = _canonical_bake(job, blender_exe, started_ns)
+    elif job["operation"] == "guarded_blender_script":
+        output_root, inputs, quality = _guarded_blender_script(job, blender_exe, started_ns)
+    else:
+        output_root, inputs, quality = _blender_script(job, blender_exe, started_ns)
+
+    report = {
+        "contract": REPORT_CONTRACT,
+        "status": "ok",
+        "jobContract": JOB_CONTRACT,
+        "jobId": job["jobId"],
+        "operation": job["operation"],
+        "blender": identity,
+        "cityHorizon": _manifest()["cityHorizonContracts"],
+        "job": {
+            "path": job_path.relative_to(REPO_ROOT).as_posix(),
+            "sha256": _sha256(job_path),
+        },
+        "inputs": inputs,
+        "outputRoot": output_root.relative_to(REPO_ROOT).as_posix(),
+        "outputs": _output_hashes(output_root, started_ns),
+    }
+    if quality is not None:
+        report["qualityGate"] = quality
+    return report
+
+
+def error_report(job_path: Path | None, exc: WorkerError) -> dict[str, Any]:
+    return {
+        "contract": REPORT_CONTRACT,
+        "status": "error",
+        "error": {"code": exc.code, "message": str(exc), "details": exc.details},
+        "job": str(job_path) if job_path else None,
+    }
