@@ -1,0 +1,13 @@
+--- a/build_files/build_environment/cmake/package_python.cmake
++++ b/build_files/build_environment/cmake/package_python.cmake
+@@ -38,9 +38,7 @@
+         ${PYSRC}/DLLs/
+         ${PYTARGET}/DLLs/
+ 
+-      COMMAND cd ${PYTARGET}/lib/ &&
+-        for /d /r . %%d in (__pycache__) do @if exist "%%d" echo "%%d" &&
+-        rd /s/q "%%d"
++      COMMAND ${CMAKE_COMMAND} -E echo "CH Legacy: preserving compatible Python bytecode caches"
+     )
+     add_custom_target(Package_Python
+       ALL

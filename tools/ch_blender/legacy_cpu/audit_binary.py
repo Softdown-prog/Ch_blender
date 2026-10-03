@@ -1,10 +1,19 @@
 """Conservative executable-section ISA inventory; review dispatch hits explicitly."""
-import argparse,collections,hashlib,json,re,subprocess
+import argparse,collections,hashlib,json,re,struct,subprocess
 from pathlib import Path
 SSE4=set("blendpd blendps blendvpd blendvps dppd dpps extractps insertps movntdqa mpsadbw packusdw pblendvb pblendw pcmpeqq pextrb pextrd pextrq phminposuw pinsrb pinsrd pinsrq pmaxsb pmaxsd pmaxud pmaxuw pminsb pminsd pminud pminuw pmovsxbd pmovsxbq pmovsxbw pmovsxdq pmovsxwd pmovsxwq pmovzxbd pmovzxbq pmovzxbw pmovzxdq pmovzxwd pmovzxwq pmuldq pmulld ptest roundpd roundps roundsd roundss crc32 pcmpestri pcmpestrm pcmpistri pcmpistrm pcmpgtq".split())
 SSSE3=set("pshufb palignr pmaddubsw pmulhrsw pabsb pabsw pabsd phaddw phaddd phaddsw phsubw phsubd phsubsw psignb psignw psignd".split())
 OTHER=set("pclmulqdq aesenc aesenclast aesdec aesdeclast aesimc aeskeygenassist andn bextr blsi blsmsk blsr bzhi mulx pdep pext rorx sarx shlx shrx".split())
 LINE=re.compile(r'^\s*([0-9A-Fa-f]+):\s+([a-z][a-z0-9]*)\b')
+def has_executable_sections(file):
+    with file.open('rb') as stream:
+        if stream.read(2)!=b'MZ':raise RuntimeError('Not a PE binary: '+str(file))
+        stream.seek(0x3c);pe=struct.unpack('<I',stream.read(4))[0];stream.seek(pe)
+        if stream.read(4)!=b'PE\0\0':raise RuntimeError('Bad PE signature')
+        header=stream.read(20);sections=struct.unpack_from('<H',header,2)[0];optional=struct.unpack_from('<H',header,16)[0]
+        stream.seek(pe+24+optional)
+        return any(struct.unpack_from('<I',stream.read(40),36)[0]&0x20000000 for _ in range(sections))
+
 def scan(file,dumpbin):
     process=subprocess.Popen([str(dumpbin),'/DISASM:NOBYTES',str(file)],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,errors='replace')
     counts=collections.Counter(); examples=[];total=0
@@ -15,8 +24,9 @@ def scan(file,dumpbin):
         if op in SSE4 or op in SSSE3 or op in OTHER or (op.startswith('v') and op not in {'verr','verw'}):
             counts[op]+=1
             if len(examples)<15:examples.append(line.strip())
-    if process.wait()!=0 or total==0:raise RuntimeError('Unable to disassemble '+str(file))
-    return {'path':str(file),'sha256':hashlib.sha256(file.read_bytes()).hexdigest(),'instructionsDecoded':total,'elevatedISA':dict(counts),'examples':examples}
+    executable=has_executable_sections(file)
+    if process.wait()!=0 or (total==0 and executable):raise RuntimeError('Unable to disassemble '+str(file))
+    return {'path':str(file),'sha256':hashlib.sha256(file.read_bytes()).hexdigest(),'instructionsDecoded':total,'executableSections':executable,'elevatedISA':dict(counts),'examples':examples}
 def main():
     a=argparse.ArgumentParser();a.add_argument('--dumpbin',required=True,type=Path);a.add_argument('--output',required=True,type=Path);a.add_argument('paths',nargs='+',type=Path);o=a.parse_args()
     files=[]

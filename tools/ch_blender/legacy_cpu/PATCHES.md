@@ -18,7 +18,8 @@ Os patches não mudam version_string, DNA/.blend, câmeras ou receitas.
 | 0010 | platform_win32.cmake presume Boost vc142 e libs debug oficiais | Usa bibliotecas compartilhadas vc143 recompiladas com MSVC 2022 | Configurar, linkar, iniciar Blender e Cycles |
 | 0011 | python.cmake e helper de preparacao | Juncoes e patches idempotentes; retoma objetos existentes | Executar Dependencies novamente e importar bpy |
 | 0012 | helper de patches CPython | Usa GNU patch para o diff upstream misto que git apply rejeita | Dry-run reverso detecta patch aplicado; build Python |
+| 0013 | opencolorio.cmake, helper idempotente e patch de src/OpenColorIO/CMakeLists.txt | Exclui quatro unidades AVX/AVX2 quando as respectivas opcoes estao OFF; upstream ainda lhes passa /arch | Auditar comandos Ninja sem /arch:AVX e render color management no Phenom |
+| 0014 | package_python.cmake usa %%d de batch dentro de cmd /C Ninja | Preserva caches .pyc compativeis do Python 3.11.7 e elimina limpeza auxiliar invalida; nenhuma exclusao recursiva | Package_Python, imports NumPy/SSL e bpy |
 
 O patch de dependência Python está em patches/dependencies/python-openssl-no-tests.patch;
 0009 instala cópia dele na árvore externa e integra sua aplicação ao build.
-

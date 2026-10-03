@@ -1,0 +1,56 @@
+--- a/build_files/build_environment/cmake/opencolorio.cmake
++++ b/build_files/build_environment/cmake/opencolorio.cmake
+@@ -71,12 +71,17 @@
+   )
+ endif()
+ 
++if(CH_BLENDER_LEGACY_CPU)
++  set(CH_OCIO_PATCH PATCH_COMMAND ${CMAKE_COMMAND} -DSOURCE=${BUILD_DIR}/opencolorio/src/external_opencolorio -DPATCH_PATH=${PATCH_DIR}/ch_legacy_opencolorio.diff -P ${PATCH_DIR}/ch_legacy_apply_patch.cmake)
++endif()
++
+ ExternalProject_Add(external_opencolorio
+   URL file://${PACKAGE_DIR}/${OPENCOLORIO_FILE}
+   DOWNLOAD_DIR ${DOWNLOAD_DIR}
+   URL_HASH ${OPENCOLORIO_HASH_TYPE}=${OPENCOLORIO_HASH}
+   CMAKE_GENERATOR ${PLATFORM_ALT_GENERATOR}
+   PREFIX ${BUILD_DIR}/opencolorio
++  ${CH_OCIO_PATCH}
+ 
+   CMAKE_ARGS
+     -DCMAKE_INSTALL_PREFIX=${LIBDIR}/opencolorio
+--- /dev/null
++++ b/build_files/build_environment/patches/ch_legacy_opencolorio.diff
+@@ -0,0 +1,17 @@
++--- a/src/OpenColorIO/CMakeLists.txt
+++++ b/src/OpenColorIO/CMakeLists.txt
++@@ -216,6 +216,14 @@
++     set_property(SOURCE ops/lut3d/Lut3DOpCPU_AVX2.cpp APPEND PROPERTY COMPILE_OPTIONS ${OCIO_AVX2_ARGS})
++ endif()
++ 
+++# Legacy dependency: do not even compile disabled ISA translation units.
+++if(NOT OCIO_USE_AVX)
+++    list(REMOVE_ITEM SOURCES ops/lut1d/Lut1DOpCPU_AVX.cpp ops/lut3d/Lut3DOpCPU_AVX.cpp)
+++endif()
+++if(NOT OCIO_USE_AVX2)
+++    list(REMOVE_ITEM SOURCES ops/lut1d/Lut1DOpCPU_AVX2.cpp ops/lut3d/Lut3DOpCPU_AVX2.cpp)
+++endif()
+++
++ configure_file(CPUInfoConfig.h.in CPUInfoConfig.h)
++ 
++ add_library(OpenColorIO ${SOURCES})
+--- /dev/null
++++ b/build_files/build_environment/patches/ch_legacy_apply_patch.cmake
+@@ -0,0 +1,13 @@
++# Idempotent application of a recorded dependency patch.
++find_program(CH_PATCH_EXECUTABLE patch PATHS "C:/Program Files/Git/usr/bin" REQUIRED)
++execute_process(COMMAND "${CH_PATCH_EXECUTABLE}" --dry-run -R -p1 -d "${SOURCE}" -i "${PATCH_PATH}" RESULT_VARIABLE reversed OUTPUT_QUIET ERROR_QUIET)
++if(NOT reversed EQUAL 0)
++  execute_process(COMMAND "${CH_PATCH_EXECUTABLE}" --dry-run -N -p1 -d "${SOURCE}" -i "${PATCH_PATH}" RESULT_VARIABLE checked)
++  if(NOT checked EQUAL 0)
++    message(FATAL_ERROR "Dependency patch does not match ${SOURCE}")
++  endif()
++  execute_process(COMMAND "${CH_PATCH_EXECUTABLE}" -N -p1 -d "${SOURCE}" -i "${PATCH_PATH}" RESULT_VARIABLE applied)
++  if(NOT applied EQUAL 0)
++    message(FATAL_ERROR "Dependency patch failed ${PATCH_PATH}")
++  endif()
++endif()

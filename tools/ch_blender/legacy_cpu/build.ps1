@@ -22,6 +22,10 @@ foreach ($line in $environment) {
  if ($line -match '^([^=]+)=(.*)$') { [Environment]::SetEnvironmentVariable($Matches[1],$Matches[2],'Process') }
 }
 $env:PATH = (Join-Path $vsPath 'Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja') + ';' + $env:PATH
+$TaskTemp = Join-Path $BuildRoot 'tmp'
+New-Item -ItemType Directory -Force -Path $TaskTemp | Out-Null
+$env:TEMP = $TaskTemp
+$env:TMP = $TaskTemp
 $env:PYTHONUTF8 = '1'
 $env:_CL_ = '/Od /Ob0 /Oi-'
 $env:PERL = Join-Path $Deps 'downloads/perl/perl/bin/perl.exe'
@@ -51,6 +55,7 @@ if ($Stage -in @('Dependencies','All')) {
  Run 'cmake' @('-S',"$Source/build_files/build_environment",'-B',$Deps,'-G','Ninja','-DCH_BLENDER_LEGACY_CPU=ON','-DCMAKE_POLICY_VERSION_MINIMUM=3.5',"-DHARVEST_TARGET=$Harvest",'-DBUILD_MODE=Release',"-DMAKE_THREADS=$Jobs") 'deps-configure.log'
  Run 'cmake' @('--build',$Deps,'--parallel',"$Jobs") 'deps-build.log'
  Run 'cmake' @('--build',$Deps,'--target','Harvest_Release_Results') 'deps-harvest.log'
+ Run "$Deps/Release/python/python.exe" @("$Here/dependency_probe.py",$Harvest,"$BuildRoot/logs/dependency-probe.json") 'dependency-probe.log'
 }
 if ($Stage -in @('Blender','All')) {
  Run 'cmake' @('-S',$Source,'-B',$Build,'-G','Ninja','-C',"$Here/legacy.cmake",'-DCMAKE_POLICY_VERSION_MINIMUM=3.5',"-DLIBDIR=$Harvest",'-DCMAKE_BUILD_TYPE=Release',"-DCMAKE_INSTALL_PREFIX=$InstallDir") 'blender-configure.log'
@@ -65,4 +70,3 @@ if ($Stage -in @('Validate','All')) {
  $dumpbin = (Get-Command dumpbin.exe -ErrorAction Stop).Source
  Run 'python' @("$Here/audit_binary.py",'--dumpbin',$dumpbin,'--output',"$BuildRoot/validation/binary-isa.json",$InstallDir) 'binary-isa.log'
 }
-
