@@ -1,0 +1,11 @@
+--- a/build_files/build_environment/cmake/setup_msys2.cmake
++++ b/build_files/build_environment/cmake/setup_msys2.cmake
+@@ -4,7 +4,7 @@
+   find_program(CH_PATCH patch HINTS "C:/Program Files/Git/usr/bin" REQUIRED)
+   set(PATCH_CMD "${CH_PATCH}")
+   set(NASM_PATH "${DOWNLOAD_DIR}/nasm-2.13.02/nasm.exe")
+-  set(CONFIGURE_ENV_MSVC set CC=cl && set CXX=cl)
++  set(CONFIGURE_ENV_MSVC ${CMAKE_COMMAND} -E echo "CH Legacy native environment")
+   set(CONFIGURE_ENV ${CONFIGURE_ENV_MSVC})
+   set(CONFIGURE_ENV_NO_PERL ${CONFIGURE_ENV_MSVC})
+   return()

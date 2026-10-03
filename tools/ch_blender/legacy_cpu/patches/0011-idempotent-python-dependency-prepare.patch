@@ -1,0 +1,81 @@
+--- a/build_files/build_environment/cmake/python.cmake
++++ b/build_files/build_environment/cmake/python.cmake
+@@ -42,17 +42,7 @@
+     set(CH_LEGACY_PYTHON_PATCH && ${PATCH_CMD} -p1 -d ${BUILD_DIR}/python/src/external_python < ${PATCH_DIR}/ch_legacy_python.diff)
+   endif()
+ 
+-  ExternalProject_Add(external_python
+-    URL file://${PACKAGE_DIR}/${PYTHON_FILE}
+-    DOWNLOAD_DIR ${DOWNLOAD_DIR}
+-    URL_HASH ${PYTHON_HASH_TYPE}=${PYTHON_HASH}
+-    PREFIX ${BUILD_DIR}/python
+-
+-    # Python will download its own deps and there's very little we can do about
+-    # that beyond placing some code in their externals dir before it tries.
+-    # the foldernames *HAVE* to match the ones inside pythons get_externals.cmd.
+-    # regardless of the version actually in there.
+-    PATCH_COMMAND mkdir ${PYTHON_EXTERNALS_FOLDER_DOS} &&
++  set(CH_PYTHON_PREPARE mkdir ${PYTHON_EXTERNALS_FOLDER_DOS} &&
+       mklink /J ${PYTHON_EXTERNALS_FOLDER_DOS}\\zlib-1.2.13 ${ZLIB_SOURCE_FOLDER_DOS} &&
+       mklink /J ${PYTHON_EXTERNALS_FOLDER_DOS}\\openssl-3.0.11 ${SSL_SOURCE_FOLDER_DOS} &&
+       ${CMAKE_COMMAND} -E copy
+@@ -61,7 +51,22 @@
+       ${PATCH_CMD} --verbose -p1 -d
+         ${BUILD_DIR}/python/src/external_python <
+         ${PATCH_DIR}/${PYTHON_PATCH_FILE}
+-      ${CH_LEGACY_PYTHON_PATCH}
++      ${CH_LEGACY_PYTHON_PATCH})
++  if(CH_BLENDER_LEGACY_CPU)
++    set(CH_PYTHON_PREPARE ${CMAKE_COMMAND} -DSOURCE=${PYTHON_SRC} -DZLIB_SOURCE=${ZLIB_SOURCE_FOLDER} -DZLIB_BUILD=${ZLIB_SOURCE_FOLDER}/../external_zlib-build -DSSL_SOURCE=${SSL_SOURCE_FOLDER} -DPATCH_DIR=${PATCH_DIR} -P ${PATCH_DIR}/ch_legacy_python_prepare.cmake)
++  endif()
++
++  ExternalProject_Add(external_python
++    URL file://${PACKAGE_DIR}/${PYTHON_FILE}
++    DOWNLOAD_DIR ${DOWNLOAD_DIR}
++    URL_HASH ${PYTHON_HASH_TYPE}=${PYTHON_HASH}
++    PREFIX ${BUILD_DIR}/python
++
++    # Python will download its own deps and there's very little we can do about
++    # that beyond placing some code in their externals dir before it tries.
++    # the foldernames *HAVE* to match the ones inside pythons get_externals.cmd.
++    # regardless of the version actually in there.
++    PATCH_COMMAND ${CH_PYTHON_PREPARE}
+ 
+     CONFIGURE_COMMAND echo "."
+ 
+--- /dev/null
++++ b/build_files/build_environment/patches/ch_legacy_python_prepare.cmake
+@@ -0,0 +1,33 @@
++# Idempotent dependency preparation; never deletes an existing checkout.
++file(MAKE_DIRECTORY "${SOURCE}/externals")
++foreach(dep zlib openssl)
++  if(dep STREQUAL "zlib")
++    set(link "${SOURCE}/externals/zlib-1.2.13")
++    set(target "${ZLIB_SOURCE}")
++  else()
++    set(link "${SOURCE}/externals/openssl-3.0.11")
++    set(target "${SSL_SOURCE}")
++  endif()
++  if(NOT EXISTS "${link}")
++    file(TO_NATIVE_PATH "${link}" native_link)
++    file(TO_NATIVE_PATH "${target}" native_target)
++    execute_process(COMMAND cmd /c mklink /J "${native_link}" "${native_target}" RESULT_VARIABLE result)
++    if(NOT result EQUAL 0)
++      message(FATAL_ERROR "Cannot create dependency junction ${link}")
++    endif()
++  endif()
++endforeach()
++file(COPY "${ZLIB_BUILD}/zconf.h" DESTINATION "${SOURCE}/externals/zlib-1.2.13")
++foreach(patch python_windows_x64.diff ch_legacy_python.diff)
++  execute_process(COMMAND git -C "${SOURCE}" apply --reverse --check "${PATCH_DIR}/${patch}" RESULT_VARIABLE reversed OUTPUT_QUIET ERROR_QUIET)
++  if(NOT reversed EQUAL 0)
++    execute_process(COMMAND git -C "${SOURCE}" apply --check "${PATCH_DIR}/${patch}" RESULT_VARIABLE checked)
++    if(NOT checked EQUAL 0)
++      message(FATAL_ERROR "Cannot apply dependency patch ${patch}")
++    endif()
++    execute_process(COMMAND git -C "${SOURCE}" apply "${PATCH_DIR}/${patch}" RESULT_VARIABLE applied)
++    if(NOT applied EQUAL 0)
++      message(FATAL_ERROR "Dependency patch failed ${patch}")
++    endif()
++  endif()
++endforeach()

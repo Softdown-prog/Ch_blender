@@ -1,0 +1,20 @@
+--- a/build_files/build_environment/CMakeLists.txt
++++ b/build_files/build_environment/CMakeLists.txt
+@@ -55,6 +55,7 @@
+   include(cmake/epoxy.cmake)
+   include(cmake/tiff.cmake)
+   include(cmake/tbb.cmake)
++  include(cmake/opensubdiv.cmake)
+   include(cmake/python.cmake)
+   include(cmake/python_site_packages.cmake)
+   include(cmake/numpy.cmake)
+--- a/build_files/build_environment/cmake/download.cmake
++++ b/build_files/build_environment/cmake/download.cmake
+@@ -90,6 +90,7 @@
+   download_source(EPOXY)
+   download_source(TIFF)
+   download_source(TBB)
++  download_source(OPENSUBDIV)
+   download_source(PYTHON)
+   download_source(NUMPY)
+   download_source(BOOST)

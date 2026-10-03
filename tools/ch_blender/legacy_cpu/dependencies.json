@@ -1,0 +1,281 @@
+[
+  {
+    "library": "ssl",
+    "version": "3.1.5",
+    "sourceArchive": "openssl-3.1.5.tar.gz",
+    "sourceHashType": "SHA256",
+    "sourceHash": "6ae015467dabf0469b139ada93319327be24b98251ffaeceda0221848dc09262",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "zlib",
+    "version": "1.2.13",
+    "sourceArchive": "zlib-1.2.13.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "9b8aa094c4e5765dabf4da391f00d15c",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "zstd",
+    "version": "1.5.0",
+    "sourceArchive": "zstd-1.5.0.tar.gz",
+    "sourceHashType": "SHA256",
+    "sourceHash": "5194fbfa781fcf45b98c5e849651aa7b3b0a008c6b72d4a0db760f3002291e94",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "png",
+    "version": "1.6.37",
+    "sourceArchive": "libpng-1.6.37.tar.xz",
+    "sourceHashType": "SHA256",
+    "sourceHash": "505e70834d35383537b6491e7ae8641f1a4bed1876dbfe361201fc80868d88ca",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "jpeg",
+    "version": "2.1.3",
+    "sourceArchive": "libjpeg-turbo-2.1.3.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "627b980fad0573e08e4c3b80b290fc91",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "pthreads",
+    "version": "3.0.0",
+    "sourceArchive": "pthreads4w-code-3.0.0.zip",
+    "sourceHashType": "MD5",
+    "sourceHash": "f3bf81bb395840b3446197bcf4ecd653",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "deflate",
+    "version": "1.18",
+    "sourceArchive": "libdeflate-v1.18.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "a29d9dd653cbe03f2d5cd83972063f9e",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "imath",
+    "version": "3.1.7",
+    "sourceArchive": "imath-3.1.7.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "5cedab446ab296c080957c3037c6d097",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "openexr",
+    "version": "3.2.4",
+    "sourceArchive": "openexr-3.2.4.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "83b23b937b3a76fd37680422f41b81b7",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "brotli",
+    "version": "1.0.9",
+    "sourceArchive": "brotli-v1.0.9.tar.gz",
+    "sourceHashType": "SHA256",
+    "sourceHash": "f9e8d81d0405ba66d181529af42a3354f838c939095ff99930da6aa9cdf6fe46",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "freetype",
+    "version": "2.13.0",
+    "sourceArchive": "freetype-2.13.0.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "98bc3cf234fe88ef3cf24569251fe0a4",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "epoxy",
+    "version": "1.5.10",
+    "sourceArchive": "libepoxy-1.5.10.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "f0730aad115c952e77591fcc805b1dc1",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "tiff",
+    "version": "4.6.0",
+    "sourceArchive": "tiff-4.6.0.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "fc7d49a9348b890b29f91a4ecadd5b49",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "tbb",
+    "version": "2020_U3",
+    "sourceArchive": "oneTBB-2020_U3.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "55ec8df6eae5ed6364a47f0e671e460c",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "python",
+    "version": "3.11.7",
+    "sourceArchive": "Python-3.11.7.tar.xz",
+    "sourceHashType": "MD5",
+    "sourceHash": "d96c7e134c35a8c46236f8a0e566b69c",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "numpy",
+    "version": "1.24.3",
+    "sourceArchive": "numpy-1.24.3.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "89e5e2e78407032290ae6acf6dcaea46",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "boost",
+    "version": "1.82.0",
+    "sourceArchive": "boost_1_82_0.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "f7050f554a65f6a42ece221eaeec1660",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "pugixml",
+    "version": "1.10",
+    "sourceArchive": "pugixml-1.10.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "0c208b0664c7fb822bf1b49ad035e8fd",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "fmt",
+    "version": "9.1.0",
+    "sourceArchive": "fmt-9.1.0.tar.gz",
+    "sourceHashType": "SHA256",
+    "sourceHash": "5dea48d1fcddc3ec571ce2058e13910a0d4a6bab4cc09a809d8b1dd1c88ae6f2",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "robinmap",
+    "version": "v0.6.2",
+    "sourceArchive": "robinmap-v0.6.2.tar.gz",
+    "sourceHashType": "SHA256",
+    "sourceHash": "c08ec4b1bf1c85eb0d6432244a6a89862229da1cb834f3f90fba8dc35d8c8ef1",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "expat",
+    "version": "2_5_0",
+    "sourceArchive": "libexpat-2_5_0.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "d375fa3571c0abb945873f5061a8f2e2",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "pystring",
+    "version": "v1.1.3",
+    "sourceArchive": "pystring-v1.1.3.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "f2c68786b359f5e4e62bed53bc4fb86d",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "yamlcpp",
+    "version": "0.7.0",
+    "sourceArchive": "yaml-cpp-0.7.0.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "74d646a3cc1b5d519829441db96744f0",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "minizipng",
+    "version": "3.0.7",
+    "sourceArchive": "minizip-ng-3.0.7.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "09dcc8a9def348e1be9659e384c2cd55",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "opencolorio",
+    "version": "2.3.2",
+    "sourceArchive": "OpenColorIO-2.3.2.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "8af74fcb8c4820ab21204463a06ba490",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "webp",
+    "version": "1.3.2",
+    "sourceArchive": "libwebp-1.3.2.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "34869086761c0e2da6361035f7b64771",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "openjpeg",
+    "version": "2.5.0",
+    "sourceArchive": "openjpeg-v2.5.0.tar.gz",
+    "sourceHashType": "SHA256",
+    "sourceHash": "0333806d6adecc6f7a91243b2b839ff4d2053823634d4f6ed7a59bc87409122a",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "pybind11",
+    "version": "2.10.1",
+    "sourceArchive": "pybind-v2.10.1.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "ce07bfd5089245da7807b3faf6cbc878",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "openimageio",
+    "version": "v2.5.11.0",
+    "sourceArchive": "OpenImageIO-v2.5.11.0.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "691e9364d25e2878e042d48980fad593",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "opensubdiv",
+    "version": "v3_6_0",
+    "sourceArchive": "opensubdiv-v3_6_0.tar.gz",
+    "sourceHashType": "MD5",
+    "sourceHash": "cd03aaf8890bc0b8550eef62029cabe7",
+    "policy": "rebuild from source, MSVC x64 default ISA, /Od /Ob0 /Oi-",
+    "validated": false
+  },
+  {
+    "library": "libffi",
+    "version": "3.4.4",
+    "policy": "CPython Windows shim, audited DLL; runtime ctypes probe pending",
+    "binarySha256": "eff52743773eb550fcc6ce3efc37c85724502233b6b002a35496d828bd7b280a",
+    "instructionsDecoded": 5309,
+    "elevatedISAFound": false,
+    "validated": false
+  }
+]

@@ -12,6 +12,7 @@ from pathlib import Path
 
 import bpy
 
+from build_scene import _legacy_cpu_backend
 import build_viking_ship_guarded as base
 import build_viking_ship_rebuild_v4_guarded  # noqa: F401 - installs V4 callbacks/gates
 
@@ -32,7 +33,7 @@ def _render_frame(scene, pivot, path: Path, degrees: float) -> None:
     scene.render.image_settings.color_mode = "RGBA"
     if scene.render.engine == "CYCLES":
         scene.cycles.samples = min(int(scene.cycles.samples), 12)
-        scene.cycles.use_denoising = True
+        scene.cycles.use_denoising = not _legacy_cpu_backend()
     scene.render.filepath = str(path)
     bpy.ops.render.render(write_still=True)
 

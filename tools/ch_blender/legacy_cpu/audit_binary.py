@@ -1,0 +1,31 @@
+"""Conservative executable-section ISA inventory; review dispatch hits explicitly."""
+import argparse,collections,hashlib,json,re,subprocess
+from pathlib import Path
+SSE4=set("blendpd blendps blendvpd blendvps dppd dpps extractps insertps movntdqa mpsadbw packusdw pblendvb pblendw pcmpeqq pextrb pextrd pextrq phminposuw pinsrb pinsrd pinsrq pmaxsb pmaxsd pmaxud pmaxuw pminsb pminsd pminud pminuw pmovsxbd pmovsxbq pmovsxbw pmovsxdq pmovsxwd pmovsxwq pmovzxbd pmovzxbq pmovzxbw pmovzxdq pmovzxwd pmovzxwq pmuldq pmulld ptest roundpd roundps roundsd roundss crc32 pcmpestri pcmpestrm pcmpistri pcmpistrm pcmpgtq".split())
+SSSE3=set("pshufb palignr pmaddubsw pmulhrsw pabsb pabsw pabsd phaddw phaddd phaddsw phsubw phsubd phsubsw psignb psignw psignd".split())
+OTHER=set("pclmulqdq aesenc aesenclast aesdec aesdeclast aesimc aeskeygenassist andn bextr blsi blsmsk blsr bzhi mulx pdep pext rorx sarx shlx shrx".split())
+LINE=re.compile(r'^\s*([0-9A-Fa-f]+):\s+([a-z][a-z0-9]*)\b')
+def scan(file,dumpbin):
+    process=subprocess.Popen([str(dumpbin),'/DISASM:NOBYTES',str(file)],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,errors='replace')
+    counts=collections.Counter(); examples=[];total=0
+    for line in process.stdout:
+        match=LINE.match(line)
+        if not match:continue
+        total+=1;op=match[2].lower()
+        if op in SSE4 or op in SSSE3 or op in OTHER or (op.startswith('v') and op not in {'verr','verw'}):
+            counts[op]+=1
+            if len(examples)<15:examples.append(line.strip())
+    if process.wait()!=0 or total==0:raise RuntimeError('Unable to disassemble '+str(file))
+    return {'path':str(file),'sha256':hashlib.sha256(file.read_bytes()).hexdigest(),'instructionsDecoded':total,'elevatedISA':dict(counts),'examples':examples}
+def main():
+    a=argparse.ArgumentParser();a.add_argument('--dumpbin',required=True,type=Path);a.add_argument('--output',required=True,type=Path);a.add_argument('paths',nargs='+',type=Path);o=a.parse_args()
+    files=[]
+    for path in o.paths:
+        if path.is_file():files.append(path)
+        else:files.extend(p for p in path.rglob('*') if p.suffix.lower() in {'.dll','.pyd','.exe'})
+    reports=[scan(file,o.dumpbin) for file in sorted(set(files))]
+    report={'status':'review_required' if any(r['elevatedISA'] for r in reports) else 'no_elevated_isa_decoded','files':reports,'scope':'Conservative linear disassembly; dispatch and code/data ambiguity require review; pair with real Phenom execution tests.'}
+    o.output.parent.mkdir(parents=True,exist_ok=True);o.output.write_text(json.dumps(report,indent=2)+'\n')
+    print(json.dumps({'status':report['status'],'files':len(reports),'report':str(o.output)},indent=2))
+    return 1 if report['status']=='review_required' else 0
+if __name__=='__main__':raise SystemExit(main())

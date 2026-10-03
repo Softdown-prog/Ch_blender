@@ -1,0 +1,10 @@
+--- a/build_files/build_environment/cmake/options.cmake
++++ b/build_files/build_environment/cmake/options.cmake
+@@ -260,6 +260,7 @@
+ endif()
+ 
+ set(DEFAULT_CMAKE_FLAGS
++  -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+   -DCMAKE_BUILD_TYPE=${BUILD_MODE}
+   -DCMAKE_C_FLAGS_DEBUG=${BLENDER_CMAKE_C_FLAGS_DEBUG}
+   -DCMAKE_C_FLAGS_MINSIZEREL=${BLENDER_CMAKE_C_FLAGS_MINSIZEREL}

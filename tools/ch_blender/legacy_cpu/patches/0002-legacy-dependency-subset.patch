@@ -1,0 +1,210 @@
+--- a/build_files/build_environment/CMakeLists.txt
++++ b/build_files/build_environment/CMakeLists.txt
+@@ -39,6 +39,42 @@
+ else()
+   set(mingw_LIBDIR ${LIBDIR})
+ endif()
++
++if(CH_BLENDER_LEGACY_CPU)
++  include(cmake/ssl.cmake)
++  include(cmake/zlib.cmake)
++  include(cmake/zstd.cmake)
++  include(cmake/png.cmake)
++  include(cmake/jpeg.cmake)
++  include(cmake/pthreads.cmake)
++  include(cmake/deflate.cmake)
++  include(cmake/imath.cmake)
++  include(cmake/openexr.cmake)
++  include(cmake/brotli.cmake)
++  include(cmake/freetype.cmake)
++  include(cmake/epoxy.cmake)
++  include(cmake/tiff.cmake)
++  include(cmake/tbb.cmake)
++  include(cmake/python.cmake)
++  include(cmake/python_site_packages.cmake)
++  include(cmake/numpy.cmake)
++  include(cmake/package_python.cmake)
++  include(cmake/boost.cmake)
++  include(cmake/pugixml.cmake)
++  include(cmake/fmt.cmake)
++  include(cmake/robinmap.cmake)
++  include(cmake/expat.cmake)
++  include(cmake/pystring.cmake)
++  include(cmake/yamlcpp.cmake)
++  include(cmake/minizipng.cmake)
++  include(cmake/opencolorio.cmake)
++  include(cmake/webp.cmake)
++  include(cmake/openjpeg.cmake)
++  include(cmake/pybind11.cmake)
++  include(cmake/openimageio.cmake)
++  return()
++endif()
++
+ include(cmake/ssl.cmake)
+ include(cmake/zlib.cmake)
+ include(cmake/zstd.cmake)
+--- a/build_files/build_environment/cmake/download.cmake
++++ b/build_files/build_environment/cmake/download.cmake
+@@ -73,6 +73,39 @@
+     endif()
+   endif()
+ endfunction(download_source)
++
++
++if(CH_BLENDER_LEGACY_CPU)
++  download_source(SSL)
++  download_source(ZLIB)
++  download_source(ZSTD)
++  download_source(PNG)
++  download_source(JPEG)
++  download_source(PTHREADS)
++  download_source(DEFLATE)
++  download_source(IMATH)
++  download_source(OPENEXR)
++  download_source(BROTLI)
++  download_source(FREETYPE)
++  download_source(EPOXY)
++  download_source(TIFF)
++  download_source(TBB)
++  download_source(PYTHON)
++  download_source(NUMPY)
++  download_source(BOOST)
++  download_source(PUGIXML)
++  download_source(FMT)
++  download_source(ROBINMAP)
++  download_source(EXPAT)
++  download_source(PYSTRING)
++  download_source(YAMLCPP)
++  download_source(MINIZIPNG)
++  download_source(OPENCOLORIO)
++  download_source(WEBP)
++  download_source(OPENJPEG)
++  download_source(PYBIND11)
++  return()
++endif()
+ 
+ download_source(ZLIB)
+ download_source(OPENAL)
+--- a/build_files/build_environment/cmake/options.cmake
++++ b/build_files/build_environment/cmake/options.cmake
+@@ -253,6 +253,12 @@
+   set(CONFIGURE_COMMAND_NO_TARGET ./configure)
+ endif()
+ 
++if(CH_BLENDER_LEGACY_CPU)
++  foreach(lang C CXX)
++    set(BLENDER_CMAKE_${lang}_FLAGS_RELEASE "/MD /Od /Ob0 /Oi- /bigobj /DNDEBUG /DPSAPI_VERSION=2 /DTINYFORMAT_ALLOW_WCHAR_STRINGS")
++  endforeach()
++endif()
++
+ set(DEFAULT_CMAKE_FLAGS
+   -DCMAKE_BUILD_TYPE=${BUILD_MODE}
+   -DCMAKE_C_FLAGS_DEBUG=${BLENDER_CMAKE_C_FLAGS_DEBUG}
+--- a/build_files/build_environment/cmake/jpeg.cmake
++++ b/build_files/build_environment/cmake/jpeg.cmake
+@@ -6,6 +6,7 @@
+   # CMAKE for MS-Windows.
+   set(JPEG_EXTRA_ARGS
+     -DNASM=${NASM_PATH}
++    -DWITH_SIMD=OFF
+     -DWITH_JPEG8=ON
+     -DCMAKE_DEBUG_POSTFIX=d
+     -DWITH_CRT_DLL=On
+--- a/build_files/build_environment/cmake/opencolorio.cmake
++++ b/build_files/build_environment/cmake/opencolorio.cmake
+@@ -12,6 +12,15 @@
+   -DOCIO_BUILD_TESTS=OFF
+   -DOCIO_BUILD_GPU_TESTS=OFF
+   -DOCIO_USE_SIMD=ON
++  -DOCIO_USE_SSE2=ON
++  -DOCIO_USE_SSE3=OFF
++  -DOCIO_USE_SSSE3=OFF
++  -DOCIO_USE_SSE4=OFF
++  -DOCIO_USE_SSE42=OFF
++  -DOCIO_USE_AVX=OFF
++  -DOCIO_USE_AVX2=OFF
++  -DOCIO_USE_AVX512=OFF
++  -DOCIO_USE_F16C=OFF
+ 
+   -DOCIO_INSTALL_EXT_PACKAGES=NONE
+ 
+--- a/build_files/build_environment/cmake/numpy.cmake
++++ b/build_files/build_environment/cmake/numpy.cmake
+@@ -28,7 +28,7 @@
+ 
+   BUILD_COMMAND
+     ${PYTHON_BINARY} ${BUILD_DIR}/numpy/src/external_numpy/setup.py
+-      build ${NUMPY_BUILD_OPTION}
++      build ${NUMPY_BUILD_OPTION} --cpu-baseline=none --cpu-dispatch=none
+       install
+       --old-and-unmanageable
+ 
+--- a/build_files/build_environment/cmake/versions.cmake
++++ b/build_files/build_environment/cmake/versions.cmake
+@@ -38,7 +38,7 @@
+ set(OPENAL_HOMEPAGE https://openal-soft.org/)
+ 
+ set(PNG_VERSION 1.6.37)
+-set(PNG_URI http://prdownloads.sourceforge.net/libpng/libpng-${PNG_VERSION}.tar.xz)
++set(PNG_URI https://prdownloads.sourceforge.net/libpng/libpng-${PNG_VERSION}.tar.xz)
+ set(PNG_HASH 505e70834d35383537b6491e7ae8641f1a4bed1876dbfe361201fc80868d88ca)
+ set(PNG_HASH_TYPE SHA256)
+ set(PNG_FILE libpng-${PNG_VERSION}.tar.xz)
+@@ -56,7 +56,7 @@
+ set(BOOST_VERSION_SHORT 1.82)
+ set(BOOST_VERSION_NODOTS 1_82_0)
+ set(BOOST_VERSION_NODOTS_SHORT 1_82)
+-set(BOOST_URI https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_NODOTS}.tar.gz)
++set(BOOST_URI https://archives.boost.io/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_NODOTS}.tar.gz)
+ set(BOOST_HASH f7050f554a65f6a42ece221eaeec1660)
+ set(BOOST_HASH_TYPE MD5)
+ set(BOOST_FILE boost_${BOOST_VERSION_NODOTS}.tar.gz)
+@@ -71,7 +71,7 @@
+ set(BLOSC_CPE "cpe:2.3:a:c-blosc_project:c-blosc:${BLOSC_VERSION}:*:*:*:*:*:*:*")
+ 
+ set(PTHREADS_VERSION 3.0.0)
+-set(PTHREADS_URI http://prdownloads.sourceforge.net/pthreads4w/pthreads4w-code-v${PTHREADS_VERSION}.zip)
++set(PTHREADS_URI https://prdownloads.sourceforge.net/pthreads4w/pthreads4w-code-v${PTHREADS_VERSION}.zip)
+ set(PTHREADS_HASH f3bf81bb395840b3446197bcf4ecd653)
+ set(PTHREADS_HASH_TYPE MD5)
+ set(PTHREADS_FILE pthreads4w-code-${PTHREADS_VERSION}.zip)
+@@ -114,7 +114,7 @@
+ endif()
+ 
+ set(FREETYPE_VERSION 2.13.0)
+-set(FREETYPE_URI http://prdownloads.sourceforge.net/freetype/freetype-${FREETYPE_VERSION}.tar.gz)
++set(FREETYPE_URI https://prdownloads.sourceforge.net/freetype/freetype-${FREETYPE_VERSION}.tar.gz)
+ set(FREETYPE_HASH 98bc3cf234fe88ef3cf24569251fe0a4)
+ set(FREETYPE_HASH_TYPE MD5)
+ set(FREETYPE_FILE freetype-${FREETYPE_VERSION}.tar.gz)
+@@ -452,7 +452,7 @@
+ set(PUGIXML_CPE "cpe:2.3:a:pugixml_project:pugixml:${PUGIXML_VERSION}:*:*:*:*:*:*:*")
+ 
+ set(FLEXBISON_VERSION 2.5.24)
+-set(FLEXBISON_URI http://prdownloads.sourceforge.net/winflexbison/win_flex_bison-${FLEXBISON_VERSION}.zip)
++set(FLEXBISON_URI https://prdownloads.sourceforge.net/winflexbison/win_flex_bison-${FLEXBISON_VERSION}.zip)
+ set(FLEXBISON_HASH 6b549d43e34ece0e8ed05af92daa31c4)
+ set(FLEXBISON_HASH_TYPE MD5)
+ set(FLEXBISON_FILE win_flex_bison-${FLEXBISON_VERSION}.zip)
+--- a/build_files/build_environment/cmake/setup_msys2.cmake
++++ b/build_files/build_environment/cmake/setup_msys2.cmake
+@@ -100,7 +100,7 @@
+ if(NOT EXISTS "${DOWNLOAD_DIR}/nasm-2.13.02-win64.zip")
+   message("Downloading nasm")
+   file(DOWNLOAD
+-    "http://www.nasm.us/pub/nasm/releasebuilds/2.13.02/win64/nasm-2.13.02-win64.zip"
++    "https://www.nasm.us/pub/nasm/releasebuilds/2.13.02/win64/nasm-2.13.02-win64.zip"
+     "${DOWNLOAD_DIR}/nasm-2.13.02-win64.zip"
+   )
+ endif()
+--- a/build_files/cmake/platform/platform_win32.cmake
++++ b/build_files/cmake/platform/platform_win32.cmake
+@@ -322,7 +322,7 @@
+     message(STATUS "Using pre-compiled LIBDIR: ${LIBDIR}")
+   endif()
+ endif()
+-if(NOT EXISTS "${LIBDIR}/.git")
++if(NOT EXISTS "${LIBDIR}/.git" AND NOT CH_BLENDER_LEGACY_CPU)
+   message(FATAL_ERROR "\n\nWindows requires pre-compiled libs at: '${LIBDIR}'. Please run `make update` in the blender source folder to obtain them.")
+ endif()
+ 

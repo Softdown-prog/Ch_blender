@@ -1,0 +1,10 @@
+--- a/build_files/build_environment/cmake/package_python.cmake
++++ b/build_files/build_environment/cmake/package_python.cmake
+@@ -48,7 +48,6 @@
+         external_python
+         external_numpy
+         external_python_site_packages
+-      OUTPUT
+         ${HARVEST_TARGET}/python/${PYTHON_SHORT_VERSION_NO_DOTS}/bin/python${PYTHON_POSTFIX}.exe
+     )
+   endif()

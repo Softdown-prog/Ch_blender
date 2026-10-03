@@ -754,6 +754,17 @@ def add_camera(camera):
     return obj
 
 
+def _legacy_cpu_backend():
+    # The worker sets identity from the executable marker; direct bpy use reads it too.
+    if os.environ.get("CH_BLENDER_BACKEND") == "legacy_cpu_4_2_3":
+        return True
+    marker = Path(bpy.app.binary_path).parent / "ch-legacy-build.json"
+    if not marker.is_file():
+        return False
+    info = json.loads(marker.read_text(encoding="utf-8-sig"))
+    return info.get("backend") == "legacy_cpu_4_2_3" and info.get("upstreamTag") == "v4.2.3"
+
+
 def configure_scene(studio, src_resolution, output_dir):
     if studio.get("id") != "CH_TYCOON_STUDIO_V1":
         raise RuntimeError("This baker expects frozen studio preset CH_TYCOON_STUDIO_V1")
@@ -765,7 +776,7 @@ def configure_scene(studio, src_resolution, output_dir):
     scene.render.engine = render["engine"]
     scene.cycles.device = render["device"]
     scene.cycles.samples = int(render["samples"])
-    scene.cycles.use_denoising = bool(render["denoising"])
+    scene.cycles.use_denoising = False if _legacy_cpu_backend() else bool(render["denoising"])
     scene.render.resolution_x = src_resolution[0]
     scene.render.resolution_y = src_resolution[1]
     scene.render.resolution_percentage = 100
@@ -899,7 +910,7 @@ def render_shadow_pass(scene, authored, ground, path):
     if shadow_samples is not None:
         scene.cycles.samples = shadow_samples
     if shadow_denoising is not None:
-        scene.cycles.use_denoising = shadow_denoising
+        scene.cycles.use_denoising = False if _legacy_cpu_backend() else shadow_denoising
 
     try:
         scene.render.filepath = path

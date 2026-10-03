@@ -1,0 +1,22 @@
+--- a/intern/cycles/kernel/device/cpu/kernel.cpp
++++ b/intern/cycles/kernel/device/cpu/kernel.cpp
+@@ -7,7 +7,7 @@
+ /* On x86-64, our minimum is SSE4.2, so avoid the extra kernel and compile this
+  * one with SSE4.2 intrinsics.
+  */
+-#if defined(__x86_64__) || defined(_M_X64)
++#if (defined(__x86_64__) || defined(_M_X64)) && !defined(CH_BLENDER_LEGACY_CPU)
+ #  define __KERNEL_SSE__
+ #  define __KERNEL_SSE2__
+ #  define __KERNEL_SSE3__
+--- a/intern/cycles/device/cpu/device.cpp
++++ b/intern/cycles/device/cpu/device.cpp
+@@ -48,7 +48,7 @@
+   string capabilities = "";
+   capabilities += system_cpu_support_sse42() ? "SSE42 " : "";
+   capabilities += system_cpu_support_avx2() ? "AVX2" : "";
+-  if (capabilities[capabilities.size() - 1] == ' ') {
++  if (!capabilities.empty() && capabilities[capabilities.size() - 1] == ' ') {
+     capabilities.resize(capabilities.size() - 1);
+   }
+   return capabilities;

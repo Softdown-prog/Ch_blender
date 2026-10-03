@@ -134,5 +134,17 @@
     "fourDirectionEvaluatedGeometry": true,
     "proxyPreservesBakeAspect": true,
     "proxyUsesProductionRenderer": true
+  },
+  "executionBackends": {
+    "official_4_2_3": {
+      "base": "v4.2.3",
+      "denoising": true
+    },
+    "legacy_cpu_4_2_3": {
+      "base": "v4.2.3",
+      "buildManifest": "tools/ch_blender/legacy_cpu/build-manifest.json",
+      "denoising": false,
+      "productionValidated": false
+    }
   }
 }

@@ -22,6 +22,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+from backend import identify_backend
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_PATH = REPO_ROOT / "tools/ch_blender/ch_blender_manifest.json"
 BUILD_SCENE = REPO_ROOT / "tools/tycoon_photo_studio/build_scene.py"
@@ -191,15 +193,21 @@ def blender_identity(blender_exe: Path) -> dict[str, str]:
             {"path": str(blender_exe), "error": str(exc)},
         ) from exc
 
-    first_line = (completed.stdout or completed.stderr).splitlines()[0].strip()
+    lines = (completed.stdout or completed.stderr).splitlines()
+    first_line = lines[0].strip() if lines else ""
     expected = str(_manifest()["upstream"]["tag"]).removeprefix("v")
-    if f"Blender {expected}" not in first_line:
+    if not re.fullmatch(r"Blender " + re.escape(expected) + r"(?:\s.*)?", first_line):
         raise WorkerError(
             "BLENDER_VERSION_MISMATCH",
             "Blender version does not match the frozen CH Blender base",
             {"expected": expected, "actual": first_line, "path": str(blender_exe)},
         )
-    return {"version": expected, "versionLine": first_line, "executable": str(blender_exe)}
+    try:
+        backend = identify_backend(blender_exe)
+    except ValueError as exc:
+        raise WorkerError("BLENDER_VERSION_MISMATCH", str(exc), {"path": str(blender_exe)}) from exc
+    return {"version": expected, "versionLine": first_line, "executable": str(blender_exe),
+            "backend": backend}
 
 
 def _command_prefix(blender_exe: Path) -> list[str]:
@@ -213,6 +221,10 @@ def _run(command: list[str], *, error_code: str, env: dict[str, str] | None = No
     run_env = os.environ.copy()
     if env:
         run_env.update(env)
+    for argument in command:
+        if Path(argument).name.lower() in {"blender", "blender.exe"}:
+            run_env["CH_BLENDER_BACKEND"] = identify_backend(argument)
+            break
     completed = subprocess.run(command, cwd=REPO_ROOT, env=run_env)
     if completed.returncode != 0:
         raise WorkerError(
