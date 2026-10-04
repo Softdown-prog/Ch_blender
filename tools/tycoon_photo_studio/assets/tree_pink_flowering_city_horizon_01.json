@@ -22,21 +22,25 @@
     "crownWidth": 8.0,
     "crownDepth": 5.9,
     "crownHeight": 3.75,
-    "primaryBranchCount": 7,
-    "secondaryBranchCount": 15,
-    "foliageClusterCount": 39,
-    "flowerClusterCount": 94,
-    "flowerAccentCount": 12,
+    "primaryBranchCount": 8,
+    "secondaryBranchCount": 20,
+    "foliageClusterCount": 54,
+    "flowerClusterCount": 132,
+    "petalsPerFlowerCluster": 3,
+    "flowerAccentCount": 18,
+    "branchRadialSegments": 18,
+    "foliageSubdivisions": 3,
+    "flowerSubdivisions": 2,
     "seed": 20261004
   },
   "artDirection": {
-    "silhouette": "broad umbrella crown with asymmetrical left-right lobes and visible lower trunk",
-    "branching": "single trunk splitting high into several readable upward/outward limbs",
-    "flowers": "dense layered pink blossom masses with three-value color breakup and sparse warm highlights",
-    "gameReadability": "avoid photoreal micro-leaves; use grouped sculptural clusters readable at City Horizon scale"
+    "silhouette": "broad umbrella crown with asymmetrical left-right lobes, soft rounded crown masses and visible lower trunk",
+    "branching": "continuous smooth trunk splitting high into readable tapered limbs; no faceted branch silhouette",
+    "flowers": "dense layered pink blossom sprays built from overlapping rounded petals rather than isolated low-poly blobs",
+    "gameReadability": "retain grouped blossom masses and branch openings, but remove obvious low-poly faceting at City Horizon sprite scale"
   },
   "validationPlan": {
     "firstPass": ["preflight", "south_proxy"],
-    "approvalGate": "human silhouette and blossom-density review before four-direction bake"
+    "approvalGate": "human silhouette, smoothness and blossom-density review before four-direction bake"
   }
 }
