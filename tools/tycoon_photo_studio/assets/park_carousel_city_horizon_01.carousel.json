@@ -14,8 +14,8 @@
     ]
   },
   "footprint": {
-    "tilesX": 7,
-    "tilesY": 7,
+    "widthTiles": 7,
+    "depthTiles": 7,
     "anchor": [3.5, 3.5],
     "maxVisualRadius": 3.22
   },
