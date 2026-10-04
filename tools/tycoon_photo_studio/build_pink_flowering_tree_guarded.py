@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Build an original City Horizon pink flowering tree from a visual archetype."""
+"""Build the City Horizon pink flowering tree with defined broadleaf foliage.
+
+The crown deliberately ports the established A7 Forge 2D broadleaf-V5 art
+language: branch-guided depth groups made from explicit readable leaves.  In
+this Blender adaptation the original green palette is replaced by rose/purple
+leaf materials; spherical foliage/blossom blobs are not used.
+"""
 from __future__ import annotations
 
 import argparse
@@ -10,15 +16,14 @@ import sys
 from pathlib import Path
 
 import bpy
-from mathutils import Vector
+from mathutils import Euler, Vector
 
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[1]
 CH_BLENDER = REPO_ROOT / "tools" / "ch_blender"
-if str(HERE) not in sys.path:
-    sys.path.insert(0, str(HERE))
-if str(CH_BLENDER) not in sys.path:
-    sys.path.insert(0, str(CH_BLENDER))
+for path in (HERE, CH_BLENDER):
+    if str(path) not in sys.path:
+        sys.path.insert(0, str(path))
 
 import build_scene as bs  # noqa: E402
 import build_ferris_wheel as fw  # noqa: E402
@@ -46,7 +51,8 @@ def load_json(path):
 def make_materials(recipe):
     return {
         key: bs.make_material(
-            spec.get("name", key), spec["rgba"], float(spec.get("roughness", 0.8)), float(spec.get("metallic", 0.0))
+            spec.get("name", key), spec["rgba"],
+            float(spec.get("roughness", 0.8)), float(spec.get("metallic", 0.0)),
         )
         for key, spec in recipe["materials"].items()
     }
@@ -63,9 +69,11 @@ def cylinder_between(name, a, b, r0, r1, material, root, authored, role, vertice
     a = Vector(a)
     b = Vector(b)
     delta = b - a
-    length = delta.length
     mid = (a + b) * 0.5
-    bpy.ops.mesh.primitive_cone_add(vertices=vertices, radius1=r0, radius2=r1, depth=length, location=mid)
+    bpy.ops.mesh.primitive_cone_add(
+        vertices=vertices, radius1=r0, radius2=r1,
+        depth=delta.length, location=mid,
+    )
     obj = bpy.context.object
     obj.name = name
     obj.data.materials.append(material)
@@ -78,132 +86,207 @@ def cylinder_between(name, a, b, r0, r1, material, root, authored, role, vertice
     return tag_parent(obj, root, role, authored, ground=(a.z <= 0.02))
 
 
-def blob(name, location, scale, material, root, authored, role, subdivisions=3):
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=subdivisions, radius=1.0, location=location)
-    obj = bpy.context.object
-    obj.name = name
-    obj.scale = scale
-    obj.data.materials.append(material)
-    bpy.ops.object.shade_smooth()
-    return tag_parent(obj, root, role, authored)
+def make_leaf_mesh(name, material, segments=16, thickness=0.018):
+    """Create one smooth almond leaf mesh, unit length on local X.
+
+    A rounded sin() outline and a slightly raised midrib keep the silhouette
+    leaf-like after downsampling.  Several material-specific meshes are shared
+    by hundreds of lightweight linked objects.
+    """
+    segments = max(12, int(segments))
+    half = segments // 2
+    outline = []
+    # Tip -> upper edge -> stem -> lower edge -> tip.
+    for i in range(half + 1):
+        t = i / half
+        x = 0.5 - t
+        y = math.sin(math.pi * t) * 0.5
+        outline.append((x, y, 0.0))
+    for i in range(1, half):
+        t = i / half
+        x = -0.5 + t
+        y = -math.sin(math.pi * t) * 0.5
+        outline.append((x, y, 0.0))
+
+    n = len(outline)
+    verts = []
+    # Convex top/bottom rim plus central midrib gives a soft surface.
+    for x, y, _ in outline:
+        bow = (1.0 - min(1.0, abs(x) * 2.0)) * thickness * 0.35
+        verts.append((x, y, bow))
+    for x, y, _ in outline:
+        bow = -(1.0 - min(1.0, abs(x) * 2.0)) * thickness * 0.35
+        verts.append((x, y, bow))
+    top_center = len(verts)
+    verts.append((0.0, 0.0, thickness))
+    bottom_center = len(verts)
+    verts.append((0.0, 0.0, -thickness))
+
+    faces = []
+    for i in range(n):
+        j = (i + 1) % n
+        faces.append((top_center, i, j))
+        faces.append((bottom_center, n + j, n + i))
+        faces.append((i, n + i, n + j, j))
+
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata(verts, [], faces)
+    mesh.materials.append(material)
+    mesh.update()
+    for poly in mesh.polygons:
+        poly.use_smooth = True
+    return mesh
 
 
-def flower_spray(name, center, base_scale, mats, rng, root, authored, subdivisions=2, petals=3):
-    # Overlapping rounded petals remove the obvious isolated icosphere / low-poly look.
-    angle0 = rng.uniform(0.0, math.tau)
-    for j in range(petals):
-        a = angle0 + j * math.tau / petals + rng.uniform(-0.22, 0.22)
-        radius = base_scale * rng.uniform(0.25, 0.55)
-        p = center + Vector((
-            math.cos(a) * radius,
-            math.sin(a) * radius * 0.78,
-            rng.uniform(-0.10, 0.16) * base_scale,
-        ))
-        s = base_scale * rng.uniform(0.72, 1.00)
-        blob(
-            f"{name}_Petal_{j}", p,
-            (s * rng.uniform(0.92, 1.18), s * rng.uniform(0.78, 1.04), s * rng.uniform(0.62, 0.88)),
-            mats[j % len(mats)], root, authored, "tree.flower", subdivisions=subdivisions,
-        )
+def add_leaf(name, mesh, location, length, width_ratio, rotation, root, authored):
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(obj)
+    obj.location = location
+    obj.scale = (length, length * width_ratio, 1.0)
+    obj.rotation_mode = "XYZ"
+    obj.rotation_euler = rotation
+    return tag_parent(obj, root, "tree.defined_leaf", authored)
+
+
+def crown_groups(crown_z, crown_w, crown_d, crown_h, primary_tips, secondary_tips, rng, limit):
+    """3D counterpart of broadleaf V5 rear / branch / front depth groups."""
+    groups = []
+    rear = (
+        (-.46, -.10, -.10), (-.19, -.39, .04), (.13, -.43, .07), (.43, -.14, -.04),
+        (-.31, .19, -.12), (.03, .17, .02), (.36, .18, -.08), (-.02, .40, -.16),
+    )
+    for ox, oy, oz in rear:
+        groups.append((0, Vector((ox*crown_w*.82, oy*crown_d*.82, crown_z + oz*crown_h))))
+
+    for i, tip in enumerate(secondary_tips):
+        if len(groups) >= 24:
+            break
+        p = Vector(tip)
+        p += Vector((rng.uniform(-.18, .18), rng.uniform(-.14, .14), rng.uniform(-.08, .28)))
+        groups.append((1, p))
+
+    front = (
+        (-.39, -.19, .08), (-.13, -.28, .18), (.15, -.25, .17), (.39, -.14, .07),
+        (-.30, .07, .12), (-.02, .04, .25), (.27, .08, .14), (-.19, .28, .08),
+        (.11, .28, .16), (.36, .24, .05), (-.18, -.52, .21), (.05, -.56, .28),
+        (.27, -.47, .20), (.01, .47, -.04),
+    )
+    for ox, oy, oz in front:
+        groups.append((2, Vector((ox*crown_w*.88, oy*crown_d*.86, crown_z + oz*crown_h))))
+
+    return groups[:limit]
+
+
+def scatter_defined_leaves(groups, recipe, mats, rng, root, authored):
+    g = recipe["geometry"]
+    meshes = {
+        "back": make_leaf_mesh("PinkLeafPlumMesh", mats["leafBack"], g["leafOutlineSegments"], g["leafThickness"]),
+        "mid": make_leaf_mesh("PinkLeafBerryMesh", mats["leafMid"], g["leafOutlineSegments"], g["leafThickness"]),
+        "front": make_leaf_mesh("PinkLeafRoseMesh", mats["leafFront"], g["leafOutlineSegments"], g["leafThickness"]),
+        "highlight": make_leaf_mesh("PinkLeafLilacMesh", mats["leafHighlight"], g["leafOutlineSegments"], g["leafThickness"]),
+        "warm": make_leaf_mesh("PinkLeafWarmMesh", mats["leafWarm"], g["leafOutlineSegments"], g["leafThickness"]),
+    }
+    lmin = float(g["leafLengthMin"])
+    lmax = float(g["leafLengthMax"])
+    wr_min = float(g["leafWidthRatioMin"])
+    wr_max = float(g["leafWidthRatioMax"])
+
+    leaf_index = 0
+    for gi, (depth, center) in enumerate(groups):
+        if depth == 0:
+            count = int(g["leavesPerRearGroup"])
+            spread = Vector((0.82, 0.60, 0.50))
+        elif depth == 1:
+            count = int(g["leavesPerMidGroup"])
+            spread = Vector((0.90, 0.67, 0.57))
+        else:
+            count = int(g["leavesPerFrontGroup"])
+            spread = Vector((0.94, 0.70, 0.61))
+
+        for li in range(count):
+            # Ellipsoidal distribution keeps each group connected while leaf
+            # silhouettes remain discrete, matching the V5 defined-leaf intent.
+            for _ in range(12):
+                dx = rng.uniform(-1.0, 1.0)
+                dy = rng.uniform(-1.0, 1.0)
+                dz = rng.uniform(-1.0, 1.0)
+                if dx*dx + dy*dy + dz*dz <= 1.0:
+                    break
+            p = center + Vector((dx*spread.x, dy*spread.y, dz*spread.z))
+
+            if depth == 0:
+                key = "back" if rng.random() < .72 else "mid"
+            elif depth == 1:
+                roll = rng.random()
+                key = "mid" if roll < .60 else ("front" if roll < .92 else "highlight")
+            else:
+                roll = rng.random()
+                key = "front" if roll < .58 else ("highlight" if roll < .90 else "mid")
+                if rng.random() < .025:
+                    key = "warm"
+
+            length = rng.uniform(lmin, lmax) * (0.94 if depth == 0 else 1.0)
+            ratio = rng.uniform(wr_min, wr_max)
+            # Leaves tend to radiate away from the crown center, with enough
+            # random tilt to stop the canopy from reading as stacked cards.
+            yaw = math.atan2(p.y, p.x) + rng.uniform(-0.72, 0.72)
+            pitch = rng.uniform(-0.52, 0.52)
+            roll = rng.uniform(-0.62, 0.62)
+            add_leaf(
+                f"DefinedLeaf_{leaf_index:04d}", meshes[key], p, length, ratio,
+                Euler((roll, pitch, yaw)), root, authored,
+            )
+            leaf_index += 1
+    return leaf_index
 
 
 def build_tree(root, recipe, mats):
     g = recipe["geometry"]
     rng = random.Random(int(g["seed"]))
     authored = []
-
-    h = float(g["height"])
     trunk_h = float(g["trunkHeight"])
     crown_z = float(g["crownCenterZ"])
     crown_w = float(g["crownWidth"])
     crown_d = float(g["crownDepth"])
     crown_h = float(g["crownHeight"])
     trunk_r = float(g["trunkBaseRadius"])
-    branch_segments = int(g.get("branchRadialSegments", 18))
-    foliage_subdivisions = int(g.get("foliageSubdivisions", 3))
-    flower_subdivisions = int(g.get("flowerSubdivisions", 2))
-    petals_per_cluster = int(g.get("petalsPerFlowerCluster", 3))
+    radial_segments = int(g.get("branchRadialSegments", 18))
 
-    # Smooth continuous trunk with a gentle organic lean.
     trunk_mid = Vector((0.05, 0.015, trunk_h * 0.53))
     trunk_top = Vector((0.18, 0.06, trunk_h))
-    cylinder_between("MainTrunkLower", (0, 0, 0.0), trunk_mid, trunk_r, trunk_r * 0.72, mats["trunkWarm"], root, authored, "tree.trunk", branch_segments)
-    cylinder_between("MainTrunkUpper", trunk_mid, trunk_top, trunk_r * 0.72, trunk_r * 0.43, mats["trunkWarm"], root, authored, "tree.trunk", branch_segments)
-
-    # Narrow shadow strip gives the bark depth without creating a segmented trunk.
-    cylinder_between(
-        "MainTrunkShadow", (-0.055, 0.06, 0.16), (0.115, 0.105, trunk_h * 0.97),
-        trunk_r * 0.22, trunk_r * 0.09, mats["trunkDark"], root, authored, "tree.trunk_detail", branch_segments,
-    )
+    cylinder_between("MainTrunkLower", (0, 0, 0), trunk_mid, trunk_r, trunk_r*.72, mats["trunkWarm"], root, authored, "tree.trunk", radial_segments)
+    cylinder_between("MainTrunkUpper", trunk_mid, trunk_top, trunk_r*.72, trunk_r*.43, mats["trunkWarm"], root, authored, "tree.trunk", radial_segments)
+    cylinder_between("MainTrunkShadow", (-.055,.06,.16), (.115,.105,trunk_h*.97), trunk_r*.22, trunk_r*.09, mats["trunkDark"], root, authored, "tree.trunk_detail", radial_segments)
 
     primary_tips = []
-    primary_count = int(g["primaryBranchCount"])
-    for i in range(primary_count):
-        angle = math.radians(-165 + i * (330 / max(primary_count - 1, 1)))
-        radial = 1.45 + 0.46 * math.sin(i * 1.55 + 0.3)
-        start = trunk_top + Vector((0.018 * i, 0.0, -0.07 * (i % 2)))
-        bend = start + Vector((math.cos(angle) * radial * 0.42, math.sin(angle) * radial * 0.30, 0.46 + 0.13 * math.sin(i)))
-        tip = Vector((math.cos(angle) * radial, math.sin(angle) * radial * 0.72, crown_z - 0.35 + 0.35 * math.sin(i * 1.18)))
-        cylinder_between(f"PrimaryBranchA_{i:02d}", start, bend, trunk_r * 0.27, trunk_r * 0.17, mats["trunkWarm"], root, authored, "tree.branch", branch_segments)
-        cylinder_between(f"PrimaryBranchB_{i:02d}", bend, tip, trunk_r * 0.17, trunk_r * 0.07, mats["trunkWarm"], root, authored, "tree.branch", branch_segments)
+    for i in range(int(g["primaryBranchCount"])):
+        a = math.radians(-165 + i * (330 / max(int(g["primaryBranchCount"])-1, 1)))
+        reach = 1.48 + .44*math.sin(i*1.55+.3)
+        start = trunk_top + Vector((.018*i, 0, -.07*(i%2)))
+        bend = start + Vector((math.cos(a)*reach*.42, math.sin(a)*reach*.30, .46+.13*math.sin(i)))
+        tip = Vector((math.cos(a)*reach, math.sin(a)*reach*.72, crown_z-.40+.34*math.sin(i*1.18)))
+        cylinder_between(f"PrimaryBranchA_{i:02d}", start, bend, trunk_r*.27, trunk_r*.17, mats["trunkWarm"], root, authored, "tree.branch", radial_segments)
+        cylinder_between(f"PrimaryBranchB_{i:02d}", bend, tip, trunk_r*.17, trunk_r*.07, mats["trunkWarm"], root, authored, "tree.branch", radial_segments)
         primary_tips.append(tip)
 
-    sec_count = int(g["secondaryBranchCount"])
-    for i in range(sec_count):
+    secondary_tips = []
+    for i in range(int(g["secondaryBranchCount"])):
         base = primary_tips[i % len(primary_tips)]
-        phase = (i / max(sec_count, 1)) * math.tau + rng.uniform(-0.20, 0.20)
-        reach = rng.uniform(0.85, 1.95)
-        mid = base + Vector((math.cos(phase) * reach * 0.48, math.sin(phase) * reach * 0.35, rng.uniform(0.28, 0.62)))
-        tip = base + Vector((math.cos(phase) * reach, math.sin(phase) * reach * 0.72, rng.uniform(0.45, 1.25)))
-        tip.x = max(-crown_w * 0.48, min(crown_w * 0.48, tip.x))
-        tip.y = max(-crown_d * 0.46, min(crown_d * 0.46, tip.y))
-        tip.z = max(crown_z - crown_h * 0.28, min(h - 0.25, tip.z))
-        cylinder_between(f"SecondaryBranchA_{i:02d}", base, mid, trunk_r * 0.09, trunk_r * 0.055, mats["trunkDark"], root, authored, "tree.branch_fine", 14)
-        cylinder_between(f"SecondaryBranchB_{i:02d}", mid, tip, trunk_r * 0.055, trunk_r * 0.022, mats["trunkDark"], root, authored, "tree.branch_fine", 12)
+        phase = (i / int(g["secondaryBranchCount"])) * math.tau + rng.uniform(-.20,.20)
+        reach = rng.uniform(.85,1.95)
+        mid = base + Vector((math.cos(phase)*reach*.48, math.sin(phase)*reach*.35, rng.uniform(.28,.62)))
+        tip = base + Vector((math.cos(phase)*reach, math.sin(phase)*reach*.72, rng.uniform(.45,1.25)))
+        tip.x = max(-crown_w*.48, min(crown_w*.48, tip.x))
+        tip.y = max(-crown_d*.46, min(crown_d*.46, tip.y))
+        tip.z = max(crown_z-crown_h*.28, min(float(g["height"])-.25, tip.z))
+        cylinder_between(f"SecondaryBranchA_{i:02d}", base, mid, trunk_r*.09, trunk_r*.055, mats["trunkDark"], root, authored, "tree.branch_fine", 14)
+        cylinder_between(f"SecondaryBranchB_{i:02d}", mid, tip, trunk_r*.055, trunk_r*.022, mats["trunkDark"], root, authored, "tree.branch_fine", 12)
+        secondary_tips.append(tip)
 
-    # Rounded foliage foundation: more clusters, higher sphere subdivision, and overlapping lobes.
-    foliage_count = int(g["foliageClusterCount"])
-    foliage_centers = []
-    for i in range(foliage_count):
-        theta = rng.random() * math.tau
-        rr = math.sqrt(rng.random())
-        x = math.cos(theta) * crown_w * 0.44 * rr
-        y = math.sin(theta) * crown_d * 0.42 * rr
-        dome = 1.0 - min(1.0, (x / (crown_w * 0.52)) ** 2 + (y / (crown_d * 0.52)) ** 2)
-        z = crown_z + crown_h * (0.10 + 0.34 * dome) + rng.uniform(-0.40, 0.34)
-        if x < -1.4:
-            z -= 0.26
-        if x > 2.0:
-            z += 0.12
-        sx = rng.uniform(0.58, 0.98)
-        sy = rng.uniform(0.48, 0.82)
-        sz = rng.uniform(0.42, 0.72)
-        mat = mats["leafDark"] if i % 4 else mats["leafLight"]
-        blob(f"Foliage_{i:03d}", (x, y, z), (sx, sy, sz), mat, root, authored, "tree.foliage", subdivisions=foliage_subdivisions)
-        foliage_centers.append(Vector((x, y, z)))
-
-    # Blossom sprays are layered groups instead of isolated low-poly balls.
-    flower_mats = (mats["flowerDeep"], mats["flowerMid"], mats["flowerLight"])
-    flower_count = int(g["flowerClusterCount"])
-    for i in range(flower_count):
-        c = foliage_centers[rng.randrange(len(foliage_centers))]
-        offset = Vector((rng.uniform(-0.56, 0.56), rng.uniform(-0.46, 0.46), rng.uniform(-0.16, 0.58)))
-        p = c + offset
-        scale = rng.uniform(0.15, 0.27)
-        # Bias brighter flowers toward the top/front for a softer natural read.
-        ordered_mats = flower_mats if (i % 4) else (mats["flowerLight"], mats["flowerMid"], mats["flowerDeep"])
-        flower_spray(
-            f"Blossom_{i:03d}", p, scale, ordered_mats, rng, root, authored,
-            subdivisions=flower_subdivisions, petals=petals_per_cluster,
-        )
-
-    # Sparse warm buds/highlights remain small and smooth.
-    for i in range(int(g["flowerAccentCount"])):
-        c = foliage_centers[(i * 7 + 3) % len(foliage_centers)]
-        p = c + Vector((rng.uniform(-0.34, 0.34), rng.uniform(-0.26, 0.26), rng.uniform(0.20, 0.62)))
-        s = rng.uniform(0.075, 0.12)
-        blob(f"WarmBud_{i:02d}", p, (s, s * 0.82, s * 1.22), mats["flowerWarm"], root, authored, "tree.flower_accent", subdivisions=2)
-
+    groups = crown_groups(crown_z, crown_w, crown_d, crown_h, primary_tips, secondary_tips, rng, int(g["leafGroupCount"]))
+    leaf_count = scatter_defined_leaves(groups, recipe, mats, rng, root, authored)
+    root["definedLeafCount"] = leaf_count
+    root["leafRecipeSource"] = recipe["leafRecipeSource"]["path"]
     return authored
 
 
@@ -219,7 +302,6 @@ def main():
     recipe = load_json(args.recipe)
     if recipe.get("contract") != "CH_VEGETATION_FLOWERING_TREE_V1":
         raise RuntimeError("Expected CH_VEGETATION_FLOWERING_TREE_V1 recipe")
-
     studio = bs.load_json(args.studio_preset)
     profile = scene_gate.load_profile(args.preflight_profile)
     out = Path(args.output).resolve()
@@ -229,7 +311,6 @@ def main():
     scene = bs.configure_scene(studio, (512, 512), str(out))
     scene.render.film_transparent = True
     scene.render.image_settings.color_mode = "RGBA"
-
     mats = make_materials(recipe)
     root = fw.empty("AssetRoot")
     root["assetId"] = recipe["assetId"]
@@ -239,11 +320,10 @@ def main():
     root["runtimeRepresentation"] = "2D_RGBA_pre_rendered_sprite"
     root["proceduralContract"] = recipe["contract"]
     root["qualityGateContract"] = "CH_SCENE_PREFLIGHT_V1"
-    root["designStage"] = "reference_reinterpretation_pass_02_smooth"
+    root["designStage"] = "defined_leaf_recipe_pass_03"
     root["groundIncludedInAsset"] = False
 
     authored = build_tree(root, recipe, mats)
-
     receiver = studio["shadowReceiver"]
     receiver_mat = bs.make_material("ShadowReceiver", receiver["materialColor"], float(receiver.get("roughness", 1.0)))
     bs.add_box("ShadowReceiverPlane", receiver["location"], receiver["dimensions"], receiver_mat, 0.0)
@@ -259,10 +339,9 @@ def main():
         asset_id=recipe["assetId"], report_path=preflight_path,
     )
     scene_gate.require_pass(preflight)
-
     if args.stage == "preflight":
         save_blend(args.save_blend)
-        print(f"[CH_GATE] flowering tree preflight PASS: {preflight_path}")
+        print(f"[CH_GATE] flowering tree defined-leaf preflight PASS: {preflight_path}")
         return
 
     proxy = scene_gate.render_proxy(
@@ -270,12 +349,12 @@ def main():
         profile=profile, asset_id=recipe["assetId"], direction="south",
     )
     proxy["referenceReinterpretation"] = True
-    proxy["designPass"] = 2
-    proxy["flowerClusterCount"] = int(recipe["geometry"]["flowerClusterCount"])
-    proxy["petalsPerFlowerCluster"] = int(recipe["geometry"].get("petalsPerFlowerCluster", 3))
+    proxy["designPass"] = 3
+    proxy["leafRecipeSource"] = recipe["leafRecipeSource"]
+    proxy["definedLeafCount"] = int(root.get("definedLeafCount", 0))
     (out / "proxy_report.json").write_text(json.dumps(proxy, indent=2), encoding="utf-8")
     save_blend(args.save_blend)
-    print(f"[CH_GATE] flowering tree SOUTH proxy ready: {proxy['sha256']}")
+    print(f"[CH_GATE] flowering tree defined-leaf SOUTH proxy ready: {proxy['sha256']}")
 
 
 if __name__ == "__main__":
