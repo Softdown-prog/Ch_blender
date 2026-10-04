@@ -14,17 +14,17 @@
   "materials": {
     "trunkDark": {"name": "CH Flower Tree Bark Dark", "rgba": [0.15, 0.075, 0.050, 1.0], "roughness": 0.94},
     "trunkWarm": {"name": "CH Flower Tree Bark Warm", "rgba": [0.29, 0.16, 0.11, 1.0], "roughness": 0.92},
-    "leafBack": {"name": "CH Pink Tree Leaf Plum", "rgba": [0.27, 0.045, 0.22, 1.0], "roughness": 0.86},
-    "leafMid": {"name": "CH Pink Tree Leaf Berry", "rgba": [0.55, 0.11, 0.42, 1.0], "roughness": 0.84},
-    "leafFront": {"name": "CH Pink Tree Leaf Rose", "rgba": [0.82, 0.27, 0.61, 1.0], "roughness": 0.82},
-    "leafHighlight": {"name": "CH Pink Tree Leaf Lilac", "rgba": [0.96, 0.57, 0.81, 1.0], "roughness": 0.80},
-    "leafWarm": {"name": "CH Pink Tree Leaf Warm Tip", "rgba": [0.91, 0.57, 0.37, 1.0], "roughness": 0.82}
+    "leafBack": {"name": "CH Pink Tree Leaf Plum", "rgba": [0.34, 0.065, 0.27, 1.0], "roughness": 0.86},
+    "leafMid": {"name": "CH Pink Tree Leaf Berry", "rgba": [0.58, 0.14, 0.45, 1.0], "roughness": 0.84},
+    "leafFront": {"name": "CH Pink Tree Leaf Rose", "rgba": [0.84, 0.30, 0.63, 1.0], "roughness": 0.82},
+    "leafHighlight": {"name": "CH Pink Tree Leaf Lilac", "rgba": [0.97, 0.59, 0.82, 1.0], "roughness": 0.80},
+    "leafWarm": {"name": "CH Pink Tree Leaf Warm Tip", "rgba": [0.92, 0.58, 0.38, 1.0], "roughness": 0.82}
   },
   "geometry": {
-    "height": 8.35,
-    "trunkHeight": 3.45,
+    "height": 8.20,
+    "trunkHeight": 3.15,
     "trunkBaseRadius": 0.42,
-    "crownCenterZ": 5.55,
+    "crownCenterZ": 5.35,
     "crownWidth": 8.95,
     "crownDepth": 6.45,
     "crownHeight": 4.10,
@@ -41,20 +41,25 @@
     "leafWidthRatioMax": 0.53,
     "leafThickness": 0.020,
     "leafOutlineSegments": 18,
+    "canopyWindows": [
+      {"center": [-0.17, -0.10, -0.04], "radius": [0.10, 0.12, 0.14]},
+      {"center": [0.13, 0.02, 0.03], "radius": [0.09, 0.11, 0.13]},
+      {"center": [0.29, -0.08, 0.10], "radius": [0.08, 0.10, 0.11]}
+    ],
     "seed": 20261004
   },
   "artDirection": {
-    "stage": "runtime_readability_pass_05_dense_crown",
-    "silhouette": "broad dense asymmetrical umbrella crown, fuller left and upper-right lobes, short visible lower trunk and only a few intentional branch windows",
-    "branching": "continuous smooth trunk splitting earlier into readable tapered limbs; branches remain visible only through controlled canopy openings",
+    "stage": "runtime_readability_pass_06_branch_windows",
+    "silhouette": "broad dense asymmetrical umbrella crown, fuller left and upper-right lobes, slightly shorter visible lower trunk and three small controlled branch windows",
+    "branching": "continuous smooth trunk splitting earlier into readable tapered limbs; selected windows expose branch hierarchy without making the canopy sparse",
     "foliage": "dense overlapping almond leaves arranged in branch-guided depth groups from the established A7 broadleaf V5 recipe; no spherical foliage blobs",
-    "palette": "rose, berry, plum and soft lilac foliage with restrained warm accents; stronger light-dark separation across the crown",
-    "gameReadability": "shorter visible trunk, wider crown and substantially denser grouped leaves so the tree reads as a flowering mass at City Horizon scale without returning to polygonal blob foliage",
+    "palette": "rose, berry, plum and soft lilac foliage with a lifted interior plum tone to avoid a black-purple core",
+    "gameReadability": "retain the dense flowering mass from pass 05 while reducing trunk dominance, exposing a few branches and preventing the crown center from collapsing into one dark patch",
     "runtimeTargetPx": {"minHeight": 180, "preferredHeight": 220, "maxHeight": 240},
     "detailBudget": "preserve silhouette, branch rhythm and 4 tonal foliage layers; discard micro-petals, bark pores and sub-pixel twigs"
   },
   "validationPlan": {
     "firstPass": ["preflight", "south_proxy", "runtime_scale_readability"],
-    "approvalGate": "human review of crown width, density, trunk proportion and 220px-equivalent readability before four-direction bake"
+    "approvalGate": "human review of branch windows, center contrast, trunk proportion and 220px-equivalent readability before four-direction bake"
   }
 }
