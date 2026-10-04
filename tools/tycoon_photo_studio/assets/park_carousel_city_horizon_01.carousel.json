@@ -3,7 +3,7 @@
   "assetId": "park_carousel_city_horizon_01",
   "assetType": "amusement_ride.carousel",
   "designIntent": {
-    "status": "animation_pass_01",
+    "status": "animation_color_mask_pass_01",
     "referenceUse": "functional archetype and quality target only",
     "legacyCarouselReuse": false,
     "notes": [
@@ -12,7 +12,8 @@
       "Gameplay footprint is exactly 4 tiles horizontally by 4 tiles vertically (16 ground tiles total).",
       "Refinement pass 06 closes the silhouette around the horses by widening both platform and canopy while preserving the 4x4 gameplay envelope.",
       "Animation pass 01 keeps the two lower plinth tiers static while the deck, horses, poles, canopy and crown rotate together.",
-      "Horse bodies move vertically on their poles with staggered phases for a calm classic carousel motion."
+      "Horse bodies move vertically on their poles with staggered phases for a calm classic carousel motion.",
+      "Primary color mask is restricted to the yellow alternating canopy roof panels only; cream panels and all other carousel regions remain untouched."
     ]
   },
   "footprint": {
@@ -65,6 +66,20 @@
     "horseNeckForward": 0.60,
     "horsePoleRadius": 0.052
   },
+  "colorMasks": {
+    "contract": "CH_COLOR_MASKS_V1",
+    "primary": {
+      "enabled": true,
+      "id": "primary",
+      "semantic": "canopy_yellow_stripes",
+      "sourceMaterial": "canopyTeal",
+      "sourceObjectPattern": "CanopyPanel_*",
+      "panelParity": "odd",
+      "defaultColor": [0.96, 0.71, 0.12, 1.0],
+      "maskEncoding": "white_on_black",
+      "runtimePurpose": "player-selectable recolor of yellow canopy stripes"
+    }
+  },
   "animationPlan": {
     "enabled": true,
     "contract": "CH_CAROUSEL_ANIMATION_V1",
@@ -79,8 +94,8 @@
     "directions": ["south", "east", "west", "north"]
   },
   "validationPlan": {
-    "firstPass": ["preflight", "south_proxy", "four_direction_animation_frames"],
-    "approvalGate": "human animation review before production packaging",
-    "laterPasses": ["color masks", "runtime spritesheet", "runtime packaging"]
+    "firstPass": ["preflight", "south_proxy", "four_direction_animation_frames", "primary_color_mask_frames"],
+    "approvalGate": "human animation and primary-mask review before production packaging",
+    "laterPasses": ["runtime spritesheet", "runtime packaging"]
   }
 }
