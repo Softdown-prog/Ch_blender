@@ -1,0 +1,58 @@
+{
+  "contract": "CH_PROP_SODA_MACHINE_V2",
+  "assetId": "prop_soda_machine_city_horizon_02",
+  "assetType": "prop.vending_machine.soda",
+  "designIntent": {
+    "status": "refinement_pass_02",
+    "style": "original City Horizon stylized low-poly prop",
+    "notes": [
+      "Second City Horizon soda machine iteration, preserving the 60 px gameplay target and 1x1 footprint.",
+      "V2 improves silhouette, front hierarchy and control readability rather than adding micro-detail.",
+      "Use a projecting top cap, framed product window, stronger dispensing bay and clearer payment/select controls.",
+      "Keep the machine readable at gameplay scale and avoid real-world branding."
+    ]
+  },
+  "sprite": {
+    "targetHeightPx": 60,
+    "proxyCanvasPx": 128,
+    "transparent": true
+  },
+  "footprint": {
+    "widthTiles": 1,
+    "depthTiles": 1,
+    "anchor": [0.5, 0.5],
+    "maxVisualRadius": 1.38
+  },
+  "geometry": {
+    "bodyWidth": 1.22,
+    "bodyDepth": 0.76,
+    "bodyHeight": 2.10,
+    "cornerBevel": 0.09,
+    "baseHeight": 0.11,
+    "topCapHeight": 0.11,
+    "marqueeHeight": 0.31,
+    "displayWidth": 0.88,
+    "displayHeight": 0.66,
+    "controlWidth": 0.20,
+    "controlHeight": 0.54,
+    "vendWidth": 0.62,
+    "vendHeight": 0.25,
+    "frontOffset": 0.395
+  },
+  "materials": {
+    "body": {"name": "CH Soda V2 Body", "rgba": [0.76, 0.10, 0.085, 1.0], "roughness": 0.60},
+    "side": {"name": "CH Soda V2 Side", "rgba": [0.49, 0.055, 0.060, 1.0], "roughness": 0.66},
+    "cream": {"name": "CH Soda V2 Cream", "rgba": [0.97, 0.92, 0.79, 1.0], "roughness": 0.72},
+    "display": {"name": "CH Soda V2 Display", "rgba": [0.10, 0.33, 0.40, 1.0], "roughness": 0.44},
+    "dark": {"name": "CH Soda V2 Dark", "rgba": [0.045, 0.055, 0.065, 1.0], "roughness": 0.56},
+    "metal": {"name": "CH Soda V2 Metal", "rgba": [0.66, 0.67, 0.64, 1.0], "roughness": 0.40, "metallic": 0.22},
+    "accent": {"name": "CH Soda V2 Gold Accent", "rgba": [0.95, 0.66, 0.10, 1.0], "roughness": 0.60},
+    "green": {"name": "CH Soda V2 Green", "rgba": [0.10, 0.48, 0.25, 1.0], "roughness": 0.50},
+    "blue": {"name": "CH Soda V2 Blue", "rgba": [0.09, 0.35, 0.72, 1.0], "roughness": 0.50}
+  },
+  "validationPlan": {
+    "firstPass": ["preflight", "south_proxy"],
+    "approvalGate": "human silhouette/readability review at 60 px target",
+    "laterPasses": ["four directions", "color masks", "runtime packaging"]
+  }
+}
