@@ -2,45 +2,56 @@
   "contract": "CH_VEGETATION_FLOWERING_TREE_V1",
   "assetId": "vegetation.tree_pink_flowering_city_horizon.01",
   "assetType": "vegetation.tree",
-  "referenceUse": "silhouette, branching rhythm and flowering density only; original City Horizon reinterpretation",
+  "referenceUse": "silhouette and branching rhythm only; original City Horizon reinterpretation",
   "footprint": {"widthTiles": 2, "depthTiles": 2, "anchor": [1.0, 1.0]},
+  "leafRecipeSource": {
+    "repository": "Softdown-prog/A7-forge-2D-",
+    "path": "tools/visitor_forge_2d/examples/park_tree_oiti_leaves_v5.json",
+    "renderer": "structured_broadleaf_scenery_v5",
+    "authoringMode": "crisp_clustered_depth_groups_v5",
+    "adaptation": "reuse branch-guided defined-leaf language; replace green palette with rose-purple palette for this Blender asset"
+  },
   "materials": {
     "trunkDark": {"name": "CH Flower Tree Bark Dark", "rgba": [0.16, 0.075, 0.045, 1.0], "roughness": 0.92},
     "trunkWarm": {"name": "CH Flower Tree Bark Warm", "rgba": [0.30, 0.15, 0.10, 1.0], "roughness": 0.90},
-    "leafDark": {"name": "CH Flower Tree Leaf Dark", "rgba": [0.10, 0.24, 0.13, 1.0], "roughness": 0.88},
-    "leafLight": {"name": "CH Flower Tree Leaf Light", "rgba": [0.28, 0.44, 0.18, 1.0], "roughness": 0.86},
-    "flowerDeep": {"name": "CH Flower Deep Pink", "rgba": [0.68, 0.10, 0.35, 1.0], "roughness": 0.82},
-    "flowerMid": {"name": "CH Flower Mid Pink", "rgba": [0.93, 0.28, 0.57, 1.0], "roughness": 0.80},
-    "flowerLight": {"name": "CH Flower Light Pink", "rgba": [1.0, 0.62, 0.78, 1.0], "roughness": 0.78},
-    "flowerWarm": {"name": "CH Flower Warm Highlight", "rgba": [0.98, 0.76, 0.24, 1.0], "roughness": 0.78}
+    "leafBack": {"name": "CH Pink Tree Leaf Plum", "rgba": [0.31, 0.055, 0.24, 1.0], "roughness": 0.84},
+    "leafMid": {"name": "CH Pink Tree Leaf Berry", "rgba": [0.56, 0.12, 0.43, 1.0], "roughness": 0.82},
+    "leafFront": {"name": "CH Pink Tree Leaf Rose", "rgba": [0.82, 0.27, 0.62, 1.0], "roughness": 0.80},
+    "leafHighlight": {"name": "CH Pink Tree Leaf Lilac", "rgba": [0.96, 0.55, 0.80, 1.0], "roughness": 0.78},
+    "leafWarm": {"name": "CH Pink Tree Leaf Warm Tip", "rgba": [0.93, 0.62, 0.36, 1.0], "roughness": 0.80}
   },
   "geometry": {
     "height": 8.8,
     "trunkHeight": 4.45,
     "trunkBaseRadius": 0.38,
-    "crownCenterZ": 6.25,
-    "crownWidth": 8.0,
+    "crownCenterZ": 6.35,
+    "crownWidth": 8.2,
     "crownDepth": 5.9,
-    "crownHeight": 3.75,
+    "crownHeight": 3.65,
     "primaryBranchCount": 8,
     "secondaryBranchCount": 20,
-    "foliageClusterCount": 54,
-    "flowerClusterCount": 132,
-    "petalsPerFlowerCluster": 3,
-    "flowerAccentCount": 18,
     "branchRadialSegments": 18,
-    "foliageSubdivisions": 3,
-    "flowerSubdivisions": 2,
+    "leafGroupCount": 38,
+    "leavesPerRearGroup": 14,
+    "leavesPerMidGroup": 20,
+    "leavesPerFrontGroup": 26,
+    "leafLengthMin": 0.34,
+    "leafLengthMax": 0.58,
+    "leafWidthRatioMin": 0.34,
+    "leafWidthRatioMax": 0.48,
+    "leafThickness": 0.018,
+    "leafOutlineSegments": 16,
     "seed": 20261004
   },
   "artDirection": {
-    "silhouette": "broad umbrella crown with asymmetrical left-right lobes, soft rounded crown masses and visible lower trunk",
-    "branching": "continuous smooth trunk splitting high into readable tapered limbs; no faceted branch silhouette",
-    "flowers": "dense layered pink blossom sprays built from overlapping rounded petals rather than isolated low-poly blobs",
-    "gameReadability": "retain grouped blossom masses and branch openings, but remove obvious low-poly faceting at City Horizon sprite scale"
+    "silhouette": "broad umbrella crown with asymmetrical lobes and visible lower trunk",
+    "branching": "continuous smooth trunk splitting high into readable tapered limbs",
+    "foliage": "defined overlapping almond leaves arranged in branch-guided depth groups, derived from the established A7 broadleaf V5 leaf recipe rather than spherical foliage blobs",
+    "palette": "rose, berry and purple foliage with pale pink-lilac highlights; no green canopy foundation",
+    "gameReadability": "individual leaf rhythm should soften the silhouette and eliminate obvious polygonal blob masses while remaining readable at City Horizon scale"
   },
   "validationPlan": {
     "firstPass": ["preflight", "south_proxy"],
-    "approvalGate": "human silhouette, smoothness and blossom-density review before four-direction bake"
+    "approvalGate": "human leaf-definition, smoothness and canopy-density review before four-direction bake"
   }
 }
