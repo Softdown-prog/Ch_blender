@@ -3,7 +3,7 @@
   "assetId": "park_carousel_city_horizon_01",
   "assetType": "amusement_ride.carousel",
   "designIntent": {
-    "status": "refinement_pass_03",
+    "status": "refinement_pass_04",
     "referenceUse": "functional archetype only",
     "legacyCarouselReuse": false,
     "notes": [
@@ -11,14 +11,14 @@
       "Do not copy prior carousel recipes, dimensions, palettes or builders.",
       "User reference establishes only the carousel archetype: round platform, canopy, mast and horses.",
       "Gameplay footprint is exactly 4 tiles horizontally by 4 tiles vertically (16 ground tiles total).",
-      "Refinement pass 03 preserves the 4x4 footprint while replacing the flat canopy read with a pitched radial roof and upgrading horse silhouettes from box blockouts to rounded stylized mounts."
+      "Refinement pass 04 widens the canopy close to the 4x4 visual envelope and replaces the loose checker-like edge read with a more continuous layered fascia and scalloped trim."
     ]
   },
   "footprint": {
     "widthTiles": 4,
     "depthTiles": 4,
     "anchor": [2.0, 2.0],
-    "maxVisualRadius": 5.85
+    "maxVisualRadius": 5.95
   },
   "materials": {
     "baseDeep": {"name": "CH Carousel Deep Base", "rgba": [0.11, 0.19, 0.23, 1.0], "roughness": 0.72},
@@ -39,7 +39,7 @@
     "mastTopZ": 6.45,
     "crownRadius": 0.70,
     "crownHeight": 1.24,
-    "canopyRadius": 5.25,
+    "canopyRadius": 5.65,
     "canopyInnerRadius": 0.92,
     "canopyTopZ": 5.86,
     "canopyUnderZ": 5.18,
@@ -47,10 +47,12 @@
     "canopyPeakRise": 1.05,
     "canopyPanelCount": 24,
     "canopyPhaseRadians": 0.0654498469,
+    "fasciaHeight": 0.42,
+    "fasciaDepth": 0.18,
     "valanceCount": 24,
-    "valanceWidth": 0.88,
-    "valanceDepth": 0.31,
-    "valanceHeight": 0.57,
+    "valanceWidth": 0.82,
+    "valanceDepth": 0.24,
+    "valanceHeight": 0.48,
     "horseCount": 14,
     "innerHorseCount": 4,
     "horseOuterRadius": 3.78,
