@@ -1,0 +1,60 @@
+{
+  "contract": "CH_TEXTURE_PACK_V1",
+  "id": "city_horizon_core_materials_v1",
+  "textures": [
+    {
+      "contract": "CH_TEXTURE_FORGE_V1",
+      "id": "wood_warm_01",
+      "family": "wood",
+      "seed": 1201,
+      "size": 256,
+      "palette": {"dark": [0.18, 0.075, 0.035], "light": [0.53, 0.27, 0.105], "accent": [0.72, 0.43, 0.19]},
+      "params": {"baseCells": 4, "fineCells": 20, "grainScale": 14.0, "warp": 1.25, "accentStrength": 0.16}
+    },
+    {
+      "contract": "CH_TEXTURE_FORGE_V1",
+      "id": "stone_gray_01",
+      "family": "stone",
+      "seed": 2201,
+      "size": 256,
+      "palette": {"dark": [0.20, 0.21, 0.22], "light": [0.54, 0.56, 0.58], "accent": [0.67, 0.63, 0.56]},
+      "params": {"baseCells": 5, "fineCells": 18, "cells": 8, "accentStrength": 0.08}
+    },
+    {
+      "contract": "CH_TEXTURE_FORGE_V1",
+      "id": "concrete_soft_01",
+      "family": "concrete",
+      "seed": 3201,
+      "size": 256,
+      "palette": {"dark": [0.37, 0.37, 0.35], "light": [0.66, 0.65, 0.61], "accent": [0.75, 0.73, 0.67]},
+      "params": {"baseCells": 4, "fineCells": 26, "accentStrength": 0.05}
+    },
+    {
+      "contract": "CH_TEXTURE_FORGE_V1",
+      "id": "asphalt_city_01",
+      "family": "asphalt",
+      "seed": 4201,
+      "size": 256,
+      "palette": {"dark": [0.055, 0.06, 0.065], "light": [0.20, 0.21, 0.22], "accent": [0.30, 0.29, 0.27]},
+      "params": {"baseCells": 6, "fineCells": 28, "accentStrength": 0.08}
+    },
+    {
+      "contract": "CH_TEXTURE_FORGE_V1",
+      "id": "painted_metal_blue_01",
+      "family": "painted_metal",
+      "seed": 5201,
+      "size": 256,
+      "palette": {"dark": [0.055, 0.16, 0.26], "light": [0.18, 0.45, 0.68], "accent": [0.45, 0.68, 0.82]},
+      "params": {"baseCells": 4, "fineCells": 22, "accentStrength": 0.10}
+    },
+    {
+      "contract": "CH_TEXTURE_FORGE_V1",
+      "id": "bark_broadleaf_01",
+      "family": "bark",
+      "seed": 6201,
+      "size": 256,
+      "palette": {"dark": [0.095, 0.052, 0.032], "light": [0.31, 0.17, 0.105], "accent": [0.42, 0.27, 0.16]},
+      "params": {"baseCells": 5, "fineCells": 20, "ridgeScale": 11.0, "accentStrength": 0.10}
+    }
+  ]
+}
