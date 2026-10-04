@@ -107,7 +107,15 @@ def main():
 
     bs.set_direction(root, bs.DIRECTIONS[0])
     bpy.context.view_layer.update()
+
+    # Guarded CH Blender jobs validate proxy_report.json as the canonical SOUTH
+    # proxy. Keep that contract unchanged and publish the 4-view aggregate in a
+    # separate report so generic worker validation remains backward-compatible.
     (out / "proxy_report.json").write_text(
+        json.dumps(reports["south"], indent=2),
+        encoding="utf-8",
+    )
+    (out / "proxy_set_report.json").write_text(
         json.dumps({
             "contract": "CH_PROXY_RENDER_SET_V1",
             "status": "ok",
