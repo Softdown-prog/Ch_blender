@@ -91,6 +91,25 @@ def build_sloped_wedge(name, r_inner, r_outer, inner_top_z, outer_top_z, thickne
     return obj
 
 
+def build_vertical_ring_segment(name, r_inner, r_outer, z0, z1, a0, a1, material, parent):
+    verts = []
+    for z in (z0, z1):
+        for r, a in ((r_inner, a0), (r_outer, a0), (r_outer, a1), (r_inner, a1)):
+            verts.append((r * math.cos(a), r * math.sin(a), z))
+    faces = [
+        (0, 1, 2, 3), (4, 7, 6, 5),
+        (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0),
+    ]
+    mesh = bpy.data.meshes.new(name + "Mesh")
+    mesh.from_pydata(verts, [], faces)
+    mesh.update()
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.scene.collection.objects.link(obj)
+    obj.data.materials.append(material)
+    obj.parent = parent
+    return obj
+
+
 def sphere_part(name, location, scale, material, parent, rotation_z=0.0):
     bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=8, location=tuple(location))
     obj = bpy.context.object
@@ -161,7 +180,6 @@ def horse_sculpt(root, idx, angle, radius, platform_z, mats, g):
             rotation=(0.0, math.radians(-8.0), tangent),
         )
 
-    # Four legs with a mild alternating carousel pose instead of blockout stilts.
     leg_specs = (
         (+0.28, -0.18, +0.08),
         (+0.28, +0.18, -0.05),
@@ -198,12 +216,6 @@ def horse_sculpt(root, idx, angle, radius, platform_z, mats, g):
 def build_carousel(root, recipe, mats):
     g = recipe["geometry"]
     authored = []
-
-    def box(name, location, dimensions, mat, bevel=0.04, role="carousel.structure", contact=False):
-        obj = fw.box(name, location, dimensions, mat, bevel, root)
-        scene_gate.tag(obj, role, ground_contact=contact)
-        authored.append(obj)
-        return obj
 
     def cyl(name, location, radius, depth, mat, role="carousel.structure", contact=False, vertices=48):
         obj = fw.cylinder(name, location, radius, depth, mat, parent=root, vertices=vertices)
@@ -255,31 +267,46 @@ def build_carousel(root, recipe, mats):
         authored.append(obj)
 
     cyl("CanopyInnerDrum", (0, 0, inner_top - canopy_thickness * 0.55), inner_r * 1.05, canopy_thickness * 2.2, mats["canopyWarm"], "carousel.canopy_hub", False, 48)
-    ring = fw.torus("CanopyOuterRing", (0, 0, outer_top - canopy_thickness * 0.18), canopy_r - 0.08, 0.085, mats["baseWarm"], parent=root)
-    scene_gate.tag(ring, "carousel.canopy_trim", ground_contact=False)
-    authored.append(ring)
 
+    # Layered edge: one continuous visual language instead of loose checker blocks.
+    top_ring = fw.torus("CanopyOuterTopTrim", (0, 0, outer_top - canopy_thickness * 0.12), canopy_r - 0.05, 0.09, mats["baseWarm"], parent=root)
+    scene_gate.tag(top_ring, "carousel.canopy_trim", ground_contact=False)
+    authored.append(top_ring)
+
+    fascia_h = float(g.get("fasciaHeight", 0.42))
+    fascia_depth = float(g.get("fasciaDepth", 0.18))
+    fascia_z1 = float(g["canopyUnderZ"]) + fascia_h * 0.55
+    fascia_z0 = fascia_z1 - fascia_h
+    fascia_inner = canopy_r - fascia_depth
+    for i in range(panel_count):
+        a0 = 2.0 * math.pi * i / panel_count
+        a1 = 2.0 * math.pi * (i + 1) / panel_count
+        seg = build_vertical_ring_segment(
+            f"CanopyFascia_{i:02d}", fascia_inner, canopy_r, fascia_z0, fascia_z1,
+            a0, a1, mats["accentCoral"], root,
+        )
+        scene_gate.tag(seg, "carousel.fascia", ground_contact=False)
+        authored.append(seg)
+
+    lower_ring = fw.torus("CanopyOuterLowerTrim", (0, 0, fascia_z0 + 0.02), canopy_r - 0.04, 0.075, mats["baseWarm"], parent=root)
+    scene_gate.tag(lower_ring, "carousel.canopy_trim", ground_contact=False)
+    authored.append(lower_ring)
+
+    # Small scallops now hang from the fascia and repeat cleanly around the circumference.
     valance_count = int(g["valanceCount"])
-    valance_r = canopy_r - 0.11
-    valance_z = float(g["canopyUnderZ"]) + 0.04
+    valance_r = canopy_r - 0.06
+    valance_z = fascia_z0 - float(g["valanceHeight"]) * 0.24
     for i in range(valance_count):
         a = 2.0 * math.pi * i / valance_count
         x, y = valance_r * math.cos(a), valance_r * math.sin(a)
-        obj = box(
-            f"ValanceTab_{i:02d}", (x, y, valance_z),
-            (float(g["valanceWidth"]), float(g["valanceDepth"]), float(g["valanceHeight"])),
-            mats["accentCoral"] if i % 2 == 0 else mats["baseWarm"],
-            0.07, "carousel.valance",
+        scallop = sphere_part(
+            f"ValanceScallop_{i:02d}",
+            (x, y, valance_z),
+            (float(g["valanceWidth"]) * 0.42, float(g["valanceDepth"]) * 0.62, float(g["valanceHeight"]) * 0.34),
+            mats["canopyCream"] if i % 2 == 0 else mats["baseWarm"], root, a + math.pi * 0.5,
         )
-        obj.rotation_euler[2] = a + math.pi * 0.5
-        if i % 2 == 0:
-            bulb = sphere_part(
-                f"ValanceBulb_{i:02d}",
-                (x, y, valance_z - float(g["valanceHeight"]) * 0.34),
-                (0.095, 0.095, 0.095), mats["canopyCream"], root,
-            )
-            scene_gate.tag(bulb, "carousel.ornament", ground_contact=False)
-            authored.append(bulb)
+        scene_gate.tag(scallop, "carousel.valance", ground_contact=False)
+        authored.append(scallop)
 
     horse_count = int(g["horseCount"])
     inner_horses = int(g["innerHorseCount"])
@@ -329,7 +356,7 @@ def main():
     root["runtimeRepresentation"] = "2D_RGBA_pre_rendered_sprite"
     root["proceduralContract"] = recipe["contract"]
     root["qualityGateContract"] = "CH_SCENE_PREFLIGHT_V1"
-    root["designStage"] = "refinement_pass_03_horse_canopy"
+    root["designStage"] = "refinement_pass_04_canopy_fascia"
     root["legacyCarouselReuse"] = False
 
     authored = build_carousel(root, recipe, mats)
@@ -338,7 +365,7 @@ def main():
     receiver_mat = bs.make_material("ShadowReceiver", receiver["materialColor"], float(receiver.get("roughness", 1.0)))
     bs.add_box("ShadowReceiverPlane", receiver["location"], receiver["dimensions"], receiver_mat, 0.0)
 
-    bs.calibrate_ortho_scale(scene, authored, safety_margin=0.26)
+    bs.calibrate_ortho_scale(scene, authored, safety_margin=0.24)
     cdg.ensure_positive_camera_depth(scene, authored, root=root, minimum_depth=2.0)
     bs.set_direction(root, bs.DIRECTIONS[0])
     bpy.context.view_layer.update()
