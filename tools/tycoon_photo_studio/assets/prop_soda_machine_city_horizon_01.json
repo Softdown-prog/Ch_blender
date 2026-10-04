@@ -1,0 +1,57 @@
+{
+  "contract": "CH_PROP_SODA_MACHINE_V1",
+  "assetId": "prop_soda_machine_city_horizon_01",
+  "assetType": "prop.vending_machine.soda",
+  "designIntent": {
+    "status": "blockout_pass_01",
+    "style": "original City Horizon stylized low-poly prop",
+    "notes": [
+      "Fresh original soda vending machine for City Horizon.",
+      "Target runtime sprite height is 60 pixels.",
+      "Designed to remain readable at small sprite scale: strong silhouette, large front display, simple controls and dispensing bay.",
+      "Keep within a single ground tile footprint."
+    ]
+  },
+  "sprite": {
+    "targetHeightPx": 60,
+    "proxyCanvasPx": 128,
+    "transparent": true
+  },
+  "footprint": {
+    "widthTiles": 1,
+    "depthTiles": 1,
+    "anchor": [0.5, 0.5],
+    "maxVisualRadius": 1.35
+  },
+  "geometry": {
+    "bodyWidth": 1.16,
+    "bodyDepth": 0.72,
+    "bodyHeight": 2.16,
+    "cornerBevel": 0.08,
+    "baseHeight": 0.10,
+    "marqueeHeight": 0.34,
+    "displayWidth": 0.82,
+    "displayHeight": 0.62,
+    "controlWidth": 0.18,
+    "controlHeight": 0.48,
+    "vendWidth": 0.56,
+    "vendHeight": 0.22,
+    "frontOffset": 0.375
+  },
+  "materials": {
+    "body": {"name": "CH Soda Body", "rgba": [0.78, 0.12, 0.10, 1.0], "roughness": 0.58},
+    "side": {"name": "CH Soda Side", "rgba": [0.58, 0.07, 0.07, 1.0], "roughness": 0.64},
+    "cream": {"name": "CH Soda Cream", "rgba": [0.96, 0.93, 0.84, 1.0], "roughness": 0.72},
+    "display": {"name": "CH Soda Display", "rgba": [0.13, 0.37, 0.46, 1.0], "roughness": 0.42},
+    "dark": {"name": "CH Soda Dark", "rgba": [0.055, 0.07, 0.08, 1.0], "roughness": 0.55},
+    "metal": {"name": "CH Soda Metal", "rgba": [0.62, 0.64, 0.64, 1.0], "roughness": 0.38, "metallic": 0.24},
+    "accent": {"name": "CH Soda Accent", "rgba": [0.96, 0.70, 0.13, 1.0], "roughness": 0.60},
+    "bottleGreen": {"name": "CH Soda Bottle Green", "rgba": [0.12, 0.46, 0.24, 1.0], "roughness": 0.48},
+    "bottleBlue": {"name": "CH Soda Bottle Blue", "rgba": [0.10, 0.36, 0.73, 1.0], "roughness": 0.48}
+  },
+  "validationPlan": {
+    "firstPass": ["preflight", "south_proxy"],
+    "approvalGate": "human silhouette/readability review at small scale",
+    "laterPasses": ["front graphic refinement", "button readability", "color masks", "four directions", "runtime packaging"]
+  }
+}
