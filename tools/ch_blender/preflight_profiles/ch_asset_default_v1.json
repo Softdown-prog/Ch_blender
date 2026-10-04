@@ -24,6 +24,13 @@
   "proxy": {
     "resolution": 256,
     "engine": "CYCLES",
-    "samples": 8
+    "samples": 8,
+    "adaptiveByFootprint": true,
+    "qualityTiers": [
+      {"maxTiles": 2, "resolution": 256, "samples": 8},
+      {"maxTiles": 4, "resolution": 384, "samples": 12},
+      {"maxTiles": 5, "resolution": 512, "samples": 16},
+      {"maxTiles": 7, "resolution": 768, "samples": 20}
+    ]
   }
 }
