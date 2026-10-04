@@ -30,6 +30,7 @@ if str(CH_BLENDER) not in sys.path:
 
 import build_scene as bs  # noqa: E402
 import build_ferris_wheel as fw  # noqa: E402
+import camera_depth_guard as cdg  # noqa: E402
 import scene_gate  # noqa: E402
 
 
@@ -271,9 +272,8 @@ def main():
     receiver_mat = bs.make_material("ShadowReceiver", receiver["materialColor"], float(receiver.get("roughness", 1.0)))
     bs.add_box("ShadowReceiverPlane", receiver["location"], receiver["dimensions"], receiver_mat, 0.0)
 
-    # Large 5x5 attractions need extra framing headroom because the quality gate
-    # evaluates every canonical rotation, including the tall crown silhouette.
     bs.calibrate_ortho_scale(scene, authored, safety_margin=0.32)
+    cdg.ensure_positive_camera_depth(scene, authored, root=root, minimum_depth=2.0)
     bs.set_direction(root, bs.DIRECTIONS[0])
     bpy.context.view_layer.update()
 
