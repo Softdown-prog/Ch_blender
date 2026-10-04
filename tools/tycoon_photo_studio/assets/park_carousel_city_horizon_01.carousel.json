@@ -1,0 +1,72 @@
+{
+  "contract": "CH_CAROUSEL_FRESH_V1",
+  "assetId": "park_carousel_city_horizon_01",
+  "assetType": "amusement_ride.carousel",
+  "designIntent": {
+    "status": "experimental_blockout",
+    "referenceUse": "functional archetype only",
+    "legacyCarouselReuse": false,
+    "notes": [
+      "Fresh build after legacy carousel purge.",
+      "Do not copy prior carousel recipes, dimensions, palettes or builders.",
+      "User reference establishes only the carousel archetype: round platform, canopy, mast and horses.",
+      "Original City Horizon identity comes from the three-tier plinth, 16-panel canopy, scalloped valance, lantern crown and two-ring horse rhythm."
+    ]
+  },
+  "footprint": {
+    "tilesX": 7,
+    "tilesY": 7,
+    "anchor": [3.5, 3.5],
+    "maxVisualRadius": 3.22
+  },
+  "materials": {
+    "baseDeep": {"name": "CH Carousel Deep Base", "rgba": [0.12, 0.22, 0.27, 1.0], "roughness": 0.72},
+    "baseWarm": {"name": "CH Carousel Warm Trim", "rgba": [0.89, 0.62, 0.20, 1.0], "roughness": 0.64},
+    "deckWood": {"name": "CH Carousel Deck", "rgba": [0.57, 0.37, 0.23, 1.0], "roughness": 0.82},
+    "canopyCream": {"name": "CH Carousel Cream", "rgba": [0.94, 0.90, 0.78, 1.0], "roughness": 0.78},
+    "canopyTeal": {"name": "CH Carousel Teal", "rgba": [0.18, 0.48, 0.50, 1.0], "roughness": 0.72},
+    "canopyWarm": {"name": "CH Carousel Canopy Hub", "rgba": [0.80, 0.46, 0.18, 1.0], "roughness": 0.68},
+    "accentCoral": {"name": "CH Carousel Coral Accent", "rgba": [0.78, 0.24, 0.20, 1.0], "roughness": 0.68},
+    "accentTeal": {"name": "CH Carousel Crown Teal", "rgba": [0.12, 0.38, 0.42, 1.0], "roughness": 0.66},
+    "metalWarm": {"name": "CH Carousel Warm Metal", "rgba": [0.66, 0.49, 0.20, 1.0], "roughness": 0.48, "metallic": 0.22},
+    "horseIvory": {"name": "CH Carousel Horse Ivory", "rgba": [0.90, 0.87, 0.78, 1.0], "roughness": 0.78}
+  },
+  "geometry": {
+    "baseRadius": 3.05,
+    "baseHeight": 0.62,
+    "mastRadius": 0.16,
+    "mastTopZ": 4.28,
+    "crownRadius": 0.42,
+    "crownHeight": 0.92,
+    "canopyRadius": 2.94,
+    "canopyInnerRadius": 0.60,
+    "canopyTopZ": 3.88,
+    "canopyUnderZ": 3.54,
+    "canopyThickness": 0.18,
+    "canopyPanelCount": 16,
+    "canopyPhaseRadians": 0.0981747704,
+    "valanceCount": 24,
+    "valanceWidth": 0.58,
+    "valanceDepth": 0.18,
+    "valanceHeight": 0.30,
+    "horseCount": 12,
+    "innerHorseCount": 4,
+    "horseOuterRadius": 2.10,
+    "horseInnerRadius": 1.28,
+    "horseBodyZ": 1.18,
+    "horseBodyLength": 0.78,
+    "horseBodyWidth": 0.30,
+    "horseBodyHeight": 0.34,
+    "horseNeckForward": 0.31,
+    "horsePoleRadius": 0.030
+  },
+  "animationPlan": {
+    "enabled": false,
+    "reason": "Blockout silhouette must be approved before rotation and horse vertical motion are authored."
+  },
+  "validationPlan": {
+    "firstPass": ["preflight", "south_proxy"],
+    "approvalGate": "human silhouette review before detail pass",
+    "laterPasses": ["final horse sculpture", "canopy curvature", "ornament", "color masks", "rotation frames"]
+  }
+}
