@@ -90,8 +90,6 @@ def build_wedge(name, r_inner, r_outer, z0, z1, a0, a1, material, parent):
 
 
 def horse_blockout(root, idx, angle, radius, platform_z, mats, g):
-    # Deliberately stylized placeholder: body + neck/head + legs.  This is only
-    # for scale and rhythm; final horse sculpture is a later isolated pass.
     z = platform_z + float(g["horseBodyZ"])
     x = radius * math.cos(angle)
     y = radius * math.sin(angle)
@@ -159,8 +157,6 @@ def build_carousel(root, recipe, mats):
         authored.append(obj)
         return obj
 
-    # Original silhouette: broad three-tier plinth with a softened octagonal read,
-    # not the reference image's striped cylindrical skirt.
     base_r = float(g["baseRadius"])
     base_h = float(g["baseHeight"])
     cyl("PlinthLower", (0, 0, base_h * 0.18), base_r, base_h * 0.36, mats["baseDeep"], "carousel.base", True, 32)
@@ -168,7 +164,6 @@ def build_carousel(root, recipe, mats):
     cyl("PlinthDeck", (0, 0, base_h * 0.78), base_r * 0.90, base_h * 0.24, mats["deckWood"], "carousel.deck", True, 48)
     platform_z = base_h
 
-    # Central mast and a distinct lantern-like crown create the City Horizon identity.
     mast_r = float(g["mastRadius"])
     mast_top = float(g["mastTopZ"])
     cyl("CenterMast", (0, 0, (platform_z + mast_top) * 0.5), mast_r, mast_top - platform_z, mats["metalWarm"], "carousel.mast")
@@ -186,8 +181,6 @@ def build_carousel(root, recipe, mats):
     scene_gate.tag(crown, "carousel.crown", ground_contact=False)
     authored.append(crown)
 
-    # Canopy uses 16 calm, broad radial panels and a raised inner drum.  Panels
-    # are flat blockout wedges for now; a curved fabric profile comes after proxy approval.
     canopy_r = float(g["canopyRadius"])
     inner_r = float(g["canopyInnerRadius"])
     canopy_z = float(g["canopyTopZ"])
@@ -207,8 +200,6 @@ def build_carousel(root, recipe, mats):
     scene_gate.tag(ring, "carousel.canopy_trim", ground_contact=False)
     authored.append(ring)
 
-    # A scalloped valance gives a signature profile.  Short rounded tablets are
-    # deliberately spaced instead of copying the reference's continuous stripe band.
     valance_count = int(g["valanceCount"])
     valance_r = canopy_r - 0.11
     valance_z = float(g["canopyUnderZ"]) + 0.04
@@ -223,7 +214,6 @@ def build_carousel(root, recipe, mats):
         )
         obj.rotation_euler[2] = a + math.pi * 0.5
 
-    # Two-ring horse rhythm prevents a copied one-ring layout and reads better in isometric view.
     horse_count = int(g["horseCount"])
     inner_horses = int(g["innerHorseCount"])
     outer_horses = horse_count - inner_horses
@@ -281,7 +271,9 @@ def main():
     receiver_mat = bs.make_material("ShadowReceiver", receiver["materialColor"], float(receiver.get("roughness", 1.0)))
     bs.add_box("ShadowReceiverPlane", receiver["location"], receiver["dimensions"], receiver_mat, 0.0)
 
-    bs.calibrate_ortho_scale(scene, authored, safety_margin=0.14)
+    # Large 5x5 attractions need extra framing headroom because the quality gate
+    # evaluates every canonical rotation, including the tall crown silhouette.
+    bs.calibrate_ortho_scale(scene, authored, safety_margin=0.32)
     bs.set_direction(root, bs.DIRECTIONS[0])
     bpy.context.view_layer.update()
 
