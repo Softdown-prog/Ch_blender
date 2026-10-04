@@ -29,7 +29,9 @@ permissions:
 
 concurrency:
   group: ch-blender-windows
-  cancel-in-progress: true
+  # Renders/bakes are expensive and non-resumable. A new commit must queue behind
+  # an active render instead of deleting hours of work already produced.
+  cancel-in-progress: false
 
 jobs:
   ch-blender:
