@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
-"""Fresh City Horizon carousel blockout.
+"""Fresh City Horizon carousel authoring pass.
 
-This builder intentionally does not import or reuse any legacy carousel builder,
-recipe, geometry, material palette, or proportions.  The user-supplied image is
-used only as a functional reference for the amusement-ride archetype: circular
-platform, overhead canopy, center mast and suspended horses.
-
-Stage 0 goal: prove a new silhouette before authoring final horses, ornaments,
-color masks, animation, or production sprites.
+No legacy carousel builder, recipe, geometry, palette or proportions are reused.
+The asset stays inside the City Horizon 4x4 gameplay footprint while progressively
+moving from blockout to a readable stylized amusement-ride silhouette.
 """
 from __future__ import annotations
 
@@ -71,11 +67,16 @@ def make_materials(recipe):
     }
 
 
-def build_wedge(name, r_inner, r_outer, z0, z1, a0, a1, material, parent):
+def build_sloped_wedge(name, r_inner, r_outer, inner_top_z, outer_top_z, thickness, a0, a1, material, parent):
     verts = []
-    for z in (z0, z1):
-        for r, a in ((r_inner, a0), (r_outer, a0), (r_outer, a1), (r_inner, a1)):
-            verts.append((r * math.cos(a), r * math.sin(a), z))
+    for zoff in (-thickness, 0.0):
+        for r, a, z in (
+            (r_inner, a0, inner_top_z),
+            (r_outer, a0, outer_top_z),
+            (r_outer, a1, outer_top_z),
+            (r_inner, a1, inner_top_z),
+        ):
+            verts.append((r * math.cos(a), r * math.sin(a), z + zoff))
     faces = [
         (0, 1, 2, 3), (4, 7, 6, 5),
         (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0),
@@ -90,56 +91,108 @@ def build_wedge(name, r_inner, r_outer, z0, z1, a0, a1, material, parent):
     return obj
 
 
-def horse_blockout(root, idx, angle, radius, platform_z, mats, g):
+def sphere_part(name, location, scale, material, parent, rotation_z=0.0):
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=8, location=tuple(location))
+    obj = bpy.context.object
+    obj.name = name
+    obj.scale = tuple(scale)
+    obj.rotation_euler[2] = rotation_z
+    obj.data.materials.append(material)
+    obj.parent = parent
+    return obj
+
+
+def cone_part(name, location, radius, depth, material, parent, rotation=(0.0, 0.0, 0.0)):
+    bpy.ops.mesh.primitive_cone_add(vertices=12, radius1=radius, radius2=0.0, depth=depth, location=tuple(location), rotation=rotation)
+    obj = bpy.context.object
+    obj.name = name
+    obj.data.materials.append(material)
+    obj.parent = parent
+    return obj
+
+
+def horse_sculpt(root, idx, angle, radius, platform_z, mats, g):
+    """Rounded low-poly carousel mount designed to stay readable after sprite downsample."""
     z = platform_z + float(g["horseBodyZ"])
     x = radius * math.cos(angle)
     y = radius * math.sin(angle)
     tangent = angle + math.pi * 0.5
-
-    body = fw.box(
-        f"HorseBody_{idx:02d}", (x, y, z),
-        (float(g["horseBodyLength"]), float(g["horseBodyWidth"]), float(g["horseBodyHeight"])),
-        mats["horseIvory"], 0.10, root,
-    )
-    body.rotation_euler[2] = tangent
-
     forward = Vector((math.cos(tangent), math.sin(tangent), 0.0))
-    neck_center = Vector((x, y, z)) + forward * float(g["horseNeckForward"])
-    neck = fw.cylinder(
-        f"HorseNeck_{idx:02d}",
-        (neck_center.x, neck_center.y, z + 0.22),
-        0.11, 0.55, mats["horseIvory"],
-        rotation=(0.0, math.radians(-18.0), tangent), parent=root, vertices=16,
-    )
-    head_center = Vector((neck_center.x, neck_center.y, z + 0.46)) + forward * 0.10
-    head = fw.box(
-        f"HorseHead_{idx:02d}", (head_center.x, head_center.y, head_center.z),
-        (0.34, 0.22, 0.25), mats["horseIvory"], 0.09, root,
-    )
-    head.rotation_euler[2] = tangent
+    side = Vector((-math.sin(tangent), math.cos(tangent), 0.0))
 
-    for leg_i, offset in enumerate((-0.24, 0.24)):
-        p = Vector((x, y, z - 0.10)) + forward * offset
-        fw.cylinder(
-            f"HorseLeg_{idx:02d}_{leg_i}",
-            (p.x, p.y, platform_z + 0.42), 0.055, 0.62,
-            mats["horseIvory"], parent=root, vertices=12,
+    length = float(g["horseBodyLength"])
+    width = float(g["horseBodyWidth"])
+    height = float(g["horseBodyHeight"])
+
+    body = sphere_part(
+        f"HorseBody_{idx:02d}", (x, y, z),
+        (length * 0.52, width * 0.62, height * 0.58), mats["horseIvory"], root, tangent,
+    )
+
+    chest = Vector((x, y, z + 0.08)) + forward * (length * 0.31)
+    sphere_part(
+        f"HorseChest_{idx:02d}", chest,
+        (width * 0.43, width * 0.40, height * 0.48), mats["horseIvory"], root, tangent,
+    )
+
+    neck_center = Vector((x, y, z + 0.28)) + forward * float(g["horseNeckForward"])
+    fw.cylinder(
+        f"HorseNeck_{idx:02d}", tuple(neck_center),
+        width * 0.19, height * 0.95, mats["horseIvory"],
+        rotation=(0.0, math.radians(-28.0), tangent), parent=root, vertices=14,
+    )
+
+    head_center = neck_center + forward * 0.18 + Vector((0.0, 0.0, height * 0.42))
+    sphere_part(
+        f"HorseHead_{idx:02d}", head_center,
+        (length * 0.19, width * 0.29, height * 0.27), mats["horseIvory"], root, tangent,
+    )
+    muzzle_center = head_center + forward * (length * 0.18) - Vector((0.0, 0.0, height * 0.04))
+    sphere_part(
+        f"HorseMuzzle_{idx:02d}", muzzle_center,
+        (length * 0.14, width * 0.24, height * 0.16), mats["horseIvory"], root, tangent,
+    )
+
+    for ear_i, side_sign in enumerate((-1.0, 1.0)):
+        ear = head_center - forward * 0.03 + side * (side_sign * width * 0.14) + Vector((0.0, 0.0, height * 0.29))
+        cone_part(
+            f"HorseEar_{idx:02d}_{ear_i}", ear,
+            width * 0.07, height * 0.26, mats["horseIvory"], root,
+            rotation=(0.0, math.radians(-8.0), tangent),
         )
 
-    pole_z0 = platform_z + 0.26
-    pole_z1 = float(g["canopyUnderZ"]) - 0.16
+    # Four legs with a mild alternating carousel pose instead of blockout stilts.
+    leg_specs = (
+        (+0.28, -0.18, +0.08),
+        (+0.28, +0.18, -0.05),
+        (-0.27, -0.18, -0.04),
+        (-0.27, +0.18, +0.07),
+    )
+    for leg_i, (fwd_scale, side_scale, lift) in enumerate(leg_specs):
+        upper = Vector((x, y, z - height * 0.31)) + forward * (length * fwd_scale) + side * (width * side_scale)
+        leg_len = height * 0.88
+        fw.cylinder(
+            f"HorseLeg_{idx:02d}_{leg_i}",
+            (upper.x, upper.y, upper.z - leg_len * 0.35 + lift),
+            width * 0.075, leg_len, mats["horseIvory"],
+            rotation=(math.radians(7.0 if leg_i % 2 == 0 else -7.0), 0.0, tangent),
+            parent=root, vertices=10,
+        )
+
+    pole_z0 = platform_z + 0.24
+    pole_z1 = float(g["canopyUnderZ"]) - 0.10
     fw.cylinder(
         f"HorsePole_{idx:02d}", (x, y, (pole_z0 + pole_z1) * 0.5),
         float(g["horsePoleRadius"]), pole_z1 - pole_z0,
-        mats["metalWarm"], parent=root, vertices=16,
+        mats["metalWarm"], parent=root, vertices=14,
     )
 
-    saddle = fw.box(
-        f"HorseSaddle_{idx:02d}",
-        (x, y, z + 0.17), (0.36, 0.30, 0.12), mats["accentCoral"], 0.05, root,
+    saddle_center = Vector((x, y, z + height * 0.40)) - forward * (length * 0.04)
+    saddle = sphere_part(
+        f"HorseSaddle_{idx:02d}", saddle_center,
+        (length * 0.23, width * 0.42, height * 0.16), mats["accentCoral"], root, tangent,
     )
-    saddle.rotation_euler[2] = tangent
-    return [body, neck, head, saddle]
+    return [body, saddle]
 
 
 def build_carousel(root, recipe, mats):
@@ -168,6 +221,7 @@ def build_carousel(root, recipe, mats):
     mast_r = float(g["mastRadius"])
     mast_top = float(g["mastTopZ"])
     cyl("CenterMast", (0, 0, (platform_z + mast_top) * 0.5), mast_r, mast_top - platform_z, mats["metalWarm"], "carousel.mast")
+
     crown_z = mast_top + float(g["crownHeight"]) * 0.38
     cyl("CrownDrum", (0, 0, crown_z), float(g["crownRadius"]), float(g["crownHeight"]) * 0.34, mats["accentTeal"], "carousel.crown", False, 24)
     bpy.ops.mesh.primitive_cone_add(
@@ -184,20 +238,24 @@ def build_carousel(root, recipe, mats):
 
     canopy_r = float(g["canopyRadius"])
     inner_r = float(g["canopyInnerRadius"])
-    canopy_z = float(g["canopyTopZ"])
+    outer_top = float(g["canopyTopZ"])
+    peak_rise = float(g.get("canopyPeakRise", 0.0))
+    inner_top = outer_top + peak_rise
     canopy_thickness = float(g["canopyThickness"])
     panel_count = int(g["canopyPanelCount"])
     for i in range(panel_count):
         a0 = (2.0 * math.pi * i / panel_count) + float(g["canopyPhaseRadians"])
         a1 = (2.0 * math.pi * (i + 1) / panel_count) + float(g["canopyPhaseRadians"])
         mat = mats["canopyCream"] if i % 2 == 0 else mats["canopyTeal"]
-        obj = build_wedge(f"CanopyPanel_{i:02d}", inner_r, canopy_r, canopy_z - canopy_thickness, canopy_z, a0, a1, mat, root)
+        obj = build_sloped_wedge(
+            f"CanopyPanel_{i:02d}", inner_r, canopy_r,
+            inner_top, outer_top, canopy_thickness, a0, a1, mat, root,
+        )
         scene_gate.tag(obj, "carousel.canopy_panel", ground_contact=False)
         authored.append(obj)
 
-    cyl("CanopyInnerDrum", (0, 0, canopy_z - canopy_thickness * 0.40), inner_r * 1.04, canopy_thickness * 1.9, mats["canopyWarm"], "carousel.canopy_hub", False, 48)
-    fw.torus("CanopyOuterRing", (0, 0, canopy_z - canopy_thickness * 0.16), canopy_r - 0.08, 0.085, mats["baseWarm"], parent=root)
-    ring = bpy.context.object
+    cyl("CanopyInnerDrum", (0, 0, inner_top - canopy_thickness * 0.55), inner_r * 1.05, canopy_thickness * 2.2, mats["canopyWarm"], "carousel.canopy_hub", False, 48)
+    ring = fw.torus("CanopyOuterRing", (0, 0, outer_top - canopy_thickness * 0.18), canopy_r - 0.08, 0.085, mats["baseWarm"], parent=root)
     scene_gate.tag(ring, "carousel.canopy_trim", ground_contact=False)
     authored.append(ring)
 
@@ -214,6 +272,14 @@ def build_carousel(root, recipe, mats):
             0.07, "carousel.valance",
         )
         obj.rotation_euler[2] = a + math.pi * 0.5
+        if i % 2 == 0:
+            bulb = sphere_part(
+                f"ValanceBulb_{i:02d}",
+                (x, y, valance_z - float(g["valanceHeight"]) * 0.34),
+                (0.095, 0.095, 0.095), mats["canopyCream"], root,
+            )
+            scene_gate.tag(bulb, "carousel.ornament", ground_contact=False)
+            authored.append(bulb)
 
     horse_count = int(g["horseCount"])
     inner_horses = int(g["innerHorseCount"])
@@ -226,10 +292,10 @@ def build_carousel(root, recipe, mats):
         for j in range(ring_count):
             a = 2.0 * math.pi * j / ring_count + phase
             before = set(bpy.context.scene.objects)
-            horse_blockout(root, idx, a, radius, platform_z, mats, g)
+            horse_sculpt(root, idx, a, radius, platform_z, mats, g)
             for obj in bpy.context.scene.objects:
                 if obj not in before and obj.type == "MESH":
-                    scene_gate.tag(obj, "carousel.horse_blockout", ground_contact=False)
+                    scene_gate.tag(obj, "carousel.horse", ground_contact=False)
                     authored.append(obj)
             idx += 1
 
@@ -263,7 +329,7 @@ def main():
     root["runtimeRepresentation"] = "2D_RGBA_pre_rendered_sprite"
     root["proceduralContract"] = recipe["contract"]
     root["qualityGateContract"] = "CH_SCENE_PREFLIGHT_V1"
-    root["designStage"] = "fresh_original_blockout_v0"
+    root["designStage"] = "refinement_pass_03_horse_canopy"
     root["legacyCarouselReuse"] = False
 
     authored = build_carousel(root, recipe, mats)
@@ -272,7 +338,7 @@ def main():
     receiver_mat = bs.make_material("ShadowReceiver", receiver["materialColor"], float(receiver.get("roughness", 1.0)))
     bs.add_box("ShadowReceiverPlane", receiver["location"], receiver["dimensions"], receiver_mat, 0.0)
 
-    bs.calibrate_ortho_scale(scene, authored, safety_margin=0.32)
+    bs.calibrate_ortho_scale(scene, authored, safety_margin=0.26)
     cdg.ensure_positive_camera_depth(scene, authored, root=root, minimum_depth=2.0)
     bs.set_direction(root, bs.DIRECTIONS[0])
     bpy.context.view_layer.update()
@@ -290,7 +356,7 @@ def main():
 
     if args.stage == "preflight":
         save_blend(args.save_blend)
-        print(f"[CH_GATE] fresh carousel blockout preflight PASS: {preflight_path}")
+        print(f"[CH_GATE] carousel refinement preflight PASS: {preflight_path}")
         return
 
     proxy = scene_gate.render_proxy(
@@ -303,7 +369,7 @@ def main():
     )
     (out / "proxy_report.json").write_text(json.dumps(proxy, indent=2), encoding="utf-8")
     save_blend(args.save_blend)
-    print(f"[CH_GATE] fresh carousel SOUTH proxy ready: {proxy['sha256']}")
+    print(f"[CH_GATE] carousel refinement SOUTH proxy ready: {proxy['sha256']}")
 
 
 if __name__ == "__main__":
