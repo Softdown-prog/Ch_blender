@@ -3,15 +3,15 @@
   "assetId": "park_carousel_city_horizon_01",
   "assetType": "amusement_ride.carousel",
   "designIntent": {
-    "status": "refinement_pass_02",
+    "status": "refinement_pass_03",
     "referenceUse": "functional archetype only",
     "legacyCarouselReuse": false,
     "notes": [
       "Fresh build after legacy carousel purge.",
       "Do not copy prior carousel recipes, dimensions, palettes or builders.",
       "User reference establishes only the carousel archetype: round platform, canopy, mast and horses.",
-      "Gameplay footprint reduced from 5x5 to 4x4 tiles after scale review.",
-      "Refinement pass 02 compacts the attraction horizontally while preserving readable horse scale, canopy height and festive silhouette so it does not become miniature."
+      "Gameplay footprint is exactly 4 tiles horizontally by 4 tiles vertically (16 ground tiles total).",
+      "Refinement pass 03 preserves the 4x4 footprint while replacing the flat canopy read with a pitched radial roof and upgrading horse silhouettes from box blockouts to rounded stylized mounts."
     ]
   },
   "footprint": {
@@ -44,6 +44,7 @@
     "canopyTopZ": 5.86,
     "canopyUnderZ": 5.18,
     "canopyThickness": 0.32,
+    "canopyPeakRise": 1.05,
     "canopyPanelCount": 24,
     "canopyPhaseRadians": 0.0654498469,
     "valanceCount": 24,
@@ -68,6 +69,6 @@
   "validationPlan": {
     "firstPass": ["preflight", "south_proxy"],
     "approvalGate": "human silhouette review before detail pass",
-    "laterPasses": ["final horse sculpture", "canopy curvature", "ornament", "color masks", "rotation frames"]
+    "laterPasses": ["final horse sculpture", "ornament", "color masks", "rotation frames"]
   }
 }
