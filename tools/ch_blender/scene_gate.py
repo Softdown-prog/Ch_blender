@@ -37,7 +37,18 @@ DEFAULT_PROFILE = {
         "footRoles": ["character.foot_left", "character.foot_right"],
         "handRoles": ["character.hand_left", "character.hand_right"],
     },
-    "proxy": {"resolution": 256, "engine": "CYCLES", "samples": 8},
+    "proxy": {
+        "resolution": 256,
+        "engine": "CYCLES",
+        "samples": 8,
+        "adaptiveByFootprint": True,
+        "qualityTiers": [
+            {"maxTiles": 2, "resolution": 256, "samples": 8},
+            {"maxTiles": 4, "resolution": 384, "samples": 12},
+            {"maxTiles": 5, "resolution": 512, "samples": 16},
+            {"maxTiles": 7, "resolution": 768, "samples": 20},
+        ],
+    },
 }
 
 
@@ -103,11 +114,43 @@ def _violation(code, message, *, obj=None, metrics=None):
     return value
 
 
+def _adaptive_proxy_quality(scene, profile):
+    proxy_cfg = profile.get("proxy", {})
+    resolution = int(proxy_cfg.get("resolution", 256))
+    samples = int(proxy_cfg.get("samples", 8))
+    footprint = None
+    try:
+        footprint = json.loads(scene.get("ch.preflightFootprint", "null"))
+    except Exception:
+        footprint = None
+
+    if not proxy_cfg.get("adaptiveByFootprint", False) or not isinstance(footprint, dict):
+        return resolution, samples, None
+
+    try:
+        max_tiles = max(float(footprint.get("widthTiles", 1)), float(footprint.get("depthTiles", 1)))
+    except (TypeError, ValueError):
+        return resolution, samples, None
+
+    tiers = list(proxy_cfg.get("qualityTiers", []))
+    tiers.sort(key=lambda tier: float(tier.get("maxTiles", 1e9)))
+    chosen = tiers[-1] if tiers else None
+    for tier in tiers:
+        if max_tiles <= float(tier.get("maxTiles", 1e9)):
+            chosen = tier
+            break
+    if chosen:
+        resolution = int(chosen.get("resolution", resolution))
+        samples = int(chosen.get("samples", samples))
+    return resolution, samples, max_tiles
+
+
 def run_preflight(*, scene=None, authored=None, footprint=None, profile=None, asset_id=None, report_path=None, requirements=None) -> dict:
     scene = scene or bpy.context.scene
     profile = profile or dict(DEFAULT_PROFILE)
     objects = [obj for obj in _mesh_objects(authored) if not obj.hide_render]
     footprint = footprint or {"widthTiles": 1, "depthTiles": 1}
+    scene["ch.preflightFootprint"] = json.dumps(footprint, sort_keys=True)
     requirements = requirements or json.loads(os.environ.get("CH_ASSET_REQUIREMENTS", "{}"))
     violations = []
 
@@ -127,7 +170,6 @@ def run_preflight(*, scene=None, authored=None, footprint=None, profile=None, as
     elif scene.camera is not None:
         forward = scene.camera.matrix_world.to_quaternion() @ Vector((0.0, 0.0, -1.0))
         elevation = math.degrees(math.asin(max(-1.0, min(1.0, -forward.z))))
-        # Studio yaw is measured clockwise: camera location is (+cos, -sin).
         yaw = math.degrees(math.atan2(forward.y, -forward.x)) % 360.0
         if abs(elevation - 30.0) > 0.1 or abs(yaw - 45.0) > 0.1:
             violations.append(_violation("CH_PREFLIGHT_CAMERA", "Actual camera must obey CH_CAMERA_V1, not just name it.",
@@ -308,7 +350,8 @@ def render_proxy(*, scene=None, authored=None, output_path, profile=None, asset_
     }
 
     proxy_cfg = profile.get("proxy", {})
-    resolution = proxy_resolution_for((old["x"], old["y"]), int(proxy_cfg.get("resolution", 256)))
+    long_edge, adaptive_samples, footprint_tiles = _adaptive_proxy_quality(scene, profile)
+    resolution = proxy_resolution_for((old["x"], old["y"]), long_edge)
     requested_engine = str(proxy_cfg.get("engine", "BLENDER_EEVEE_NEXT"))
     engine_used = requested_engine
 
@@ -324,7 +367,7 @@ def render_proxy(*, scene=None, authored=None, output_path, profile=None, asset_
                 scene.cycles.samples = 1
 
         if engine_used == "CYCLES" and old["cycles_samples"] is not None:
-            scene.cycles.samples = max(1, int(proxy_cfg.get("samples", min(old["cycles_samples"], 8))))
+            scene.cycles.samples = max(1, adaptive_samples)
 
         scene.render.resolution_x, scene.render.resolution_y = resolution
         scene.render.resolution_percentage = 100
@@ -332,7 +375,6 @@ def render_proxy(*, scene=None, authored=None, output_path, profile=None, asset_
         scene.render.image_settings.color_mode = "RGBA"
         scene.render.film_transparent = True
         scene.render.filepath = str(output)
-        # Respect intentionally hidden authoring/alternate geometry.
         bpy.ops.render.render(write_still=True)
         origin = world_to_camera_view(scene, scene.camera, Vector((0.0, 0.0, 0.0)))
         tile_points = [world_to_camera_view(scene, scene.camera, Vector(pt)) for pt in
@@ -361,6 +403,9 @@ def render_proxy(*, scene=None, authored=None, output_path, profile=None, asset_
         "direction": direction,
         "engine": engine_used,
         "resolution": list(resolution),
+        "samples": adaptive_samples if engine_used == "CYCLES" else None,
+        "adaptiveByFootprint": bool(proxy_cfg.get("adaptiveByFootprint", False)),
+        "footprintMaxTiles": footprint_tiles,
         "groundOriginPx": {"x": origin.x * resolution[0], "y": (1.0 - origin.y) * resolution[1]},
         "projectedTileWidthPx": tile_width,
         "studioFingerprint": scene.get("ch.studioFingerprint"),
