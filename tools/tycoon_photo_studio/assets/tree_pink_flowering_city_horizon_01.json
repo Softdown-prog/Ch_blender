@@ -1,0 +1,42 @@
+{
+  "contract": "CH_VEGETATION_FLOWERING_TREE_V1",
+  "assetId": "vegetation.tree_pink_flowering_city_horizon.01",
+  "assetType": "vegetation.tree",
+  "referenceUse": "silhouette, branching rhythm and flowering density only; original City Horizon reinterpretation",
+  "footprint": {"widthTiles": 2, "depthTiles": 2, "anchor": [1.0, 1.0]},
+  "materials": {
+    "trunkDark": {"name": "CH Flower Tree Bark Dark", "rgba": [0.16, 0.075, 0.045, 1.0], "roughness": 0.92},
+    "trunkWarm": {"name": "CH Flower Tree Bark Warm", "rgba": [0.30, 0.15, 0.10, 1.0], "roughness": 0.90},
+    "leafDark": {"name": "CH Flower Tree Leaf Dark", "rgba": [0.10, 0.24, 0.13, 1.0], "roughness": 0.88},
+    "leafLight": {"name": "CH Flower Tree Leaf Light", "rgba": [0.28, 0.44, 0.18, 1.0], "roughness": 0.86},
+    "flowerDeep": {"name": "CH Flower Deep Pink", "rgba": [0.68, 0.10, 0.35, 1.0], "roughness": 0.82},
+    "flowerMid": {"name": "CH Flower Mid Pink", "rgba": [0.93, 0.28, 0.57, 1.0], "roughness": 0.80},
+    "flowerLight": {"name": "CH Flower Light Pink", "rgba": [1.0, 0.62, 0.78, 1.0], "roughness": 0.78},
+    "flowerWarm": {"name": "CH Flower Warm Highlight", "rgba": [0.98, 0.76, 0.24, 1.0], "roughness": 0.78}
+  },
+  "geometry": {
+    "height": 8.8,
+    "trunkHeight": 4.45,
+    "trunkBaseRadius": 0.38,
+    "crownCenterZ": 6.25,
+    "crownWidth": 8.0,
+    "crownDepth": 5.9,
+    "crownHeight": 3.75,
+    "primaryBranchCount": 7,
+    "secondaryBranchCount": 15,
+    "foliageClusterCount": 39,
+    "flowerClusterCount": 94,
+    "flowerAccentCount": 12,
+    "seed": 20261004
+  },
+  "artDirection": {
+    "silhouette": "broad umbrella crown with asymmetrical left-right lobes and visible lower trunk",
+    "branching": "single trunk splitting high into several readable upward/outward limbs",
+    "flowers": "dense layered pink blossom masses with three-value color breakup and sparse warm highlights",
+    "gameReadability": "avoid photoreal micro-leaves; use grouped sculptural clusters readable at City Horizon scale"
+  },
+  "validationPlan": {
+    "firstPass": ["preflight", "south_proxy"],
+    "approvalGate": "human silhouette and blossom-density review before four-direction bake"
+  }
+}
