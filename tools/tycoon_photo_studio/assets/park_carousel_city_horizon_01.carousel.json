@@ -3,7 +3,7 @@
   "assetId": "park_carousel_city_horizon_01",
   "assetType": "amusement_ride.carousel",
   "designIntent": {
-    "status": "refinement_pass_06",
+    "status": "animation_pass_01",
     "referenceUse": "functional archetype and quality target only",
     "legacyCarouselReuse": false,
     "notes": [
@@ -11,7 +11,8 @@
       "Do not copy prior carousel recipes, dimensions, palettes or builders.",
       "Gameplay footprint is exactly 4 tiles horizontally by 4 tiles vertically (16 ground tiles total).",
       "Refinement pass 06 closes the silhouette around the horses by widening both platform and canopy while preserving the 4x4 gameplay envelope.",
-      "Canopy fascia is slightly deeper and taller so the interior reads less exposed at gameplay scale while horses remain visible."
+      "Animation pass 01 keeps the two lower plinth tiers static while the deck, horses, poles, canopy and crown rotate together.",
+      "Horse bodies move vertically on their poles with staggered phases for a calm classic carousel motion."
     ]
   },
   "footprint": {
@@ -65,12 +66,21 @@
     "horsePoleRadius": 0.052
   },
   "animationPlan": {
-    "enabled": false,
-    "reason": "Refine and approve static silhouette before rotation and horse vertical motion are authored."
+    "enabled": true,
+    "contract": "CH_CAROUSEL_ANIMATION_V1",
+    "frameCount": 48,
+    "frameDurationMs": 100,
+    "loop": true,
+    "rotationDegreesPerLoop": 360.0,
+    "horseBobAmplitude": 0.14,
+    "horseBobCyclesPerLoop": 2.0,
+    "horsePhaseMode": "staggered_alternating",
+    "staticObjects": ["PlinthLower", "PlinthMiddle", "CenterMast"],
+    "directions": ["south", "east", "west", "north"]
   },
   "validationPlan": {
-    "firstPass": ["preflight", "south_proxy"],
-    "approvalGate": "human silhouette review before detail pass",
-    "laterPasses": ["final horse sculpture", "ornament", "color masks", "rotation frames"]
+    "firstPass": ["preflight", "south_proxy", "four_direction_animation_frames"],
+    "approvalGate": "human animation review before production packaging",
+    "laterPasses": ["color masks", "runtime spritesheet", "runtime packaging"]
   }
 }
