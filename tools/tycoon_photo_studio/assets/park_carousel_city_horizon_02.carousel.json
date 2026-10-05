@@ -1,0 +1,99 @@
+{
+  "contract": "CH_CAROUSEL_FRESH_V1",
+  "assetId": "park_carousel_city_horizon_02",
+  "assetType": "amusement_ride.carousel",
+  "designIntent": {
+    "status": "structural_rebuild_proxy_01",
+    "referenceUse": "functional archetype and quality target only",
+    "legacyCarouselReuse": false,
+    "notes": [
+      "Structural rebuild based on City Horizon MapForge validation of v1 proportions.",
+      "Preserve CH_CAMERA_V1, 4x4 gameplay footprint, 24 alternating canopy panels, 48-frame animation contract and primary canopy mask semantics.",
+      "Increase lateral presence instead of compensating with runtime artScale.",
+      "Open the horse rings and widen deck/canopy while keeping overall height close to v1.",
+      "V1 remains intact as rollback/reference until v2 passes proxy and MapForge validation."
+    ]
+  },
+  "footprint": {
+    "widthTiles": 4,
+    "depthTiles": 4,
+    "anchor": [2.0, 2.0],
+    "maxVisualRadius": 6.55
+  },
+  "materials": {
+    "baseDeep": {"name": "CH Carousel Deep Base", "rgba": [0.11, 0.19, 0.23, 1.0], "roughness": 0.72},
+    "baseWarm": {"name": "CH Carousel Golden Trim", "rgba": [0.91, 0.67, 0.16, 1.0], "roughness": 0.60},
+    "deckWood": {"name": "CH Carousel Deck", "rgba": [0.58, 0.34, 0.19, 1.0], "roughness": 0.78},
+    "canopyCream": {"name": "CH Carousel Cream", "rgba": [0.98, 0.94, 0.82, 1.0], "roughness": 0.76},
+    "canopyTeal": {"name": "CH Carousel Sun Yellow", "rgba": [0.96, 0.71, 0.12, 1.0], "roughness": 0.70},
+    "canopyWarm": {"name": "CH Carousel Canopy Hub", "rgba": [0.73, 0.20, 0.16, 1.0], "roughness": 0.66},
+    "accentCoral": {"name": "CH Carousel Coral Accent", "rgba": [0.78, 0.20, 0.16, 1.0], "roughness": 0.66},
+    "accentTeal": {"name": "CH Carousel Crown Teal", "rgba": [0.08, 0.35, 0.39, 1.0], "roughness": 0.64},
+    "metalWarm": {"name": "CH Carousel Warm Metal", "rgba": [0.72, 0.54, 0.18, 1.0], "roughness": 0.44, "metallic": 0.28},
+    "horseIvory": {"name": "CH Carousel Horse Ivory", "rgba": [0.95, 0.92, 0.83, 1.0], "roughness": 0.74}
+  },
+  "geometry": {
+    "baseRadius": 6.20,
+    "baseHeight": 0.82,
+    "mastRadius": 0.24,
+    "mastTopZ": 6.50,
+    "crownRadius": 0.82,
+    "crownHeight": 1.28,
+    "canopyRadius": 6.48,
+    "canopyInnerRadius": 0.94,
+    "canopyTopZ": 5.92,
+    "canopyUnderZ": 5.12,
+    "canopyThickness": 0.32,
+    "canopyPeakRise": 1.18,
+    "canopyPanelCount": 24,
+    "canopyPhaseRadians": 0.0654498469,
+    "fasciaHeight": 0.48,
+    "fasciaDepth": 0.22,
+    "valanceCount": 24,
+    "valanceWidth": 0.92,
+    "valanceDepth": 0.24,
+    "valanceHeight": 0.44,
+    "horseCount": 14,
+    "innerHorseCount": 4,
+    "horseOuterRadius": 4.72,
+    "horseInnerRadius": 3.18,
+    "horseBodyZ": 1.96,
+    "horseBodyLength": 1.68,
+    "horseBodyWidth": 0.64,
+    "horseBodyHeight": 0.70,
+    "horseNeckForward": 0.62,
+    "horsePoleRadius": 0.052
+  },
+  "colorMasks": {
+    "contract": "CH_COLOR_MASKS_V1",
+    "primary": {
+      "enabled": true,
+      "id": "primary",
+      "semantic": "canopy_yellow_stripes",
+      "sourceMaterial": "canopyTeal",
+      "sourceObjectPattern": "CanopyPanel_*",
+      "panelParity": "odd",
+      "defaultColor": [0.96, 0.71, 0.12, 1.0],
+      "maskEncoding": "white_on_black",
+      "runtimePurpose": "player-selectable recolor of yellow canopy stripes"
+    }
+  },
+  "animationPlan": {
+    "enabled": true,
+    "contract": "CH_CAROUSEL_ANIMATION_V1",
+    "frameCount": 48,
+    "frameDurationMs": 100,
+    "loop": true,
+    "rotationDegreesPerLoop": 360.0,
+    "horseBobAmplitude": 0.14,
+    "horseBobCyclesPerLoop": 2.0,
+    "horsePhaseMode": "staggered_alternating",
+    "staticObjects": ["PlinthLower", "PlinthMiddle", "CenterMast"],
+    "directions": ["south", "east", "west", "north"]
+  },
+  "validationPlan": {
+    "firstPass": ["preflight", "south_proxy"],
+    "approvalGate": "human silhouette and 4x4 occupancy review before 48x4 animation bake",
+    "laterPasses": ["four_direction_animation_frames", "primary_color_mask_frames", "runtime spritesheet", "runtime packaging"]
+  }
+}
